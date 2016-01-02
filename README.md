@@ -1,4 +1,4 @@
-# FlowGrid Documentation
+# FlowGrid
 
 FlowGrid is a visual dataflow programming environment for Android. The main difference to other
 visual programming apps such as Scratch is that FlowGrid is based on modelling data flow directly
@@ -9,15 +9,16 @@ through the computer is modelled in a graph, making programs look more like flow
 At the top level, this flow can be easily visualized, potentially making programming also more
 accessible.
 
+## About Flowgrid
 
-## Where is the App?
+### Where is the App?
 
 Please join the Google+-Group
 "[FlowGrid](https://plus.google.com/u/0/communities/116001482434880598082)" for feedback and
 discussions and download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
 
 
-## Tutorials
+### Tutorials
 
 To get a basic understanding of the editor and concepts, FlowGrid provides a set of increasingly
 sophisticated tutorials in the “missions” section of the App. Before diving deeper into developing
@@ -25,7 +26,7 @@ custom programs with FlowGrid, I’d recommend to play through some of them to b
 the operation editor.
 
 
-## Help!
+### Help!
 
 I have been working on this side project for quite a while now (about two years, taking up most of
 my spare time) and thought it might be a good idea to get some wider feedback before sinking
@@ -43,7 +44,7 @@ Please post feedback in the
 feedback@flowgrid.org.
 
 
-## Where is the source?
+### Where is the source?
 
 The FlowGrid source code will be available here (it's currently in a hidden repository on bitbucket).
 
@@ -55,13 +56,15 @@ I still need to
 - figure out the best way to transfer the existing repository
 
 
-## Editor
+## Flowgrid Documentation
+
+### Editor
 
 Add functional blocks by tapping anywhere in the grid. Connect the blocks by dragging connections
 out of the bottom of the blocks.
 
 
-## Operations
+### Operations
 
 The most important concept in FlowGrid is an operation. An operation typically has a set of inputs
 and output and performs a transformation between them. Operations do so by connecting other
@@ -71,7 +74,7 @@ A straightforward example is examples/simple/sqr: This operation
 computes the square of a number by multiplying it with itself.
 
 
-### Synchronized vs. Continuous input
+#### Synchronized vs. Continuous input
 
 In FlowGrid, “synchronized input” means that an operation waits for all input values to be
 available, and only then consumes them and executes. This is the default and the case for all
@@ -83,19 +86,19 @@ inserted in place, similar to a macro in traditional programming.
 Continuous operations preserve their state as long as the calling operation is running.
 
 
-### Buffers and Constant Values
+#### Buffers and Constant Values
 
 Operations with synchronized input can have input buffers attached. Input buffers store the
 last supplied value, allowing the operation to execute with the buffered value when sufficient
 other new input is provided.
 
 
-## Classes
+### Classes
 
 Classes encapsulate data and operations working on this data.
 
 
-## Interfaces
+### Interfaces
 
 Interfaces are class signatures without an implementation (but in contrast to most other languages,
 they may have data fields).  Like in Go, classes implicitly implement interfaces if the signatures
