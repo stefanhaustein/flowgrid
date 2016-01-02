@@ -65,8 +65,14 @@ I still need to
 
 ### Editor
 
-Add functional blocks by tapping anywhere in the grid. Connect the blocks by dragging connections
-out of the bottom of the blocks.
+Add functional blocks by tapping anywhere in the grid, bringing up a context menu.
+The "edit" sub-menu contains options to insert and delete columns, rows and previously
+copied areas.
+
+Connect operations by dragging connections out of the bottom of the corresponding blocks.
+
+A long press triggers selection mode. Touch the screen for a while until the selection controls
+show up, then move (without releasing) to select a rectangular area.
 
 
 ### Operations
