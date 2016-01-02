@@ -13,7 +13,7 @@ accessible.
 ## Where is the App?
 
 Please join the Google+-Group
-"[FlowGrid][https://plus.google.com/u/0/communities/116001482434880598082]" for feedback and
+"[FlowGrid](https://plus.google.com/u/0/communities/116001482434880598082)" for feedback and
 discussions and download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
 
 
@@ -39,7 +39,7 @@ ones.
 - What in particular needs better documentation?
 
 Please post feedback in the
-[FlowGrid][https://plus.google.com/u/0/communities/116001482434880598082] G+-group or send it to
+[FlowGrid](https://plus.google.com/u/0/communities/116001482434880598082) G+-group or send it to
 feedback@flowgrid.org.
 
 
@@ -156,7 +156,7 @@ Mathematical operations. Trigonometrical operations are contained in subpackages
 
 ## Credits
 
-(c) 2015 Stefan Haustein, Zurich, Switzerland.
+(c) 2016 Stefan Haustein, Zurich, Switzerland.
 
 Thanks to Jerry Morrison, Mareike Klisch and Pat Coleman for inspiration
 and help with testing this app.
