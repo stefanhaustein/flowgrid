@@ -12,14 +12,9 @@ accessible.
 
 ## Where is the App?
 
-
-Please join the Google+-Group "FlowGrid" to participate in the public alpha.
-
-
-## Where is the source?
-
-Will be available here -- I still needs to do some cleanup and to make sure I don't expose
-keys in the public repository.
+Please join the Google+-Group
+"[FlowGrid][https://plus.google.com/u/0/communities/116001482434880598082]" for feedback and
+discussions and download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
 
 
 ## Tutorials
@@ -28,6 +23,36 @@ To get a basic understanding of the editor and concepts, FlowGrid provides a set
 sophisticated tutorials in the “missions” section of the App. Before diving deeper into developing
 custom programs with FlowGrid, I’d recommend to play through some of them to become familiar with
 the operation editor.
+
+
+## Help!
+
+I have been working on this side project for quite a while now (about two years, taking up most of
+my spare time) and thought it might be a good idea to get some wider feedback before sinking
+more time into this and launching the app publicly on the play store. In particular, I'd be
+interested in any "real world" use cases -- or suggestions for making this suitable for realistic
+ones.
+
+- What are realistic use cases where this app makes sense?
+- Are there use cases where it would make sense, but some bits are missing?
+- Do you have suggestions for additional tutorials in the "missions" section?
+- What in particular needs better documentation?
+
+Please post feedback in the
+[FlowGrid][https://plus.google.com/u/0/communities/116001482434880598082] G+-group or send it to
+feedback@flowgrid.org.
+
+
+## Where is the source?
+
+The FlowGrid source code will be available here (it's currently in a hidden repository on bitbucket).
+
+I still need to
+
+- do some cleanup
+- decide about the source license (probably Apache for the core and GPL for the UI)
+- make sure I don't expose keys in the public repository
+- figure out the best way to transfer the existing repository
 
 
 ## Editor
@@ -56,6 +81,25 @@ A continuous operation just passes on any input directly, i.e. it acts like its 
 inserted in place, similar to a macro in traditional programming.
 
 Continuous operations preserve their state as long as the calling operation is running.
+
+
+### Buffers and Constant Values
+
+Operations with synchronized input can have input buffers attached. Input buffers store the
+last supplied value, allowing the operation to execute with the buffered value when sufficient
+other new input is provided.
+
+
+## Classes
+
+Classes encapsulate data and operations working on this data.
+
+
+## Interfaces
+
+Interfaces are class signatures without an implementation (but in contrast to most other languages,
+they may have data fields).  Like in Go, classes implicitly implement interfaces if the signatures
+match.
 
 
 ## System Library
