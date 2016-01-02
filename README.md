@@ -152,6 +152,7 @@ Mathematical operations. Trigonometrical operations are contained in subpackages
   - When adding a constant to an input, the type should be inferred
   - When adding an output port to an exisingt connection, the type should be inferred
   - The array editor should support drag and drop
+  - It should be possible to pull connection out of unconnected branches
 
 - Code
   - Publish full source code on GitHub
@@ -161,6 +162,10 @@ Mathematical operations. Trigonometrical operations are contained in subpackages
   - Reduce logspam
   - Improve reload triggering
   - Use drive query to synchronize faster and to make delete work more reliable
+
+- API
+  - Should add some time / date stuff
+  - There are huge gaps when dealing with arrays / lists / vectors.
 
 - Documentation
   - Full system library documentation
