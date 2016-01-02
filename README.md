@@ -1,15 +1,16 @@
 # FlowGrid
 
 FlowGrid is a visual dataflow programming environment for Android. The main difference to other
-visual programming apps such as Scratch is that FlowGrid is based on modelling data flow directly
-instead of traditional structured programming.
+visual programming apps such as [Scratch](https://scratch.mit.edu/) is that FlowGrid is based on
+modelling data flow directly instead of traditional structured programming.
 
 Basically, instead of using an indirection via variables or registers, the flow of information
 through the computer is modelled in a graph, making programs look more like flow chart diagrams.
 At the top level, this flow can be easily visualized, potentially making programming also more
 accessible.
 
-## About Flowgrid
+
+## Some Meta Stuff
 
 ### Where is the App?
 
@@ -30,7 +31,7 @@ the operation editor.
 
 I have been working on this side project for quite a while now (about two years, taking up most of
 my spare time) and thought it might be a good idea to get some wider feedback before sinking
-more time into this and launching the app publicly on the play store. In particular, I'd be
+more time into this and launching the app publicly on the Google Play Store. In particular, I'd be
 interested in any "real world" use cases -- or suggestions for making this suitable for realistic
 ones.
 
@@ -39,8 +40,9 @@ ones.
 - Do you have suggestions for additional tutorials in the "missions" section?
 - What in particular needs better documentation?
 
-Please post feedback in the
-[FlowGrid](https://plus.google.com/u/0/communities/116001482434880598082) G+-group or send it to
+Please post feedback in the corresponding
+[G+-group](https://plus.google.com/u/0/communities/116001482434880598082),
+[file an issue](https://github.com/FlowGrid/flowgrid-android/issues) or send feedback to
 feedback@flowgrid.org.
 
 
@@ -53,10 +55,12 @@ I still need to
 - do some cleanup
 - decide about the source license (probably Apache for the core and GPL for the UI)
 - make sure I don't expose keys in the public repository
-- figure out the best way to transfer the existing repository
+- figure out the best way to transfer the existing repository (I know, everything! But what
+  in particular is surprising / unexpected / confusing?) 
 
 
-## Flowgrid Documentation
+## Documentation
+
 
 ### Editor
 
@@ -154,10 +158,10 @@ Mathematical operations. Trigonometrical operations are contained in subpackages
 - Documentation
   - Full system library documentation
   - Switch vs. Filter vs. Compute
-  - Make sure all 3rd party stuff is mentioned in credits
+  - Make sure all 3rd party stuff is mentioned in the copyright section
 
 
-## Credits
+## Copyright
 
 (c) 2016 Stefan Haustein, Zurich, Switzerland.
 
