@@ -14,9 +14,7 @@ accessible.
 
 ### Where is the App?
 
-Please join the Google+-Group
-"[FlowGrid](https://plus.google.com/u/0/communities/116001482434880598082)" for feedback and
-discussions and download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
+Download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
 
 
 ### Tutorials
@@ -27,6 +25,7 @@ custom programs with FlowGrid, I’d recommend to play through some of them to b
 the operation editor.
 
 ![Tutorial Screenshot](https://lh3.googleusercontent.com/SU350EF-5AOVfjLSVmqHFbwTIKylOgsB5pp1Jipe7BCbLIMYZawebvSjwB-5lTbH3JhVkQ=w3840-h2160-rw-no)
+
 
 ### Help!
 
@@ -39,7 +38,8 @@ ones.
 - What are realistic use cases where this app makes sense?
 - Are there use cases where it would make sense, but some bits are missing?
 - Do you have suggestions for additional tutorials in the "missions" section?
-- What in particular needs better documentation?
+- What in particular needs better documentation  (I know, everything! What
+  is surprising / unexpected / confusing?) ?
 
 Please post feedback in the corresponding
 [G+-group](https://plus.google.com/u/0/communities/116001482434880598082),
@@ -49,15 +49,15 @@ feedback@flowgrid.org.
 
 ### Where is the source?
 
-The FlowGrid source code will be available here (it's currently in a hidden repository on bitbucket).
+The FlowGrid source code will be available here (it's currently in a hidden repository on bitbucket;
+I am aiming for end of January 2016).
 
 I still need to
 
 - do some cleanup
 - decide about the source license (probably Apache for the core and GPL for the UI)
 - make sure I don't expose keys in the public repository
-- figure out the best way to transfer the existing repository (I know, everything! But what
-  in particular is surprising / unexpected / confusing?) 
+- figure out the best way to transfer the existing repository
 
 
 ## Documentation
@@ -85,7 +85,7 @@ A straightforward example is examples/simple/sqr: This operation
 computes the square of a number by multiplying it with itself.
 
 
-#### Synchronized vs. Continuous input
+#### Synchronized vs. Continuous Input
 
 In FlowGrid, “synchronized input” means that an operation waits for all input values to be
 available, and only then consumes them and executes. This is the default and the case for all
@@ -121,6 +121,8 @@ match.
 To control an Arduino board via FlowGrid, please install
 [StandardFirmata](https://github.com/firmata/arduino#usage) on the Arduino board.
 
+Please find Arduino IO connectors in the editor context menu under `Data/IO` -> `Firmata`.
+
 
 ## System Library
 
@@ -149,7 +151,13 @@ Logic operations such as "and", "or" and "not".
 
 ### /math
 
-Mathematical operations. Trigonometrical operations are contained in subpackages.
+Mathematical operations, including formatting operations. Trigonometrical operations are
+contained in subpackages.
+
+
+### /text
+
+Text string operations.
 
 
 ## Known Issues / Todos
