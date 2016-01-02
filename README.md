@@ -26,6 +26,7 @@ sophisticated tutorials in the “missions” section of the App. Before diving 
 custom programs with FlowGrid, I’d recommend to play through some of them to become familiar with
 the operation editor.
 
+![Tutorial Screenshot](https://lh3.googleusercontent.com/SU350EF-5AOVfjLSVmqHFbwTIKylOgsB5pp1Jipe7BCbLIMYZawebvSjwB-5lTbH3JhVkQ=w3840-h2160-rw-no)
 
 ### Help!
 
