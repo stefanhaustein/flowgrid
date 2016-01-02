@@ -110,6 +110,12 @@ they may have data fields).  Like in Go, classes implicitly implement interfaces
 match.
 
 
+### Arduino Connection
+
+To control an Arduino board via FlowGrid, please install
+[StandardFirmata](https://github.com/firmata/arduino#usage) on the Arduino board.
+
+
 ## System Library
 
 
