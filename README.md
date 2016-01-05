@@ -60,8 +60,7 @@ I still need to
 - figure out the best way to transfer the existing repository
 
 
-## Documentation
-
+## FlowGrid Language Concepts
 
 
 ### Operations
@@ -105,6 +104,8 @@ they may have data fields).  Like in Go, classes implicitly implement interfaces
 match.
 
 
+## Android-Specific Features
+
 ### Arduino Connection
 
 To control an Arduino board via FlowGrid, please install
@@ -112,6 +113,8 @@ To control an Arduino board via FlowGrid, please install
 
 Please find Arduino IO connectors in the editor context menu under `Data/IO` -> `Firmata`.
 
+
+## FlowGrid User Interface
 
 ### Operation Editor
 
@@ -127,8 +130,11 @@ show up, then move (without releasing) to select a rectangular area.
 
 #### Context Menu
 
+The context menu allows you to modify the current operation at the current touch position
+by adding, changing or removing operational blocks.
 
-##### Data / IO
+
+##### Data / IO
 
 This context menu option allows you to add constant values and various types of input
 and output connectors.
@@ -141,8 +147,16 @@ This context menu option contains control flow and comparison operations.
 
 ###### This module
 
-This option is a short cut to local modules, which are also contained in the "Operations / classes"
-option.
+This option is a short cut to local modules, which are also contained in the
+`Operations / classes` option.
+
+
+###### Operations / classes
+
+This option provides access to all regular built-in and user provided classes and operations,
+except for IO connectors and control structures available via the `Data / IO` and `Control`
+menu options.
+
 
 ###### Edit
 
@@ -152,8 +166,7 @@ copied areas.
 
 
 
-
-## System Library
+## FlowGrid System Library
 
 
 ### /graphics
