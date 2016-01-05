@@ -63,17 +63,6 @@ I still need to
 ## Documentation
 
 
-### Editor
-
-Add functional blocks by tapping anywhere in the grid, bringing up a context menu.
-The "edit" sub-menu contains options to insert and delete columns, rows and previously
-copied areas.
-
-Connect operations by dragging connections out of the bottom of the corresponding blocks.
-
-A long press triggers selection mode. Touch the screen for a while until the selection controls
-show up, then move (without releasing) to select a rectangular area.
-
 
 ### Operations
 
@@ -124,6 +113,46 @@ To control an Arduino board via FlowGrid, please install
 Please find Arduino IO connectors in the editor context menu under `Data/IO` -> `Firmata`.
 
 
+### Operation Editor
+
+Add functional blocks by tapping anywhere in the grid, bringing up a context menu.
+The "edit" sub-menu contains options to insert and delete columns, rows and previously
+copied areas.
+
+Connect operations by dragging connections out of the bottom of the corresponding blocks.
+
+A long press triggers selection mode. Touch the screen for a while until the selection controls
+show up, then move (without releasing) to select a rectangular area.
+
+
+#### Context Menu
+
+
+##### Data / IO
+
+This context menu option allows you to add constant values and various types of input
+and output connectors.
+
+
+##### Control
+
+This context menu option contains control flow and comparison operations.
+
+
+###### This module
+
+This option is a short cut to local modules, which are also contained in the "Operations / classes"
+option.
+
+###### Edit
+
+This sub-menu contains options to insert and delete columns, rows and previously
+copied areas.
+
+
+
+
+
 ## System Library
 
 
@@ -164,7 +193,7 @@ Text string operations.
 
 - Editor
   - When adding a constant to an input, the type should be inferred
-  - When adding an output port to an exisingt connection, the type should be inferred
+  - When adding an output port to an existing connection, the type should be inferred
   - The array editor should support drag and drop
   - It should be possible to pull connection out of unconnected branches
 
