@@ -47,7 +47,7 @@ Please post feedback in the corresponding
 feedback@flowgrid.org.
 
 
-## Source Dependencies
+### Source Dependencies
 
 FlowGrid Android depends on:
 
