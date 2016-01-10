@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <FrameLayout android:id="@+id/rootContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+    
+    
+  </FrameLayout>
+  
+
+  
+  <LinearLayout android:id="@+id/left_drawer"
+        android:orientation="vertical"
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:divider="?android:dividerHorizontal"
+        android:showDividers="middle"
+        android:background="#333">
+  <!--   <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Storage location:"/>
+    <Spinner
+        android:id="@+id/storage_mode_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </Spinner>  -->
+    <TextView 
+        android:id="@+id/about" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:gravity="center_vertical"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:text="About" />
+    <TextView 
+        android:id="@+id/show_logs" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:gravity="center_vertical"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:text="Show logs" />
+    <Space android:layout_width="match_parent"
+           android:layout_weight="1"
+           android:layout_height="0dp"/>
+      <!--  <Button android:id="@+id/force_sync_button"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Force sync" />  -->
+    <TextView android:id="@+id/reset_metadata_button"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset metadata" />
+  </LinearLayout>
+  
+    
+  <ScrollView android:id="@+id/right_drawer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="#cc444444">
+
+    <LinearLayout
+        android:id="@+id/logView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+      </LinearLayout>
+  </ScrollView>
+  
+  
+</android.support.v4.widget.DrawerLayout>

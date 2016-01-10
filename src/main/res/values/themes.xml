@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="FlowGridTheme"
+           parent="@android:style/Theme.Holo">
+        <item name="android:actionBarStyle">@style/FlowGridTheme.ActionBar</item>
+    </style>
+    
+    <style name="FlowGridTheme.ActionBar"
+           parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">#ff0099cc</item>
+        <item name="android:titleTextStyle">@style/FlowGridTheme.ActionBar.TitleTextStyle</item>
+    </style>
+    
+    <style name="FlowGridTheme.ActionBar.TitleTextStyle" 
+           parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+      <item name="android:textColor">#ffffffff</item>
+  	</style>
+    
+</resources>
