@@ -47,17 +47,13 @@ Please post feedback in the corresponding
 feedback@flowgrid.org.
 
 
-### Where is the source?
+### Source Dependencies
 
-The FlowGrid source code will be available here (it's currently in a hidden repository on bitbucket;
-I am aiming for end of January 2016).
+FlowGrid Android depends on:
 
-I still need to
-
-- do some cleanup
-- decide about the source license (probably Apache for the core and GPL for the UI)
-- make sure I don't expose keys in the public repository
-- figure out the best way to transfer the existing repository
+- https://github.com/FlowGrid/flowgrid-core
+- https://github.com/kobjects/emoji
+- https://github.com/kobjects/filesystem
 
 
 ## Language Concepts
@@ -166,13 +162,57 @@ This probably makes only sense for continuous operations. As for other inputs, t
 a regular parameter when the operation is called from another operation.
 
 
-###### Ouput
+###### Output
 
 Adds an output element to the UI (e.g. a text field). When this operation is used from
 another operation, all output elements (except for Canvas) become return values.
 
 
-###### Firmata
+####### Output field
+
+Adds a regular text bases output field to the UI. When the operation is used from another
+operation, all output fields become return values.
+
+
+####### Canvas
+
+Adds a graphical canvas to the UI. In contrast to other output fields, this emits a reference
+to the canvas that can be used for drawing and callback registration. Like other IO operators,
+this turns into a parameter when the operation containing the canvas is called from another
+operation.
+
+
+####### Histogram
+
+Adds a graphical output element that visualizes the distribution of input values. Like other
+ouput elements, this becomes a return parameter when the containing operation is called
+from another operation.
+
+
+####### Percent bar
+
+Adds a graphical output element that visualizes a value between 0 and 100 in the form of
+a bar.
+
+
+####### Run chart
+
+Adds a graphical output element that visualizes numerical input values over time. Like other
+ouput elements, this becomes a return parameter when the containing operation is called
+from another operation.
+
+
+####### Web view
+
+Adds a web view to the UI. If a URL is supplied to this operator, the corresponding web
+page is rendered in the web view. If the user changes the URL (following a link), the
+URL is sent as an output value of the operator.
+
+When the containing operation is called from another operation, this turns into an input
+and output parameter.
+
+
+###### Firmata
 
 Receives or sends digital or analog data to a device connected via USB using the Firmata
 protocol; i.e. typically an Arduino board. As for other IO elements, the corresponding
@@ -261,10 +301,6 @@ Text string operations.
   - The array editor should support drag and drop
   - It should be possible to pull connection out of unconnected branches
 
-- Code
-  - Publish full source code on GitHub
-  - Switch fragments to the support library
-
 - Synchronization
   - Reduce logspam
   - Improve reload triggering
@@ -273,11 +309,19 @@ Text string operations.
 - API
   - Should add some time / date stuff
   - There are huge gaps when dealing with arrays / lists / vectors.
+  - A way to trigger an activity
+  - Some form of intent / external event handling capabilities?
 
 - Documentation
   - Full system library documentation
   - Switch vs. Filter vs. Compute
   - Make sure all 3rd party stuff is mentioned in the copyright section
+
+- Code
+  - Move to support library fragments
+
+- Building
+  - Make it easier to build the project
 
 
 ## Copyright
