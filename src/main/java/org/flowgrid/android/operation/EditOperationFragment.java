@@ -359,8 +359,14 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
           Iterator<Artifact> it = operation.module().iterator();
           CustomOperation next = null;
           while (it.hasNext()) {
-            if (it.next() == operation && it.hasNext()) {
-              next = (CustomOperation) it.next();
+            if (it.next() == operation) {
+              if (it.hasNext()) {
+                Artifact nextArtifact = it.next();
+                // Might be main.png, so we need to be careful here.
+                if (nextArtifact instanceof CustomOperation) {
+                  next = (CustomOperation) nextArtifact;
+                }
+              }
               break;
             }
           }

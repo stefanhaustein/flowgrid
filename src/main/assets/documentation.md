@@ -47,17 +47,13 @@ Please post feedback in the corresponding
 feedback@flowgrid.org.
 
 
-### Where is the source?
+### Source Dependencies
 
-The FlowGrid source code will be available here (it's currently in a hidden repository on bitbucket;
-I am aiming for end of January 2016).
+FlowGrid Android depends on:
 
-I still need to
-
-- do some cleanup
-- decide about the source license (probably Apache for the core and GPL for the UI)
-- make sure I don't expose keys in the public repository
-- figure out the best way to transfer the existing repository
+- https://github.com/FlowGrid/flowgrid-core
+- https://github.com/kobjects/emoji
+- https://github.com/kobjects/filesystem
 
 
 ## Language Concepts
@@ -305,10 +301,6 @@ Text string operations.
   - The array editor should support drag and drop
   - It should be possible to pull connection out of unconnected branches
 
-- Code
-  - Publish full source code on GitHub
-  - Switch fragments to the support library
-
 - Synchronization
   - Reduce logspam
   - Improve reload triggering
@@ -324,6 +316,12 @@ Text string operations.
   - Full system library documentation
   - Switch vs. Filter vs. Compute
   - Make sure all 3rd party stuff is mentioned in the copyright section
+
+- Code
+  - Move to support library fragments
+
+- Building
+  - Make it easier to build the project
 
 
 ## Copyright
