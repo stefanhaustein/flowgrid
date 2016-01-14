@@ -54,10 +54,16 @@ FlowGrid Android depends on:
 - https://github.com/kobjects/filesystem
 
 
-## Language Concepts and Editor
+## Language Concepts, Editor and API documentation
+
+Links:
+
+- [Languagce concepts](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/documentation.md)
+- [User interface](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/ui.md)
+- [System library](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/api.md)
 
 For a documentation of language concepts and the FlowGrid editor, please refer to 
-https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/documentation.md
+
 
 
 ## Known Issues / Todos
