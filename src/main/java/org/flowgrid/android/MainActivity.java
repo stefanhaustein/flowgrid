@@ -112,8 +112,7 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
   private ArduinoFirmata arduinoFirmata;
   private int actionBarIconId = R.drawable.ic_menu_white_24dp;
   private SyncState syncState = SyncState.NONE;
-  private LinkedHashMap<String, String> documentation = new LinkedHashMap<String, String>();
-
+  private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
 
   public Callback<Model> platformApiSetup() {
     return new AndroidApiSetup(this);
@@ -226,12 +225,7 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
     transaction.add(R.id.rootContainer, new ModuleFragment(), null);
     transaction.commitAllowingStateLoss(); */
 
-    try {
-      loadDocumentation();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
+    loadDocumentation();
     log("FlowGrid operational. Starting IOIO and FS connections.");
     
     startStorageConnections();
@@ -246,10 +240,22 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
   }
 
 
-  private void loadDocumentation() throws IOException {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(getAssets().open("documentation.md"), "UTF-8"));
+  private void loadDocumentation() {
+    try {
+      loadDocumentation("documentation.md");
+      loadDocumentation("ui.md");
+      loadDocumentation("api.md");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
+  private void loadDocumentation(String name) throws IOException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(getAssets().open(name), "UTF-8"));
     String title = null;
     StringBuilder body = new StringBuilder();
+    LinkedHashMap<String,String> result = new LinkedHashMap<>();
     while (true) {
       String line = reader.readLine();
       if (line == null || line.startsWith("#")) {
@@ -268,7 +274,7 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
           }
 
           String text = body.toString().trim();
-          documentation.put(title, text);
+          result.put(title, text);
           Artifact artifact = model.artifact(title);
           if (artifact != null) {
             artifact.setDocumentation(text);
