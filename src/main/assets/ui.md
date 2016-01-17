@@ -1,4 +1,4 @@
-##User Interface
+## User Interface
 
 ## Operation Editor
 
@@ -15,7 +15,20 @@ show up, then move (without releasing) to select a rectangular area.
 ### Context Menu
 
 The context menu allows you to modify the current operation at the current touch position
-by adding, changing or removing operational blocks.
+by adding, changing or removing operational blocks. The current touch position is highlighted
+in light blue to confirm the selected location.
+
+
+#### Add Buffer
+
+Add a buffer to the selected input. Available when an unbuffered input for a rgular
+operation (=non-continuous) is selected.
+
+
+#### Remove Buffer
+
+Removes a buffer (including potentially contained constants). Only shown if
+an input connection with a buffer or constant is selected.
 
 
 #### Data / IO
@@ -26,6 +39,24 @@ Add constant values and various types of input and output connectors.
 ##### Constant value
 
 Opens a dialog for inserting a constant in the selected field.
+
+
+###### Compute
+
+Compute a boolean result for the selected condition or boolean operation.
+
+
+###### Filter
+
+Filter the primary input value according to the selected condition or boolean operation:
+The primary input value is passed to the output only if the condition is true.
+
+
+###### Switch
+
+Switch the primary input value according to the selected condition or boolean operation:
+If the condition is true, the primary input value is passed to the left output, otherwise
+it is passed to the right output.
 
 
 ##### Input field
@@ -141,4 +172,33 @@ menu options.
 This sub-menu contains options to insert and delete columns, rows and previously
 copied areas.
 
+
+##### Paste
+
+Enabled after an area was copied or cut. Inserts the area at the current position, expanding
+to the right an below as needed. Existing content in this area will be overwritten.
+
+
+##### Insert row
+
+Inserts a new row at the current position. The current row and all rows below will be shifted
+down.
+
+
+##### Insert column
+
+Insert a new column at the current position. The current row and all rows below will be shifted
+down.
+
+
+##### Delete row
+
+Remove the row at the current position. The whole row will be deleted, and all rows below will
+be shifted up accordingly.
+
+
+##### Delete column
+
+Remove the column at the current position. The whole column will be deleted, and all columns
+to the right will be shifted to the left accordingly.
 

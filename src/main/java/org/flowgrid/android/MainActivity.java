@@ -100,7 +100,6 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
   private File metadataRootDir;
   private Model model;
   private HutnObject editBuffer;
-  public Filesystem assetsFilesystem;
   private Filesystem metadataFilesystem;
   private Filesystem storageFilesystem;
   private Settings settings;
@@ -255,7 +254,6 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
     BufferedReader reader = new BufferedReader(new InputStreamReader(getAssets().open(name), "UTF-8"));
     String title = null;
     StringBuilder body = new StringBuilder();
-    LinkedHashMap<String,String> result = new LinkedHashMap<>();
     while (true) {
       String line = reader.readLine();
       if (line == null || line.startsWith("#")) {
@@ -274,7 +272,7 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
           }
 
           String text = body.toString().trim();
-          result.put(title, text);
+          documentation.put(title, text);
           Artifact artifact = model.artifact(title);
           if (artifact != null) {
             artifact.setDocumentation(text);
