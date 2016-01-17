@@ -62,9 +62,6 @@ Links:
 - [User interface](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/ui.md)
 - [System library](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/api.md)
 
-For a documentation of language concepts and the FlowGrid editor, please refer to 
-
-
 
 ## Known Issues / Todos
 
