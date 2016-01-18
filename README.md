@@ -9,6 +9,9 @@ through the computer is modelled in a graph, making programs look more like flow
 At the top level, this flow can be easily visualized, potentially making programming also more
 accessible.
 
+When the program is executed, flowgrid shows the flow of information through the program:
+
+[![Factorial example screenshot](img/factorial-video-preview.png?raw=true)](https://www.youtube.com/watch?v=hKC-6rJlHRo)
 
 ## Where is the App?
 
@@ -22,7 +25,7 @@ sophisticated tutorials in the “missions” section of the App. Before diving 
 custom programs with FlowGrid, I’d recommend to play through some of them to become familiar with
 the operation editor.
 
-![Tutorial Screenshot](https://lh3.googleusercontent.com/SU350EF-5AOVfjLSVmqHFbwTIKylOgsB5pp1Jipe7BCbLIMYZawebvSjwB-5lTbH3JhVkQ=w3840-h2160-rw-no)
+![Tutorial Screenshot](img/tutorial-screenshot.png)
 
 
 ## Help!
