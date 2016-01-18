@@ -9,6 +9,9 @@ through the computer is modelled in a graph, making programs look more like flow
 At the top level, this flow can be easily visualized, potentially making programming also more
 accessible.
 
+When the program is executed, flowgrid shows the flow of information through the program:
+
+![img/actorial-video-preview.png](Factorial example screenshot)
 
 ## Where is the App?
 
