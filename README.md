@@ -11,7 +11,7 @@ accessible.
 
 When the program is executed, flowgrid shows the flow of information through the program:
 
-![img/factorial-video-preview.png?raw=true](Factorial example screenshot)
+![/img/factorial-video-preview.png?raw=true](Factorial example screenshot)
 
 ## Where is the App?
 
