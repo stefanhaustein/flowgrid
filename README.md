@@ -38,7 +38,7 @@ Also, the tutorials should make it easy to learn programming with a data flow pa
 I haven't built a turing machine in FG yet, but I am quite confident it is computational
 complete since it supports recursion.
 
-[![Arduino Firmata LED example](img/firmata-screenshot?raw=true)](https://www.youtube.com/watch?v=_C4wgUQjMl0&list=PLhEJPa6dXGpsC_xXwtZgpvbDWQlaW84Ny)
+[![Arduino Firmata LED example](img/firmata-screenshot.jpg?raw=true)](https://www.youtube.com/watch?v=_C4wgUQjMl0&list=PLhEJPa6dXGpsC_xXwtZgpvbDWQlaW84Ny)
 
 
 
