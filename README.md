@@ -11,11 +11,38 @@ accessible.
 
 When the program is executed, flowgrid shows the flow of information through the program:
 
-[![Factorial example screenshot](img/factorial-video-launcher.png?raw=true)](https://www.youtube.com/watch?v=hKC-6rJlHRo)
+[![Factorial example screenshot](img/factorial-video-launcher.png?raw=true)](https://www.youtube.com/watch?v=hKC-6rJlHRo&list=PLhEJPa6dXGpsC_xXwtZgpvbDWQlaW84Ny)
 
 ## Where is the App?
 
 Download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
+
+
+## What is it good for?
+
+The main motivation for building FlowGrid was that text input is quite horrible on most
+mobile devices. So I wanted to explore a different approach to programming that is a better
+fit for a touch based interface. The inspiration for using a Grid to make sure that the programs
+look relatively tidy came from MineCraft and "Flow Free"-style mobile games.
+Building something like IFTTT crossed with Redstone blocks on steroids just seemed like a
+natural fit for tablets and phones.
+
+Possible applications are:
+
+- Simple simulations, converters or games
+- Apps utilizing or rendering device sensor data
+- Controlling an Arduino board via Firmata (requires a device with USB OTG support)
+
+Also, the tutorials should make it easy to learn programming with a data flow paradigm.
+
+I haven't built a turing machine in FG yet, but I am quite confident it is computational
+complete since it supports recursion.
+
+
+## What is it not so good for?
+
+FlowGrid is currently not really suitable for data- or UI heavy apps. While it is possible to 
+create home screen icons for individual FG progams, it's not really easy to share apps yet.
 
 
 ## Tutorials
