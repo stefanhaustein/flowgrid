@@ -32,7 +32,7 @@ Possible applications are:
 - Simple simulations, converters or games
 - Apps utilizing or rendering device sensor data
 - Controlling an Arduino board via Firmata (requires a device with USB OTG support)
-- Implementing actual real [spaghetti code](img/spaghetti-code.png) :)
+- Implementing actual real [spaghetti code](img/spaghetticode.png) :)
 
 Also, the tutorials should make it easy to learn programming with a data flow paradigm.
 
