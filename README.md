@@ -111,18 +111,16 @@ Links:
   - Use drive query to synchronize faster and to make delete work more reliable
 
 - API
-  - Should add some time / date stuff
-  - There are huge gaps when dealing with arrays / lists / vectors.
+  - Add a clamp function and use it in the lander example
   - A way to trigger an activity
-  - Some form of intent / external event handling capabilities?
+  - There are significant gaps when dealing with arrays / lists / vectors.
+  - Should add some time / date stuff
+  - Some form of intent / external event handling capabilities?
 
 - Documentation
   - Full system library documentation
   - Switch vs. Filter vs. Compute
   - Make sure all 3rd party stuff is mentioned in the copyright section
-
-- Code
-  - Move to support library fragments
 
 - Building
   - Make it easier to build the project
