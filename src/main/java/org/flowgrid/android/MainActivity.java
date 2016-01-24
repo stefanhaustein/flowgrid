@@ -64,12 +64,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -77,6 +75,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.Gravity;
@@ -87,7 +87,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements Platform, ContextMenu.HelpProvider {
+public class MainActivity extends AppCompatActivity implements Platform, ContextMenu.HelpProvider {
   protected static final int RESOLVE_CONNECTION_REQUEST_CODE_START = 9000;  // Reserve some
   protected static final int RESOLVE_CONNECTION_REQUEST_CODE_END = 9999;  // Reserve some
 
@@ -171,25 +171,23 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
     return model;
   }
   
-  
-  @SuppressLint("NewApi")
   private void updateIcon() {
-    ActionBar actionBar = getActionBar();
+    ActionBar actionBar = getSupportActionBar();
     int iconId = actionBarIconId;
     if (iconId == R.drawable.ic_menu_white_24dp && syncState != SyncState.NONE) {
       iconId = syncState == SyncState.FAILED ? R.drawable.ic_cloud_off_white_24dp : R.drawable.ic_cloud_download_white_24dp;
     }
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      // Is this all needed?
+   // if (iconId == R.drawable.ic_menu_white_24dp) {
+   //   actionBar.setHomeButtonEnabled(true);
+   //   actionBar.setDisplayHomeAsUpEnabled(false);
+  //  } else {
       actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_HOME);
       actionBar.setHomeAsUpIndicator(iconId);
-    } else {
-      actionBar.setIcon(iconId);
-    }
+   // }
   }
+
   public void showActionBar(Spannable title, String subtitle, int iconId) {
-    ActionBar actionBar = getActionBar();
+    ActionBar actionBar = getSupportActionBar();
     actionBarIconId = iconId;
     updateIcon();
     actionBar.setTitle(title);
@@ -199,7 +197,7 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
   }
   
   public void hideActionBar() {
-    getActionBar().hide();
+    getSupportActionBar().hide();
   }
 
   protected void onCreate(final Bundle savedState) {
@@ -382,7 +380,7 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
       @Override
       public void run() {
         updateIcon();
-        Fragment currentFragment = getFragmentManager().findFragmentById(R.id.rootContainer);
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.rootContainer);
         if (currentFragment instanceof PlatformFragment) {
           ((PlatformFragment) currentFragment).refresh();
         }
@@ -657,13 +655,13 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
     if (getFragmentManager().popBackStackImmediate(tag, 0)) {
       return true;
     }
-    Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+    Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
     if (fragment == null) {
       return false; 
     }
-    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-    Fragment current = getFragmentManager().findFragmentById(R.id.rootContainer);
+    Fragment current = getSupportFragmentManager().findFragmentById(R.id.rootContainer);
     if (current == null) {
       transaction.add(R.id.rootContainer, fragment, tag);
     } else {
@@ -690,8 +688,8 @@ public class MainActivity extends Activity implements Platform, ContextMenu.Help
       args.putString("data", parts[2]);
     }
 
-    Fragment current = getFragmentManager().findFragmentById(R.id.rootContainer);
-    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    Fragment current = getSupportFragmentManager().findFragmentById(R.id.rootContainer);
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     if (current == null) {
       fragment.setArguments(args);
       transaction.add(R.id.rootContainer, fragment, name);

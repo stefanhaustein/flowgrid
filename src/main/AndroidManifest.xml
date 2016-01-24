@@ -23,8 +23,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="FlowGrid"
-        android:theme="@style/FlowGridTheme"> <!--  
-        android:theme="@android:style/Theme.Holo.Light"  -->
+        android:theme="@style/FlowGridTheme">
+    <!--          android:theme="@style/FlowGridTheme">
+            android:theme="@android:style/Theme.Holo.Light"  -->
 
         <meta-data android:name="com.google.android.gms.version"
            android:value="@integer/google_play_services_version" /> 
