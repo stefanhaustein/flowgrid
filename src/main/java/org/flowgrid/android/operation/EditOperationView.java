@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.flowgrid.android.Views;
 import org.flowgrid.android.graphics.Colors;
-import org.flowgrid.android.graphics.ScaledGraphElements;
 import org.flowgrid.android.port.TestPort;
 import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Cell;
@@ -95,11 +94,13 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     debugTextPaint.setAntiAlias(true);
     debugTextPaint.setTextSize(Views.px(fragment.platform(), 16));
 
-    sge = new ScaledGraphElements(fragment.platform(), cellSize);
-    setCellSize(cellSize * fragment.getActivity().getResources().getDisplayMetrics().density);
+    sge = new ScaledGraphElements(fragment.platform(), operation());
+    cellSize *= fragment.getActivity().getResources().getDisplayMetrics().density;
     initialCellSize = cellSize;
 
     selection.setVisibility(INVISIBLE);
+
+    sge.setState(originX, originY, cellSize);
   }
 
   
@@ -127,35 +128,12 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       return;
     }
 
-    float x = col * cellSize + xOffset(edge) * (1-progress) + xOffset(target) * progress - originX;
-    float y = row * cellSize + yOffset(edge) * (1-progress) + yOffset(target) * progress - originY;
+    float x = col * cellSize + sge.xOffset(edge) * (1-progress) + sge.xOffset(target) * progress - originX;
+    float y = row * cellSize + sge.yOffset(edge) * (1-progress) + sge.yOffset(target) * progress - originY;
     sge.drawData(canvas, x, y, data.value(), false, 0);
   }
   
 
-  void drawConnector(Canvas canvas, int row, int col, Edge fromEdge, Edge toEdge, Type type) {
-    float x0 = col * cellSize - originX;
-    float y0 = row * cellSize - originY;
-    float toX = x0 + xOffset(toEdge);
-    float toY = y0 + yOffset(toEdge);
-    sge.drawConnector(canvas, x0 + xOffset(fromEdge), y0 + yOffset(fromEdge), toX, toY, type);
-    int toRow = row + toEdge.row;
-    int toCol = col + toEdge.col;
-    
-    if (!fragment.operation.hasInputConnector(toRow, toCol, toEdge.opposite())) {
-      sge.drawOpenConnection(canvas, toX, toY, type);
-    }
-  }
-  
-  private void drawConnections(Cell cell, Canvas canvas) {
-    for (int i = 0; i < 4; i++) {
-      Edge from = Edge.forIndex(i);
-      Edge to = cell.connection(i);
-      if (to != null) {
-        drawConnector(canvas, cell.row(), cell.col(), from, to, cell.inputType(i));
-      }
-    }
-  }
 
 
   private boolean inRange(int row, int col) {
@@ -165,91 +143,15 @@ public class EditOperationView extends View implements OnScaleGestureListener {
   }
   
   
-  private void drawOperator(Cell cell, Canvas canvas, float x0, float y0, boolean ready) {
-    Command cmd = cell.command();
-    int width = cell.width();
 
-    if (cmd.shape() == Shape.BRANCH) {
-   //   float border = cellSize / 10f;
-      Type type = cell.inputType(0);
-
-      if (ready) {
-        sge.highlightCell(canvas, x0, y0, Color.WHITE & 0x3fffffff);
-      }
-
-      if (cmd.outputType(0, null) != null) {
-        drawConnector(canvas, cell.row(), cell.col(), Edge.TOP, Edge.LEFT, type);
-      }
-      if (cmd.outputType(1, null) != null) {
-        drawConnector(canvas, cell.row(), cell.col(), Edge.TOP, Edge.BOTTOM, type);
-      }
-      if (cmd.outputType(2, null) != null) {
-        drawConnector(canvas, cell.row(), cell.col(), Edge.TOP, Edge.RIGHT, type);
-      }
-      return;
-    }
-    
-    Type[] inputSignature = new Type[cmd.inputCount()];
-
-    // Input connectors
-    float yM = y0 + cellSize / 2;
-    if (cell.inputCount() == 0) {
-      float x = x0 + cellSize / 2;
-      sge.drawConnector(canvas, x, y0, x, yM, null);
-      Type type = cell.inputType(0);
-      if (type != null) {
-        while (Types.isArray(type)) {
-          type = ((ArrayType) type).elementType;
-        }
-        sge.drawConnector(canvas, x - cellSize / 10, y0, x + cellSize / 10, y0, cell.inputType(0));
-      }
-    } else {
-      for (int i = 0; i < cell.inputCount(); i++) {
-        float x = x0 + i * cellSize + cellSize / 2;
-
-        Type actualType = cell.inputType(i);
-        if (actualType != null && cmd.inputType(i).isAssignableFrom(actualType)) {
-          inputSignature[i] = actualType;
-        } else {
-          inputSignature[i] = cmd.inputType(i);
-        }
-        sge.drawConnector(canvas, x, y0, x, yM, cell.inputType(i));
-      }
-    }
-    
-    // Output connectors
-    for (int i = 0; i < cmd.outputCount(); i++) {
-      Type oti = cmd.outputType(i, inputSignature);
-      if (oti != null) {
-        drawConnector(canvas, cell.row(), cell.col() + i, null, Edge.BOTTOM, oti);
-      }
-    }
-
-    boolean regular = true;
-    if (cmd instanceof PortCommand) {
-      PortCommand portCommand = (PortCommand) cmd;
-      if (portCommand.port() instanceof TestPort) {
-        ((TestPort) portCommand.port()).draw(fragment.platform(), canvas, x0, y0, cellSize, ready);
-        regular = false;
-      }
-    }
-    if (regular) {
-      sge.drawOperator(canvas, cmd, x0, y0, width, ready);
-    }
-
-    for (int i = 0; i < inputSignature.length; i++) {
-      if (cell.inputType(i) != null && cell.inputType(i) != inputSignature[i]) {
-        float x = x0 + i * cellSize + cellSize / 2;
-        sge.drawErrorMarker(canvas, x, y0);
-      }
-    }
-  }
   
   
   @Override
   protected void onDraw(android.graphics.Canvas canvas) {
     int minRow = 0;
     int maxRow = 0;
+
+    gridPaint.setStrokeWidth(cellSize / 32);
 
     TutorialData tutorialData = operation().tutorialData;
     fragment.counted = 0;
@@ -311,22 +213,25 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       }
 
       if (cell.command() == null) {
-        drawConnections(cell, canvas);
+        sge.drawConnections(cell, canvas);
       } else {
         boolean ready = cellsReady.contains(cell);
         float radius = cellSize / 6;
-        drawOperator(cell, canvas, x0, y0, ready);
-        
+        sge.drawOperator(cell, canvas, x0, y0, ready);
+
         if (cell.command().shape() == Shape.BAR) {
-        	y0 += cellSize / 2 - radius;
+          y0 += cellSize / 2 - radius;
         }
-        
+
         for (int i = 0; i < cell.inputCount(); i++) {
           if (cell.isBuffered(i)) {
             sge.drawBuffer(canvas, x0 + (i + 0.5f) * cellSize, y0);
           }
         }
-       
+      }
+
+      if (cell.command() != null) {
+        boolean ready = cellsReady.contains(cell);
         for (int i = 0; i < cell.inputCount(); i++) {
           float x = x0 + i * cellSize + cellSize / 2;
           Object constant = cell.constant(i);
@@ -401,8 +306,8 @@ public class EditOperationView extends View implements OnScaleGestureListener {
         for (Edge edge: Edge.values()) {
           if (operation().hasOutputConnector(row, col, edge) && 
               !operation().hasInputConnector(row + edge.row, col + edge.col, edge.opposite())) {
-            float conX = col * cellSize + xOffset(edge);
-            float conY = row * cellSize + yOffset(edge);
+            float conX = col * cellSize + sge.xOffset(edge);
+            float conY = row * cellSize + sge.yOffset(edge);
             float dx = conX - absX;
             float dy = conY - absY;
             float d2 = dx * dx + dy * dy;
@@ -440,7 +345,8 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       originX -= dx;
       originY -= dy;
       lastX = x;
-      lastY = y; 
+      lastY = y;
+      sge.setState(originX, originY, cellSize);
     } else {
       int col = (int) Math.floor((x + originX) / cellSize);
       int row = (int) Math.floor((y + originY) / cellSize);
@@ -589,7 +495,8 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     lastFocusX = fx;
     lastFocusY = fy;
 
-    setCellSize(cellSize * scale);
+    cellSize *= scale;
+    sge.setState(originX, originY, cellSize);
     invalidate();
     return true;
   }
@@ -612,7 +519,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     float scale = cellSize / initialCellSize;
     double f = Math.pow(ZOOM_STEP, Math.round(Math.log(scale) / Math.log(ZOOM_STEP)));
     scale = (float) (initialCellSize * f) / cellSize;
-    setCellSize(cellSize * scale);
+    cellSize *= scale;
 
     originX += lastFocusX * scale - lastFocusX;
     originY += lastFocusY * scale - lastFocusY;
@@ -620,7 +527,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     originX = Math.round(originX / cellSize) * cellSize;
     originY = Math.round(originY / cellSize) * cellSize;
     selection.setVisibility(INVISIBLE);
-
+    sge.setState(originX, originY, cellSize);
     invalidate();
   }
 
@@ -636,36 +543,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     originY = 0;
     invalidate();
   }*/
-  
-  public float xOffset(Edge edge) {
-    if (edge == null) {
-      return cellSize / 2;
-    }
-    switch(edge) {
-    case TOP:
-    case BOTTOM:
-      return cellSize / 2;
-    case RIGHT:
-      return cellSize;
-    default:
-      return 0;
-    }
-  }
 
-  public float yOffset(Edge edge) {
-    if (edge == null) {
-      return cellSize / 2;
-    }
-    switch (edge) {
-    case LEFT:
-    case RIGHT:
-      return cellSize / 2;
-    case BOTTOM:
-      return cellSize;
-    default:
-      return 0;
-    }
-  }
 
   protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
     super.onLayout(changed, left, top, right, bottom);
@@ -673,12 +551,6 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       autoZoom(right - left, bottom - top);
       autoZoom = false;
     }
-  }
-
-  private void setCellSize(float cellSize) {
-    this.cellSize = cellSize;
-    sge.setCellSize(cellSize);
-    gridPaint.setStrokeWidth(cellSize / 32);
   }
 
 
@@ -695,7 +567,10 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       scale = (float) (initialCellSize * f) / cellSize;
 
       selection.setVisibility(INVISIBLE);
-      setCellSize(cellSize * scale);
+      cellSize *= scale;
+
+      sge.setState(originX, originY, cellSize);
+
       invalidate();
     }
   }

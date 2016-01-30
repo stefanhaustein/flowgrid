@@ -1,15 +1,23 @@
-package org.flowgrid.android.graphics;
+package org.flowgrid.android.operation;
 
+import org.flowgrid.android.graphics.Colors;
 import org.flowgrid.android.graphics.Colors.Brightness;
 import org.flowgrid.android.MainActivity;
+import org.flowgrid.android.graphics.Drawing;
+import org.flowgrid.android.port.TestPort;
 import org.flowgrid.model.ArrayType;
+import org.flowgrid.model.Cell;
+import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.DisplayType;
+import org.flowgrid.model.Edge;
 import org.flowgrid.model.Model;
 import org.flowgrid.model.Shape;
 import org.flowgrid.model.Operation;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.Command;
+import org.flowgrid.model.Types;
 import org.flowgrid.model.api.LocalCallCommand;
+import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.api.PropertyCommand;
 import org.kobjects.emoji.android.TextHelper;
 import org.kobjects.emoji.Emoji;
@@ -47,11 +55,15 @@ public class ScaledGraphElements {
   private final RectF rect = new RectF();
   private final Path path = new Path();
   private final MainActivity platform;
+  private final CustomOperation operation;
 
   private float cellSize;
+  private float originX;
+  private float originY;
 
-  public ScaledGraphElements(MainActivity platform, float cellSize) {
+  public ScaledGraphElements(MainActivity platform, CustomOperation operation) {
     this.platform = platform;
+    this.operation = operation;
 
     connectorPaint.setStrokeCap(Cap.ROUND);
     connectorPaint.setStyle(Style.STROKE);
@@ -104,10 +116,11 @@ public class ScaledGraphElements {
     errorPaint.setColor(Color.RED);
     errorPaint.setStyle(Style.STROKE);
     errorPaint.setAntiAlias(true);
-    setCellSize(cellSize);
   }
 
-  public void setCellSize(float cellSize) {
+  public void setState(float originX, float originY, float cellSize) {
+    this.originX = originX;
+    this.originY = originY;
     this.cellSize = cellSize;
     arrayConnectorPaint.setStrokeWidth(2 * cellSize / 16);
     errorPaint.setStrokeWidth(cellSize / 8);
@@ -132,6 +145,30 @@ public class ScaledGraphElements {
       connectorPaint.setColor(color);
     }
     canvas.drawLine(x0, y0, x1, y1, connectorPaint);
+  }
+
+  void drawConnector(Canvas canvas, int row, int col, Edge fromEdge, Edge toEdge, Type type) {
+    float x0 = col * cellSize - originX;
+    float y0 = row * cellSize - originY;
+    float toX = x0 + xOffset(toEdge);
+    float toY = y0 + yOffset(toEdge);
+    drawConnector(canvas, x0 + xOffset(fromEdge), y0 + yOffset(fromEdge), toX, toY, type);
+    int toRow = row + toEdge.row;
+    int toCol = col + toEdge.col;
+
+    if (!operation.hasInputConnector(toRow, toCol, toEdge.opposite())) {
+      drawOpenConnection(canvas, toX, toY, type);
+    }
+  }
+
+  void drawConnections(Cell cell, Canvas canvas) {
+    for (int i = 0; i < 4; i++) {
+      Edge from = Edge.forIndex(i);
+      Edge to = cell.connection(i);
+      if (to != null) {
+        drawConnector(canvas, cell.row(), cell.col(), from, to, cell.inputType(i));
+      }
+    }
   }
 
   public void drawData(Canvas canvas, float x, float y, Object value, boolean constant, int mod) {
@@ -199,6 +236,86 @@ public class ScaledGraphElements {
     TextHelper.drawText(platform, canvas, text, x, tY, paint);
   }
 
+
+  void drawOperator(Cell cell, Canvas canvas, float x0, float y0, boolean ready) {
+    Command cmd = cell.command();
+    int width = cell.width();
+
+    if (cmd.shape() == Shape.BRANCH) {
+      //   float border = cellSize / 10f;
+      Type type = cell.inputType(0);
+
+      if (ready) {
+        highlightCell(canvas, x0, y0, Color.WHITE & 0x3fffffff);
+      }
+
+      if (cmd.outputType(0, null) != null) {
+        drawConnector(canvas, cell.row(), cell.col(), Edge.TOP, Edge.LEFT, type);
+      }
+      if (cmd.outputType(1, null) != null) {
+        drawConnector(canvas, cell.row(), cell.col(), Edge.TOP, Edge.BOTTOM, type);
+      }
+      if (cmd.outputType(2, null) != null) {
+        drawConnector(canvas, cell.row(), cell.col(), Edge.TOP, Edge.RIGHT, type);
+      }
+      return;
+    }
+
+    Type[] inputSignature = new Type[cmd.inputCount()];
+
+    // Input connectors
+    float yM = y0 + cellSize / 2;
+    if (cell.inputCount() == 0) {
+      float x = x0 + cellSize / 2;
+      drawConnector(canvas, x, y0, x, yM, null);
+      Type type = cell.inputType(0);
+      if (type != null) {
+        while (Types.isArray(type)) {
+          type = ((ArrayType) type).elementType;
+        }
+        drawConnector(canvas, x - cellSize / 10, y0, x + cellSize / 10, y0, cell.inputType(0));
+      }
+    } else {
+      for (int i = 0; i < cell.inputCount(); i++) {
+        float x = x0 + i * cellSize + cellSize / 2;
+
+        Type actualType = cell.inputType(i);
+        if (actualType != null && cmd.inputType(i).isAssignableFrom(actualType)) {
+          inputSignature[i] = actualType;
+        } else {
+          inputSignature[i] = cmd.inputType(i);
+        }
+        drawConnector(canvas, x, y0, x, yM, cell.inputType(i));
+      }
+    }
+
+    // Output connectors
+    for (int i = 0; i < cmd.outputCount(); i++) {
+      Type oti = cmd.outputType(i, inputSignature);
+      if (oti != null) {
+        drawConnector(canvas, cell.row(), cell.col() + i, null, Edge.BOTTOM, oti);
+      }
+    }
+
+    boolean regular = true;
+    if (cmd instanceof PortCommand) {
+      PortCommand portCommand = (PortCommand) cmd;
+      if (portCommand.port() instanceof TestPort) {
+        ((TestPort) portCommand.port()).draw(platform, canvas, x0, y0, cellSize, ready);
+        regular = false;
+      }
+    }
+    if (regular) {
+      drawOperator(canvas, cmd, x0, y0, width, ready);
+    }
+
+    for (int i = 0; i < inputSignature.length; i++) {
+      if (cell.inputType(i) != null && cell.inputType(i) != inputSignature[i]) {
+        float x = x0 + i * cellSize + cellSize / 2;
+        drawErrorMarker(canvas, x, y0);
+      }
+    }
+  }
 
   public void drawShape(Canvas canvas, Shape shape, String text, float x0, float y0, int width, boolean highlight, boolean passThrough) {
     float x1 = x0 + width * cellSize;
@@ -543,5 +660,36 @@ public class ScaledGraphElements {
   public void highlightCell(Canvas canvas, float x0, float y0, int color) {
     cellCountingPaint.setColor(color);
     canvas.drawRect(x0, y0, x0 + cellSize, y0 + cellSize, cellCountingPaint);
+  }
+
+
+  public float xOffset(Edge edge) {
+    if (edge == null) {
+      return cellSize / 2;
+    }
+    switch(edge) {
+      case TOP:
+      case BOTTOM:
+        return cellSize / 2;
+      case RIGHT:
+        return cellSize;
+      default:
+        return 0;
+    }
+  }
+
+  public float yOffset(Edge edge) {
+    if (edge == null) {
+      return cellSize / 2;
+    }
+    switch (edge) {
+      case LEFT:
+      case RIGHT:
+        return cellSize / 2;
+      case BOTTOM:
+        return cellSize;
+      default:
+        return 0;
+    }
   }
 }
