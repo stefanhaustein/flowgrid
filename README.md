@@ -22,7 +22,7 @@ Download the public alpha from <https://play.google.com/apps/testing/org.flowgri
 
 The main motivation for building FlowGrid was that text input is quite horrible on most
 mobile devices. So I wanted to explore a different approach to programming that is a better
-fit for a touch based interface. The inspiration for using a Grid to make sure that the programs
+fit for a touch based interface. The inspiration for using a grid to make sure that the programs
 look relatively tidy came from MineCraft and "Flow Free"-style mobile games.
 Building something like IFTTT crossed with Redstone blocks on steroids just seemed like a
 natural fit for tablets and phones.
