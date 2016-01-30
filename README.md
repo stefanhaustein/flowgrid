@@ -101,6 +101,7 @@ Links:
 
 - Editor
   - Zoom in on "edit" 
+  - Better initial zoom
   - When adding a constant to an input, the type should be inferred
   - When adding an output port to an existing connection, the type should be inferred
   - The array editor should support drag and drop
