@@ -22,7 +22,7 @@ Download the public alpha from <https://play.google.com/apps/testing/org.flowgri
 
 The main motivation for building FlowGrid was that text input is quite horrible on most
 mobile devices. So I wanted to explore a different approach to programming that is a better
-fit for a touch based interface. The inspiration for using a Grid to make sure that the programs
+fit for a touch based interface. The inspiration for using a grid to make sure that the programs
 look relatively tidy came from MineCraft and "Flow Free"-style mobile games.
 Building something like IFTTT crossed with Redstone blocks on steroids just seemed like a
 natural fit for tablets and phones.
@@ -100,6 +100,8 @@ Links:
 ## Known Issues / Todos
 
 - Editor
+  - Zoom in on "edit" 
+  - Better initial zoom
   - When adding a constant to an input, the type should be inferred
   - When adding an output port to an existing connection, the type should be inferred
   - The array editor should support drag and drop
@@ -107,20 +109,24 @@ Links:
 
 - Synchronization
   - Reduce logspam
-  - Improve reload triggering
+  - Liste to sync changes to trigger invalidations, improve and document invalidation / load process  
   - Use drive query to synchronize faster and to make delete work more reliable
 
 - API
   - Add a clamp function and use it in the lander example
-  - A way to trigger an activity
+  - Add a way to trigger an activity
   - There are significant gaps when dealing with arrays / lists / vectors.
   - Should add some time / date stuff
   - Some form of intent / external event handling capabilities?
 
 - Documentation
-  - Full system library documentation
-  - Switch vs. Filter vs. Compute
   - Make sure all 3rd party stuff is mentioned in the copyright section
 
 - Building
   - Make it easier to build the project
+
+- Cleanup 
+  - Switch to Support Library dialogs 
+  - See if this helps with context menu alignment
+  - Get rid of the DisabledMap class; move the custom functionality to the menu
+  - Switch from ActioBar to Toolbar
