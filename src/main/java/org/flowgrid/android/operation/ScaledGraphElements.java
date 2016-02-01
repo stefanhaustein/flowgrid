@@ -38,20 +38,21 @@ import android.graphics.Paint.Style;
 public class ScaledGraphElements {
   private final Paint connectorPaint = new Paint();
   private final Paint errorPaint = new Paint();
-  private final Paint operatorBoxPaint = new Paint();
   private final Paint valueBorderPaint = new Paint();
   private final Paint cellCountingPaint = new Paint();
   private final Paint operatorTextPaint = new Paint();
-  
+
   private final Paint arrayConnectorPaint = new Paint();
-  private final Paint operatorOutlinePaint = new Paint();
   private final Paint valueTextPaint = new Paint();
   private final Paint shapeTextPaint = new Paint();
   private final Paint readyBoxPaint = new Paint();
   private final Paint valueBoxPaint = new Paint();
   private final Paint labelPaint = new Paint();
   private final Paint highlightPaint = new Paint();
-  
+
+  final Paint operatorBoxPaint = new Paint();
+  final Paint operatorOutlinePaint = new Paint();
+
   private final RectF rect = new RectF();
   private final Path path = new Path();
   private final MainActivity platform;
@@ -134,7 +135,29 @@ public class ScaledGraphElements {
   float cellSize() {
     return cellSize;
   }
-  
+
+  public void drawCell(Canvas canvas, Cell cell, boolean ready) {
+    if (cell.command() == null) {
+      drawConnections(cell, canvas);
+    } else {
+      float x0 = cell.col() * cellSize - originX;
+      float y0 = cell.row() * cellSize - originY;
+
+      float radius = cellSize / 6;
+      drawOperator(cell, canvas, x0, y0, ready);
+
+      if (cell.command().shape() == Shape.BAR) {
+        y0 += cellSize / 2 - radius;
+      }
+
+      for (int i = 0; i < cell.inputCount(); i++) {
+        if (cell.isBuffered(i)) {
+          drawBuffer(canvas, x0 + (i + 0.5f) * cellSize, y0);
+        }
+      }
+    }
+  }
+
   public void drawConnector(Canvas canvas, float x0, float y0, float x1, float y1, Type type) {
     int color = Colors.typeColor(type, false);
     if (type instanceof ArrayType) {
@@ -692,4 +715,5 @@ public class ScaledGraphElements {
         return 0;
     }
   }
+
 }

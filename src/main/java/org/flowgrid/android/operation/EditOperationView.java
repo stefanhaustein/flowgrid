@@ -8,6 +8,7 @@ import org.flowgrid.android.Views;
 import org.flowgrid.android.graphics.Colors;
 import org.flowgrid.android.port.TestPort;
 import org.flowgrid.model.ArrayType;
+import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Cell;
 import org.flowgrid.model.Shape;
 import org.flowgrid.model.Edge;
@@ -25,6 +26,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -69,7 +71,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
   final Paint gridPaint = new Paint();
   final Paint debugTextPaint = new Paint();
   final Paint downArrowPaint = new Paint();
-
+  private ZoomData zoomData;
 
   public EditOperationView(final EditOperationFragment fragment) {
     super(fragment.getActivity());
@@ -142,9 +144,42 @@ public class EditOperationView extends View implements OnScaleGestureListener {
             row < operation().tutorialData.editableEndRow && col >= 0);
   }
   
-  
 
-  
+  protected void zoomOpen(Cell cell) {
+    int[] size = new int[4];
+    CustomOperation operation =  (CustomOperation) cell.command();
+    operation.size(size);
+
+    zoomData = new ZoomData();
+    zoomData.cell = cell;
+    zoomData.operation = operation;
+    zoomData.rows = size[2] + 2;
+    zoomData.targetCellSize = size[2] * autoZoom(zoomData.operation, getWidth(), getHeight());
+    zoomData.endTime = System.currentTimeMillis() + 1000;
+
+    zoomData.originalOriginX = originX;
+    zoomData.originalOriginY = originY;
+    zoomData.orginalCellSize = cellSize;
+
+    zoomData.targetOriginX = cell.col() * zoomData.targetCellSize;
+    zoomData.targetOriginY = cell.row() * zoomData.targetCellSize;
+    postInvalidate();
+  }
+
+  class ZoomData {
+    Cell cell;
+    CustomOperation operation;
+    int rows;
+    long endTime;
+
+    float originalOriginX;
+    float originalOriginY;
+    float orginalCellSize;
+    float targetOriginX;
+    float targetOriginY;
+    float targetCellSize;
+  }
+
   
   @Override
   protected void onDraw(android.graphics.Canvas canvas) {
@@ -212,26 +247,11 @@ public class EditOperationView extends View implements OnScaleGestureListener {
         fragment.counted += cell.command() == null ? 1 : 2;
       }
 
-      if (cell.command() == null) {
-        sge.drawConnections(cell, canvas);
-      } else {
-        boolean ready = cellsReady.contains(cell);
-        float radius = cellSize / 6;
-        sge.drawOperator(cell, canvas, x0, y0, ready);
+      boolean ready = cell.command() != null && cellsReady.contains(cell);
 
-        if (cell.command().shape() == Shape.BAR) {
-          y0 += cellSize / 2 - radius;
-        }
-
-        for (int i = 0; i < cell.inputCount(); i++) {
-          if (cell.isBuffered(i)) {
-            sge.drawBuffer(canvas, x0 + (i + 0.5f) * cellSize, y0);
-          }
-        }
-      }
+      sge.drawCell(canvas, cell, ready);
 
       if (cell.command() != null) {
-        boolean ready = cellsReady.contains(cell);
         for (int i = 0; i < cell.inputCount(); i++) {
           float x = x0 + i * cellSize + cellSize / 2;
           Object constant = cell.constant(i);
@@ -254,7 +274,21 @@ public class EditOperationView extends View implements OnScaleGestureListener {
         }
       }
     }
-    
+
+    if (zoomData != null) {
+      float x0 = zoomData.cell.col() * cellSize - originX;
+      float y0 = zoomData.cell.row() * cellSize - originY;
+
+      canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, sge.operatorBoxPaint);
+      canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, sge.operatorOutlinePaint);
+
+      ScaledGraphElements childSge = new ScaledGraphElements(fragment.platform(), zoomData.operation);
+      childSge.setState(-x0, -y0, cellSize / zoomData.rows);
+      for (Cell childCell: zoomData.operation) {
+        childSge.drawCell(canvas, childCell, false);
+      }
+    }
+
     cellsReady.clear();
     for (VisualData data: controller.getAndAdvanceVisualData(fragment.speedBar.getProgress())) {
       drawData(data, canvas);
@@ -263,6 +297,23 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     if (controller.isRunning()) {
       canvas.drawText(controller.status(), Views.px(getContext(), 12),
           getHeight() - debugTextPaint.getFontMetrics(null) / 2, debugTextPaint);
+    }
+
+    if (zoomData != null) {
+      float fraction = 1f - (zoomData.endTime - System.currentTimeMillis()) / 1000f;
+      if (fraction > 1) {
+        originX = zoomData.originalOriginX;
+        originY = zoomData.originalOriginY;
+        cellSize = zoomData.orginalCellSize;
+        fragment.platform().openArtifact(zoomData.operation);
+        zoomData = null;
+      } else {
+        cellSize = zoomData.orginalCellSize * (1 - fraction) + zoomData.targetCellSize * fraction;
+        originX = zoomData.originalOriginX * (1 - fraction) + zoomData.targetOriginX * fraction;
+        originY = zoomData.originalOriginY * (1 - fraction) + zoomData.targetOriginY * fraction;
+        postInvalidate();
+      }
+      sge.setState(originX, originY, cellSize);
     }
   }
   
@@ -547,31 +598,31 @@ public class EditOperationView extends View implements OnScaleGestureListener {
 
   protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
     super.onLayout(changed, left, top, right, bottom);
-    if (autoZoom) {
-      autoZoom(right - left, bottom - top);
+    if (autoZoom  && originX == 0 && originY == 0) {
+      cellSize = autoZoom(operation(), right - left, bottom - top);
       autoZoom = false;
+      sge.setState(originX, originY, cellSize);
+      invalidate();
     }
   }
 
 
-  public void autoZoom(int availableWidth, int availableHeight) {    
+  public float autoZoom(CustomOperation op, int availableWidth, int availableHeight) {
     int[] size = new int[4];
-    operation().size(size);
+    op.size(size);
     
-    if (size[0] >= 0 && size [1] >= 0 && originX == 0 && originY == 0) {
-      cellSize = Math.min(availableHeight / Math.max(8f, size[2]), 
+    if (size[0] >= 0 && size [1] >= 0) {
+      float newCellSize = Math.min(availableHeight / Math.max(8f, size[2]),
           availableWidth / Math.max(8f, size[3] + 1));  // operator width, scrollbar
 
-      float scale = cellSize / initialCellSize;
+      float scale = newCellSize / initialCellSize;
       double f = Math.pow(ZOOM_STEP, Math.floor(Math.log(scale) / Math.log(ZOOM_STEP)));
-      scale = (float) (initialCellSize * f) / cellSize;
+      scale = (float) (initialCellSize * f) / newCellSize;
 
-      selection.setVisibility(INVISIBLE);
-      cellSize *= scale;
+      //selection.setVisibility(INVISIBLE);
 
-      sge.setState(originX, originY, cellSize);
-
-      invalidate();
+      return newCellSize * scale;
     }
+    return 32 * fragment.getActivity().getResources().getDisplayMetrics().density;
   }
 }

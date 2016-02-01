@@ -92,6 +92,7 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
   static final String MENU_ITEM_DELETE_PATH = "Delete path";
   static final String MENU_ITEM_DELETE_ROW = "Delete row";
   static final String MENU_ITEM_EDIT = "Edit\u2026";
+  static final String MENU_ITEM_EDIT_CELL = "Edit cell";
   static final String MENU_ITEM_EXPECTATION = "Expectation";
   static final String MENU_ITEM_FIRMATA_ANALOG_INPUT = "Firmata Analog input";
   static final String MENU_ITEM_FIRMATA_ANALOG_OUTPUT = "Firmata Analog output";
@@ -106,7 +107,6 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
   static final String MENU_ITEM_TEST_INPUT = "Test input";
   static final String MENU_ITEM_TUTORIAL_SETTINGS = "Tutorial settings";
   static final String MENU_ITEM_OUTPUT_FIELD = "Output field";
-  static final String MENU_ITEM_EDIT_CELL = "Edit cell";
   static final String MENU_ITEM_RUN_CHART = "Run chart";
   static final String MENU_ITEM_RUN_MODE = "Run mode";
   static final String MENU_ITEM_RESET = "Reset";
@@ -616,7 +616,10 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
       afterChange();
     } else if (label.equals(MENU_ITEM_EDIT_CELL)) {
       Command cmd = operation.cell(row, col).command();
-      if (cmd instanceof Artifact) {
+      if (cmd instanceof CustomOperation) {
+        selection.setVisibility(View.INVISIBLE);
+        operationView.zoomOpen(operation.cell(row, col));
+      } else if (cmd instanceof Artifact) {
         platform.openArtifact((Artifact) cmd);
       } else if (cmd instanceof PropertyCommand) {
         Property p = ((PropertyCommand) cmd).property();
