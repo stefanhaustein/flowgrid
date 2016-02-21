@@ -6,27 +6,19 @@ import java.util.Set;
 
 import org.flowgrid.android.Views;
 import org.flowgrid.android.graphics.Colors;
-import org.flowgrid.android.port.TestPort;
-import org.flowgrid.model.ArrayType;
-import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Cell;
-import org.flowgrid.model.Shape;
 import org.flowgrid.model.Edge;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.TutorialData;
 import org.flowgrid.model.Controller;
 import org.flowgrid.model.Type;
-import org.flowgrid.model.Types;
 import org.flowgrid.model.VisualData;
-import org.flowgrid.model.Command;
-import org.flowgrid.model.api.PortCommand;
 import org.kobjects.emoji.android.TextHelper;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -37,6 +29,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
   static final String BREAK_CHARS = "\n\t -.,;:+)?/*";
   
   static final float ZOOM_STEP = 1.2f;
+  static final int ZOOM_TIME_MS = 1000;
   
   float startX;
   float startY;
@@ -155,7 +148,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     zoomData.operation = operation;
     zoomData.rows = size[2] + 2;
     zoomData.targetCellSize = size[2] * autoZoom(zoomData.operation, getWidth(), getHeight());
-    zoomData.endTime = System.currentTimeMillis() + 1000;
+    zoomData.endTime = System.currentTimeMillis() + ZOOM_TIME_MS;
 
     zoomData.originalOriginX = originX;
     zoomData.originalOriginY = originY;
@@ -163,6 +156,13 @@ public class EditOperationView extends View implements OnScaleGestureListener {
 
     zoomData.targetOriginX = cell.col() * zoomData.targetCellSize;
     zoomData.targetOriginY = cell.row() * zoomData.targetCellSize;
+
+    zoomData.outlinePaint = new Paint(sge.operatorOutlinePaint);
+    zoomData.fillPaint = new Paint(sge.operatorBoxPaint);
+
+    zoomData.outlinePaint.setAlpha(0);
+    zoomData.fillPaint.setAlpha(0);
+
     postInvalidate();
   }
 
@@ -171,6 +171,9 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     CustomOperation operation;
     int rows;
     long endTime;
+
+    Paint outlinePaint;
+    Paint fillPaint;
 
     float originalOriginX;
     float originalOriginY;
@@ -279,8 +282,8 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       float x0 = zoomData.cell.col() * cellSize - originX;
       float y0 = zoomData.cell.row() * cellSize - originY;
 
-      canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, sge.operatorBoxPaint);
-      canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, sge.operatorOutlinePaint);
+      canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, zoomData.fillPaint);
+     // canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, zoomData.outlinePaint);
 
       ScaledGraphElements childSge = new ScaledGraphElements(fragment.platform(), zoomData.operation);
       childSge.setState(-x0, -y0, cellSize / zoomData.rows);
@@ -299,18 +302,24 @@ public class EditOperationView extends View implements OnScaleGestureListener {
           getHeight() - debugTextPaint.getFontMetrics(null) / 2, debugTextPaint);
     }
 
+    // Update zoom etc.
     if (zoomData != null) {
-      float fraction = 1f - (zoomData.endTime - System.currentTimeMillis()) / 1000f;
-      if (fraction > 1) {
+      float remaining = (zoomData.endTime - System.currentTimeMillis()) / ((float) ZOOM_TIME_MS);
+      float completed = 1f - remaining;
+      if (completed > 1) {
         originX = zoomData.originalOriginX;
         originY = zoomData.originalOriginY;
         cellSize = zoomData.orginalCellSize;
         fragment.platform().openArtifact(zoomData.operation);
         zoomData = null;
       } else {
-        cellSize = zoomData.orginalCellSize * (1 - fraction) + zoomData.targetCellSize * fraction;
-        originX = zoomData.originalOriginX * (1 - fraction) + zoomData.targetOriginX * fraction;
-        originY = zoomData.originalOriginY * (1 - fraction) + zoomData.targetOriginY * fraction;
+        int alpha = Math.min((int) (completed * 1024), 255);
+        zoomData.fillPaint.setAlpha(alpha);
+        zoomData.outlinePaint.setAlpha(alpha);
+
+        cellSize = zoomData.orginalCellSize * remaining + zoomData.targetCellSize * completed;
+        originX = zoomData.originalOriginX * remaining + zoomData.targetOriginX * completed;
+        originY = zoomData.originalOriginY * remaining + zoomData.targetOriginY * completed;
         postInvalidate();
       }
       sge.setState(originX, originY, cellSize);

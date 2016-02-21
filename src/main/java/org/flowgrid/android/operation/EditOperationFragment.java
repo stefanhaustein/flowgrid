@@ -1039,12 +1039,13 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
     if (splitPane.getOrientation() == SplitPaneLayout.ORIENTATION_HORIZONTAL) {
       // In horizontal mode, we can't depend on the columnLayout count because we need
       // to show the title and help text even if there are no ports.
-      new UiTimerTask(platform) {
+      splitPane.setSplitterPositionPercent(0.25f);
+      /*new UiTimerTask(platform) {
         @Override
         public void runOnUiThread() {
           splitPane.setSplitterPositionPercent(0.25f);
         }
-      }.schedule(100);
+      }.schedule(100);*/
     } else {
       MetaLayout.adjustSplitPaneToColumnLayoutDeferred(platform, columnLayout, splitPane);
     }
