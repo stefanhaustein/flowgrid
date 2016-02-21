@@ -1017,7 +1017,11 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
   protected void updateLayout() {
     Point screenSize = new Point();
     getActivity().getWindowManager().getDefaultDisplay().getSize(screenSize);
-    landscapeMode = screenSize.x > screenSize.y;
+    boolean newLandscapeMode = screenSize.x > screenSize.y;
+    if (newLandscapeMode != landscapeMode) {
+      operationView.autoZoom = true;
+      landscapeMode = newLandscapeMode;
+    }
     final SplitPaneLayout splitPane = (SplitPaneLayout) rootView;
     splitPane.setOrientation(landscapeMode ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
     //splitPane.setSplitterPositionPercent(0.2499f);

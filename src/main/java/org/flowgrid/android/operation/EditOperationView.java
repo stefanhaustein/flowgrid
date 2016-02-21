@@ -28,7 +28,7 @@ import android.view.View;
 public class EditOperationView extends View implements OnScaleGestureListener {
   static final String BREAK_CHARS = "\n\t -.,;:+)?/*";
   
-  static final float ZOOM_STEP = 1.2f;
+  static final float ZOOM_STEP = 1.1f;
   static final int ZOOM_TIME_MS = 1000;
   
   float startX;
@@ -342,6 +342,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
   
 
   private void onTouchActionDown(float x, float y) {
+    autoZoom = false;
     changed = false;
     dragging = false;
     moved = false;
@@ -609,7 +610,7 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     super.onLayout(changed, left, top, right, bottom);
     if (autoZoom  && originX == 0 && originY == 0) {
       cellSize = autoZoom(operation(), right - left, bottom - top);
-      autoZoom = false;
+      //autoZoom = false;
       sge.setState(originX, originY, cellSize);
       invalidate();
     }
@@ -621,16 +622,18 @@ public class EditOperationView extends View implements OnScaleGestureListener {
     op.size(size);
     
     if (size[0] >= 0 && size [1] >= 0) {
-      float newCellSize = Math.min(availableHeight / Math.max(8f, size[2]),
+      float newCellSize = Math.min(availableHeight / Math.max(8f, size[2] + 1),
           availableWidth / Math.max(8f, size[3] + 1));  // operator width, scrollbar
 
-      float scale = newCellSize / initialCellSize;
-      double f = Math.pow(ZOOM_STEP, Math.floor(Math.log(scale) / Math.log(ZOOM_STEP)));
-      scale = (float) (initialCellSize * f) / newCellSize;
+      float newScale = newCellSize / initialCellSize;
+      double quantumScale = Math.pow(ZOOM_STEP, Math.floor(Math.log(newScale) / Math.log(ZOOM_STEP)));
+    //  scale = (float) (initialCellSize * f) / newCellSize;
 
       //selection.setVisibility(INVISIBLE);
 
-      return newCellSize * scale;
+      newCellSize = (float) (initialCellSize * quantumScale);
+
+      return newCellSize; // * scale;
     }
     return 32 * fragment.getActivity().getResources().getDisplayMetrics().density;
   }
