@@ -333,6 +333,15 @@ negative, otherwise the unmodified input value.
 Return the closest integer value that is bigger than the input value, or the input value
 itself if it is an integer value already.
 
+
+### /math/clamp
+
+Clamp the first argument between the second and third argument.
+If the first argument is smaller than the second argument, return the second argument.
+If the first argument is bigger than the third argument, return the thrid argument.
+Otherwise, if the first argument is between the second and third argument, return
+the first argument.
+
 ### /math/exp
 
 Return the result of the e-function applied to the input value.
