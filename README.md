@@ -15,7 +15,7 @@ When the program is executed, flowgrid shows the flow of information through the
 
 ## Where is the App?
 
-Download the public alpha from <https://play.google.com/apps/testing/org.flowgrid>.
+Download the public alpha from <https://play.google.com/store/apps/details?id=org.flowgrid>.
 
 
 ## What is it good for?
