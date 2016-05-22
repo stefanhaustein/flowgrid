@@ -32,9 +32,9 @@ Possible applications are:
 - Simple simulations, converters or games
 - Apps utilizing or rendering device sensor data
 - Controlling an Arduino board via Firmata (requires a device with USB OTG support)
-- Implementing actual real [spaghetti code](img/spaghetticode.png) :)
+- Real [spaghetti code](img/spaghetticode.png) :)
 
-Also, the tutorials should make it easy to learn programming with a data flow paradigm.
+Also, the "missions" should make it easy to learn programming with a data flow paradigm.
 
 I haven't built a turing machine in FG yet, but I am quite confident it is computational
 complete since it supports recursion.
@@ -49,7 +49,7 @@ FlowGrid is currently not really suitable for data- or UI heavy apps. While it i
 create home screen icons for individual FG progams, it's not really easy to share apps yet.
 
 
-## Tutorials
+## Tutorials (aka "Missions")
 
 To get a basic understanding of the editor and concepts, FlowGrid provides a set of increasingly
 sophisticated tutorials in the “missions” section of the App. Before diving deeper into developing
@@ -59,24 +59,11 @@ the operation editor.
 ![Tutorial Screenshot](img/tutorial-screenshot.png)
 
 
-## Help!
+## Feedback?
 
-I have been working on this side project for quite a while now (about two years, taking up most of
-my spare time) and thought it might be a good idea to get some wider feedback before sinking
-more time into this and launching the app publicly on the Google Play Store. In particular, I'd be
-interested in any "real world" use cases -- or suggestions for making this suitable for realistic
-ones.
-
-- What are good use cases that fit to the strenghts of this app?
-- What is missing?
-- Do you have suggestions for additional tutorials in the "missions" section?
-- What in particular needs better documentation  (I know, everything! What
-  is surprising / unexpected / confusing?) ?
-
-Please post feedback in the corresponding
-[G+-group](https://plus.google.com/u/0/communities/116001482434880598082),
-[file an issue](https://github.com/FlowGrid/flowgrid-android/issues) or send feedback to
-feedback@flowgrid.org.
+If you have any feedback, please don't hesitate to send me feedback via stefan@flowgrid.org,
+[file an issue](https://github.com/FlowGrid/flowgrid-android/issues) or to join the corresponding
+[G+-group](https://plus.google.com/u/0/communities/111282708416188636080).
 
 
 ## Source Dependencies
@@ -85,7 +72,6 @@ FlowGrid Android depends on:
 
 - https://github.com/FlowGrid/flowgrid-core
 - https://github.com/kobjects/emoji
-- https://github.com/kobjects/filesystem
 
 
 ## Language Concepts, Editor and API documentation
@@ -96,37 +82,3 @@ Links:
 - [User interface](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/ui.md)
 - [System library](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/api.md)
 
-
-## Known Issues / Todos
-
-- Editor
-  - Zoom in on "edit" 
-  - Better initial zoom
-  - When adding a constant to an input, the type should be inferred
-  - When adding an output port to an existing connection, the type should be inferred
-  - The array editor should support drag and drop
-  - It should be possible to pull connection out of unconnected branches
-
-- Synchronization
-  - Reduce logspam
-  - Liste to sync changes to trigger invalidations, improve and document invalidation / load process  
-  - Use drive query to synchronize faster and to make delete work more reliable
-
-- API
-  - Add a clamp function and use it in the lander example
-  - Add a way to trigger an activity
-  - There are significant gaps when dealing with arrays / lists / vectors.
-  - Should add some time / date stuff
-  - Some form of intent / external event handling capabilities?
-
-- Documentation
-  - Make sure all 3rd party stuff is mentioned in the copyright section
-
-- Building
-  - Make it easier to build the project
-
-- Cleanup 
-  - Switch to Support Library dialogs 
-  - See if this helps with context menu alignment
-  - Get rid of the DisabledMap class; move the custom functionality to the menu
-  - Switch from ActioBar to Toolbar

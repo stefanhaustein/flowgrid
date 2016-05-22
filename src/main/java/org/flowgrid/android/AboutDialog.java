@@ -15,7 +15,7 @@ public class AboutDialog {
     int padding = Views.px(platform, 24);
     final boolean[] restart = new boolean[1];
     content.setPadding(padding, padding, padding, padding);
-    content.setText(platform.documentation("Credits"));
+    content.setText(platform.documentation("Copyright"));
     content.setOnClickListener(new OnClickListener() {
       int requiredClicks = 7;
 

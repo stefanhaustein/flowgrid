@@ -16,6 +16,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class BootActivity extends Activity {
+  private static final String[] MASTER_FILE_NAMES = {
+      "flowgrid-examples-master.zip", "flowgrid-missions-master.zip"};
+
   Settings settings;
   ProgressDialog progressDialog;
 
@@ -47,26 +50,38 @@ public class BootActivity extends Activity {
       Filesystems.deleteAll(localFilesystem, path, statusListener);
     }
 
-    ZipInputStream zis = new ZipInputStream(getAssets().open("flowgrid.zip"));
+    for (String master : MASTER_FILE_NAMES) {
+      ZipInputStream zis = new ZipInputStream(getAssets().open(master));
 
-    String prefix = path.startsWith("/") ? path.substring(1) : path;
-    while(true) {
-      ZipEntry entry = zis.getNextEntry();
-      if (entry == null) {
-        break;
-      }
-      if (entry.isDirectory() || !entry.getName().startsWith(prefix)) {
-        continue;
-      }
-      if (command == Settings.BootCommand.RESTORE_MISSING_FILES) {
-        if (localFilesystem.stat(entry.getName()) != null) {
+      String prefix = path.startsWith("/") ? path.substring(1) : path;
+      while(true) {
+        ZipEntry entry = zis.getNextEntry();
+        if (entry == null) {
+          break;
+        }
+        if (entry.isDirectory()) {
           continue;
         }
+        String localName = entry.getName();
+        int cut = localName.indexOf('/');
+        if (localName.startsWith("flowgrid-examples-master/")) {
+          localName = "examples" + localName.substring(cut);
+        } else if (localName.startsWith("flowgrid-missions-master/")) {
+          localName = "missions" + localName.substring(cut);
+        }
+        if (!localName.startsWith(prefix)) {
+          continue;
+        }
+        if (command == Settings.BootCommand.RESTORE_MISSING_FILES) {
+          if (localFilesystem.stat(localName) != null) {
+            continue;
+          }
+        }
+        message(localName);
+        OutputStream os = localFilesystem.save(localName, entry.getTime());
+        Filesystems.copyStream(zis, os);
+        os.close();
       }
-      message(entry.getName());
-      OutputStream os = localFilesystem.save(entry.getName(), entry.getTime());
-      Filesystems.copyStream(zis, os);
-      os.close();
     }
 
   }
