@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
   private boolean runMode;
   private ArduinoFirmata arduinoFirmata;
   private int actionBarIconId = R.drawable.ic_menu_white_24dp;
-  private SyncState syncState = SyncState.NONE;
   private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
 
   public Callback<Model> platformApiSetup() {
