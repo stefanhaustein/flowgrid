@@ -51,29 +51,16 @@ public class ModuleFragment extends ArtifactFragment<ListView> {
     setArtifact(module);
     addMenuItem(module.hasDocumentation() ? MENU_ITEM_DOCUMENTATION : MENU_ITEM_ADD_DOCUMENTATION);
     boolean tutorialMode = module.isTutorial() && !platform.settings().developerMode();
-    if (!module.isRoot() || platform.settings().developerMode()) {
-      HutnObject storageConnections = platform.settings().storageConnections();
-      Module parent = module.parent();
-      while(parent != null) {
-        if (storageConnections.containsKey(parent.qualifiedName())) {
-          break;
-        }
-        parent = parent.parent();
-      }
-      if (parent == null) {
-        addMenuItem("Storage connection");
-      }
-    }
 
     if (module.isRoot()) {
       addMenuItem("New module");
     } else if (!tutorialMode) {
       ContextMenu newMenu = menu.addSubMenu("Add...").getSubMenu();
+      newMenu.add("New class");
+      newMenu.add("New constant");
+      newMenu.add("New interface");
       newMenu.add("New module");
       newMenu.add("New operation");
-      newMenu.add("New class");
-      newMenu.add("New interface");
-      newMenu.add("New constant");
       newMenu.add("Image");
       newMenu.add("Sound");
       String path = module.qualifiedName() + "/";
@@ -143,13 +130,10 @@ public class ModuleFragment extends ArtifactFragment<ListView> {
     }).start();
   }
 
+
   @Override
   public boolean onContextMenuItemClick(ContextMenu.Item item) {
     final String title = item.getTitle().toString();
-    if (title.equals("Storage connection")) {
-      StorageDialog.show(platform, module);
-      return true;
-    }
     if (title.equals(MENU_ITEM_RESTORE)) {
       ResetDialog.show(platform, module.qualifiedName() + "/");
       return true;

@@ -51,18 +51,10 @@ import org.flowgrid.model.Sound;
 import org.flowgrid.model.hutn.HutnObject;
 import org.kobjects.filesystem.api.Filesystem;
 import org.kobjects.filesystem.api.IOCallback;
-import org.kobjects.filesystem.drive.DriveFs;
 import org.kobjects.filesystem.local.LocalFs;
-import org.kobjects.filesystem.sync.Syncer;
 import org.shokai.firmata.ArduinoFirmata;
 
 import com.badlogic.audio.io.WaveDecoder;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.javanet .NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -88,12 +80,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements Platform, ContextMenu.HelpProvider {
-  protected static final int RESOLVE_CONNECTION_REQUEST_CODE_START = 9000;  // Reserve some
-  protected static final int RESOLVE_CONNECTION_REQUEST_CODE_END = 9999;  // Reserve some
-
-  enum SyncState {
-    NONE, SYNCING, FAILED
-  }
 
   private static final String TAG = "MainActivity";
   private File storageRootDir;
@@ -105,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
   private Settings settings;
   private boolean destroyed;
   private DrawerLayout drawer;
-  private ArrayList<Syncer> connections = new ArrayList<Syncer>();
-  private ArrayList<Syncer> pendingSyncs = new ArrayList<Syncer>();
   private boolean runMode;
   private ArduinoFirmata arduinoFirmata;
   private int actionBarIconId = R.drawable.ic_menu_white_24dp;
@@ -174,9 +158,7 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
   private void updateIcon() {
     ActionBar actionBar = getSupportActionBar();
     int iconId = actionBarIconId;
-    if (iconId == R.drawable.ic_menu_white_24dp && syncState != SyncState.NONE) {
-      iconId = syncState == SyncState.FAILED ? R.drawable.ic_cloud_off_white_24dp : R.drawable.ic_cloud_download_white_24dp;
-    }
+
    // if (iconId == R.drawable.ic_menu_white_24dp) {
    //   actionBar.setHomeButtonEnabled(true);
    //   actionBar.setDisplayHomeAsUpEnabled(false);
@@ -224,9 +206,7 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
 
     loadDocumentation();
     log("FlowGrid operational. Starting IOIO and FS connections.");
-    
-    startStorageConnections();
-    
+
     Bundle b = getIntent().getExtras();
     if (b != null && b.getString("run") != null) {
       runMode = true;
@@ -292,23 +272,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
     }
   }
 
-
-  private void startStorageConnections() {
-    if (settings.storageConnections().size() > 0) {
-      syncState = SyncState.SYNCING;
-      updateIcon();
-      new Thread(new Runnable() {
-        public void run() {
-          HutnObject storageJson = settings.storageConnections();
-          for (Map.Entry<String, Object> entry : storageJson.entrySet()) {
-            System.out.println("ConnectToDrive:" + entry);
-            connectToDrive(entry.getKey(), (HutnObject) entry.getValue());
-          }
-        }
-      }).start();
-    }
-  }
-
   private void registerDrawerHandlers() {
     ((TextView) findViewById(R.id.about)).setOnClickListener(new OnClickListener() {
       @Override
@@ -334,106 +297,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
     });
   }
 
-  private void connectionError(Syncer syncer, Exception e) {
-    error("Error connecting module '" + syncer.localRoot() + "' to drive ", e);
-  }
-
-  private void connectToDrive(String modulePath, HutnObject connectionJson) {
-    log("Connecting '" + modulePath + "' to Google Drive");
-    GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
-        this, Collections.singleton(DriveScopes.DRIVE));
-    String username = connectionJson.getString("username", "");
-    if (username.indexOf('@') == -1) {
-      username += "@gmail.com";
-    }
-    credential.setSelectedAccountName(username);
-
-    Drive service = new com.google.api.services.drive.Drive.Builder(
-        new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
-      .setApplicationName("org.flowgrid").build();
-    DriveFs driveFs = new DriveFs(service, connectionJson.getString("remotePath", ""));
-    driveFs.mapFileExtension(Container.SIGNATURE_CACHE_FILE_EXTENSION, "text/plain");
-    driveFs.mapFileExtension(Module.MODULE_FILE_EXTENSION, "text/plain");
-    driveFs.mapFileExtension(Classifier.CLASS_FILE_EXTENSION, "text/plain");
-    driveFs.mapFileExtension(Classifier.INTERFACE_FILE_EXTENSION, "text/plain");
-    driveFs.mapFileExtension(CustomOperation.FILE_EXTENSION, "text/plain");
-    
-    final Syncer syncer = new Syncer(storageFilesystem, modulePath, driveFs, "");
-    syncer.setStatusListener(this);
-    connections.add(syncer);
-    
-    // Force authorization
-    try {
-      driveFs.list("/");
-      connectedToDrive(syncer);
-    } catch (UserRecoverableAuthIOException e) {
-      startActivityForResult(((UserRecoverableAuthIOException) e).getIntent(), 
-          RESOLVE_CONNECTION_REQUEST_CODE_START + connections.size() - 1);
-    } catch (IOException e) {
-      connectionError(syncer, e);
-    }
-  }
-
-  private void syncFinished(boolean ok) {
-    syncState = ok ? SyncState.NONE : SyncState.FAILED;
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        updateIcon();
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.rootContainer);
-        if (currentFragment instanceof PlatformFragment) {
-          ((PlatformFragment) currentFragment).refresh();
-        }
-      }
-    });
-  }
-  
-  private void connectedToDrive(final Syncer syncer) {
-    log("Connected '" + syncer.localRoot() + "' to drive.");
-    syncer.init();
-    log("FS Synchronization initialized for '" + syncer.localRoot() + "'");
-    boolean startThread;
-    synchronized(pendingSyncs) {
-      pendingSyncs.add(syncer);
-      startThread = pendingSyncs.size() == 1;
-    }
-    if (startThread) {
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            while (true) {
-              Syncer syncer;
-              synchronized (pendingSyncs) {
-                if (pendingSyncs.size() == 0) {
-                  break;
-                }
-                syncer = pendingSyncs.get(0);
-              }
-              log("Starting FS background synchronization for '" + syncer.localRoot() + "'");
-              try {
-                syncer.sync();
-              } catch (IOException e) {
-                connectionError(syncer, e);
-              }
-              synchronized (pendingSyncs) {
-                pendingSyncs.remove(0);
-              }
-              log("Finished FS background synchronization for '" + syncer.localRoot() + "'");
-            }
-            synchronized (pendingSyncs) {
-              log("All FS background synchronizations finished. Starting metadata background synchronization");
-              model.rootModule.syncAll();
-              log("Background metadata synchronization finished.");
-              syncFinished(true);
-            }
-          } catch (Exception e) {
-            error("Sync error", e);
-          }
-        }
-      }).start();
-    }
-  }
 
   public String documentation(String title) {
     String result = documentation.get(title);
@@ -446,20 +309,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
   @Override
   public String getHelp(String label) {
     return documentation.get(label.endsWith("…") ? label.substring(0, label.length() - 1) : label);
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    super.onActivityResult(requestCode, resultCode, intent);
-    if (requestCode >= RESOLVE_CONNECTION_REQUEST_CODE_START &&
-        requestCode < RESOLVE_CONNECTION_REQUEST_CODE_END) {
-      Syncer syncer = connections.get(requestCode - RESOLVE_CONNECTION_REQUEST_CODE_START);
-      if (resultCode == Activity.RESULT_OK) {
-        connectedToDrive(syncer);
-      } else {
-        connectionError(syncer, new IOException("Resolving connection request failed."));
-      }
-    }
   }
 
   @Override

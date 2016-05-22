@@ -27,9 +27,6 @@
     <!--          android:theme="@style/FlowGridTheme">
             android:theme="@android:style/Theme.Holo.Light"  -->
 
-        <meta-data android:name="com.google.android.gms.version"
-           android:value="@integer/google_play_services_version" /> 
-
         <activity android:name="org.flowgrid.android.BootActivity"
                   android:label="FlowGrid"
                   android:configChanges="orientation|screenSize">
