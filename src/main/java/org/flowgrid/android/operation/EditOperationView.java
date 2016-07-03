@@ -237,6 +237,12 @@ public class EditOperationView extends View implements OnScaleGestureListener {
       downArrowPaint.setTextSize(cellSize);
       downArrowPaint.setTextAlign(Paint.Align.CENTER);
       TextHelper.drawText(getContext(), canvas, "\u21e9", x0, y0, downArrowPaint, TextHelper.VerticalAlign.CENTER);
+      if (!fragment.landscapeMode) {
+        downArrowPaint.setColor(Color.LTGRAY);
+        downArrowPaint.setTextSize(cellSize / 3);
+        downArrowPaint.setTextAlign(Paint.Align.LEFT);
+        TextHelper.drawText(getContext(), canvas, "rotate for help", x0 + cellSize/2, y0, downArrowPaint, TextHelper.VerticalAlign.CENTER);
+      }
     }
 
 

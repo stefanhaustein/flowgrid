@@ -71,5 +71,5 @@ Please find Arduino IO connectors in the editor context menu under `Data / IO` -
 
 (c) 2016 Stefan Haustein, Zurich, Switzerland.
 
-Thanks to Jerry Morrison, Mareike Klisch and Pat Coleman for inspiration
-and help with testing this app.
+Thanks to Janine Breitbarth, Pat Coleman, Mareike Klisch, Jerry Morrison and Mario Zechner
+for inspiration and help with testing this app.

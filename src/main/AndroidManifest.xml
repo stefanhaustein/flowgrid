@@ -5,14 +5,11 @@
     android:versionName="InsertedFromGradle" >
     
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />    
 	
 <!-- Needed for pre-kitkat --> 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<!--     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
-     -->
     <uses-sdk
         android:minSdkVersion="15" 
         android:targetSdkVersion="22" />        

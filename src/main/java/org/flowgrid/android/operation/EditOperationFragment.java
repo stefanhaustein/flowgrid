@@ -1044,12 +1044,15 @@ public class EditOperationFragment extends AbstractOperationFragment<SplitPaneLa
       // In horizontal mode, we can't depend on the columnLayout count because we need
       // to show the title and help text even if there are no ports.
       splitPane.setSplitterPositionPercent(0.25f);
-      /*new UiTimerTask(platform) {
+
+      // Not sure why deferred setting is needed here. Seems to fix an issue with adjusting the
+      // layout. Perhaps a problem with timers for the opposite effect not being cancelled.
+      new UiTimerTask(platform) {
         @Override
         public void runOnUiThread() {
           splitPane.setSplitterPositionPercent(0.25f);
         }
-      }.schedule(100);*/
+      }.schedule(100);
     } else {
       MetaLayout.adjustSplitPaneToColumnLayoutDeferred(platform, columnLayout, splitPane);
     }
