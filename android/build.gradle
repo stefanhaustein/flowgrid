@@ -22,6 +22,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':emoji')
-    compile project(':flowgrid-core')
+    compile project(':core')
     compile 'com.android.support:appcompat-v7:+'
 }
