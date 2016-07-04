@@ -96,6 +96,28 @@ public class ArtifactDrawable extends Drawable {
         canvas.drawCircle(bounds.centerX(), bounds.centerY(), cellSize / 2, paint);
         break;
       }
+
+      case TUTORIAL:
+        path.rewind();
+        path.moveTo(x1 - 2 * border, y0 + 4 * border);
+        path.lineTo(x1 - 2 * border, y1 - 2 * border);
+        path.lineTo(xM, y1 - border);
+        path.lineTo(x0 + 2 * border, y1 - 2 * border);
+        path.lineTo(x0 + 2 * border, y0 + 4 * border);
+        canvas.drawPath(path, paint);
+
+        path.rewind();
+        path.moveTo(xM, y0 + border);
+        path.lineTo(x1, y0 + 3 * border);
+        path.lineTo(xM, y0 + 5 * border);
+        path.lineTo(x0, y0 + 3 * border);
+        path.close();
+        canvas.drawPath(path, paint);
+        canvas.drawLine(x1, y0 + 3 * border, x1, yM + (text == null ? 2 : 1) * border, paint);
+        if (kind == Kind.TUTORIAL) {
+          break;
+        }
+
       case MODULE:
         rect.set(bounds);
         rect.bottom = x0 + 1.5f * border;
@@ -144,24 +166,6 @@ public class ArtifactDrawable extends Drawable {
         canvas.drawRect(rect, paint);
         return;
 
-      case TUTORIAL:
-        path.rewind();
-        path.moveTo(x1 - 2 * border, y0 + 4 * border);
-        path.lineTo(x1 - 2 * border, y1 - 2 * border);
-        path.lineTo(xM, y1 - border);
-        path.lineTo(x0 + 2 * border, y1 - 2 * border);
-        path.lineTo(x0 + 2 * border, y0 + 4 * border);
-        canvas.drawPath(path, paint);
-
-        path.rewind();
-        path.moveTo(xM, y0 + border);
-        path.lineTo(x1, y0 + 3 * border);
-        path.lineTo(xM, y0 + 5 * border);
-        path.lineTo(x0, y0 + 3 * border);
-        path.close();
-        canvas.drawPath(path, paint);
-        canvas.drawLine(x1, y0 + 3 * border, x1, yM + (text == null ? 2 : 1) * border, paint);
-        break;
     }
 
 

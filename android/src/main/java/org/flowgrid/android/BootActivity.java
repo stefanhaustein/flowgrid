@@ -17,7 +17,10 @@ import java.util.zip.ZipInputStream;
 
 public class BootActivity extends Activity {
   private static final String[] MASTER_FILE_NAMES = {
-      "flowgrid-examples-master.zip", "flowgrid-missions-master.zip"};
+      "flowgrid-examples-master.zip",
+      "flowgrid-missions-master.zip",
+      "flowgrid-myname-master.zip"
+  };
 
   Settings settings;
   ProgressDialog progressDialog;
@@ -64,10 +67,8 @@ public class BootActivity extends Activity {
         }
         String localName = entry.getName();
         int cut = localName.indexOf('/');
-        if (localName.startsWith("flowgrid-examples-master/")) {
-          localName = "examples" + localName.substring(cut);
-        } else if (localName.startsWith("flowgrid-missions-master/")) {
-          localName = "missions" + localName.substring(cut);
+        if (localName.startsWith("flowgrid-") && localName.substring(0, cut).endsWith("-master")) {
+          localName = localName.substring(9, cut - 7) + localName.substring(cut);
         }
         if (!localName.startsWith(prefix)) {
           continue;

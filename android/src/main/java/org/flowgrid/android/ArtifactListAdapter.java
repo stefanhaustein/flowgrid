@@ -122,7 +122,15 @@ public class ArtifactListAdapter extends AbstractListAdapter<Artifact> implement
 
     if (entry instanceof Module) {
       Container module = (Container) entry;
-      iv.setImageDrawable(new ArtifactDrawable(platform, ArtifactDrawable.Kind.MODULE, null));
+      String label;
+      if (module.owner() == module.model().rootModule && module.name().equals("missions")) {
+        label = "\u25C7";
+      } else if (module.qualifiedName().startsWith("/examples")) {
+          label = "\u2606";
+      } else {
+        label = null;
+      }
+      iv.setImageDrawable(new ArtifactDrawable(platform, ArtifactDrawable.Kind.MODULE, label));
       Artifact a =  module.artifact("main.png");
       if (a instanceof ResourceFile) {
         setBitmapAsync(iv, ((ResourceFile) a));
