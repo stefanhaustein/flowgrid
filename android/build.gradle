@@ -8,8 +8,8 @@ android {
         applicationId "org.flowgrid"
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 9
-        versionName "0.9"
+        versionCode 11
+        versionName "0.11"
     }
     buildTypes {
         release {
@@ -22,6 +22,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':emoji')
-    compile project(':core')
+    compile project(':flowgrid-core')
     compile 'com.android.support:appcompat-v7:+'
 }
