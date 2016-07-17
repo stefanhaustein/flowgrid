@@ -62,7 +62,7 @@ the operation editor.
 ## Feedback?
 
 If you have any feedback, please don't hesitate to send me feedback via stefan@flowgrid.org,
-[file an issue](https://github.com/FlowGrid/flowgrid-android/issues) or to join the corresponding
+[file an issue](https://github.com/FlowGrid/flowgrid/issues) or to join the corresponding
 [G+-group](https://plus.google.com/u/0/communities/111282708416188636080).
 
 
@@ -78,7 +78,18 @@ FlowGrid Android depends on:
 
 Links:
 
-- [Languagce concepts](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/documentation.md)
-- [User interface](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/ui.md)
-- [System library](https://github.com/FlowGrid/flowgrid-android/blob/master/src/main/assets/api.md)
+- [Languagce concepts](https://github.com/FlowGrid/flowgrid/android/blob/master/src/main/assets/documentation.md)
+- [User interface](https://github.com/FlowGrid/flowgrid/android/blob/master/src/main/assets/ui.md)
+- [System library](https://github.com/FlowGrid/flowgrid/android/blob/master/src/main/assets/api.md)
+
+
+## Creating and Managing Missions
+
+In "About" in the main menu, tap on the text several times. This will turn on developer mode,
+enabling all missions and extra menu entries. In particular "Add..." will be added to the
+context menu in the list of missions, allowing for the addition of new missions.
+
+In each individual Mission, "Tutorial mode" can be turned off, which will show the
+"Tutorial settings" menu, including an option to change the order of missions.
+
 
