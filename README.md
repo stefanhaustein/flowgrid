@@ -89,8 +89,9 @@ In "About" in the main menu, tap on the text several times. This will turn on de
 enabling all missions and extra menu entries. In particular "Add..." will be added to the
 context menu in the list of missions, allowing for the addition of new missions.
 
+To add new input and expectations to your own mission, tap on a free field for the options to be shown. 
+The visualizations in form of the pipes and monsters for input and output can be found if you tap 
+"Data/IO" and after that "Test".
+
 In each individual Mission, "Tutorial mode" can be turned off, which will show the
 "Tutorial settings" menu, including an option to change the order of missions.
-
-If you want to add something new to your own mission tap on a free field for the options to be shown. 
-The visualizations in form of the pipes and monsters for input and output can be found if you tap "Data/IO" and after that "Test".
