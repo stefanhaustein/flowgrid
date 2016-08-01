@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Slider;
 import org.flowgrid.model.*;
 import org.flowgrid.model.api.ConstructorCommand;
 import org.flowgrid.model.api.LocalCallCommand;
@@ -134,6 +135,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     SwtFlowgrid flowgrid;
     ArrayList<String> undoHistory = new ArrayList<>();
 
+    Slider speedBar;
 
     public OperationCanvas(final OperationEditor operationEditor, Composite parent) {
         super(parent, SWT.RIGHT_TO_LEFT);
@@ -145,6 +147,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         operation.ensureLoaded();  // FIXME
 
         setLayout(new RowLayout());
+
+        speedBar = new Slider(this, SWT.HORIZONTAL);
 
         playButton = new Button(this, SWT.PUSH);
         playButton.setText("\u25b6");
@@ -485,15 +489,16 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             for (Cell childCell: zoomData.operation) {
                 childSge.drawCell(canvas, childCell, false);
             }
-        }
+        } */
 
         cellsReady.clear();
-        for (VisualData data: controller.getAndAdvanceVisualData(fragment.speedBar.getProgress())) {
-            drawData(data, canvas);
+        for (VisualData data: operationEditor.controller.getAndAdvanceVisualData(speedBar.getSelection())) {
+            drawData(data, gc);
         }
 
-        if (controller.isRunning()) {
-            canvas.drawText(controller.status(), Views.px(getContext(), 12),
+        /*
+        if (operationEditor.controller.isRunning()) {
+            canvas.drawText(operationEditor.controller.status(), Views.px(getContext(), 12),
                     getHeight() - debugTextPaint.getFontMetrics(null) / 2, debugTextPaint);
         }
 
@@ -531,6 +536,37 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 Math.round(cellSize * selection.width), Math.round(cellSize * selection.height));
     }
 
+    private void drawData(VisualData data, GC gc) {
+        float progress = data.progress();
+        if (progress < 0) {
+            return;
+        }
+        int row = data.row();
+        int col = data.col();
+        Edge edge = data.edge();
+
+        Cell ready = data.cellReady();
+        if (ready != null) {
+            cellsReady.add(ready);
+        }
+
+        Cell cell = operation().cell(row, col);
+        if (cell == null) {
+            return;
+        }
+        Edge target = cell.connection(edge);
+        if (target == null) {
+            sge.drawData(gc, Math.round(col * cellSize + cellSize / 2 - originX),
+                    Math.round(row * cellSize - originY), data.value(), false, ready != null ? 1 : 0);
+            return;
+        }
+
+        int x = Math.round(col * cellSize + sge.xOffset(edge) * (1-progress) + sge.xOffset(target) * progress - originX);
+        int y = Math.round(row * cellSize + sge.yOffset(edge) * (1-progress) + sge.yOffset(target) * progress - originY);
+        sge.drawData(gc, x, y, data.value(), false, 0);
+    }
+
+
 
     private boolean inRange(int row, int col) {
         return !operationEditor.tutorialMode ||
@@ -544,7 +580,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         }
         menu = new ContextMenu(menuAnchor);
         // menu.setHelpProvider(platform);
-     /*   if (operation.isTutorial()) {
+     /*   if (operation.isTutorial()) {                                     // FIXME
             menu.setDisabledMap(operation().tutorialData.disabledMenus, !tutorialMode, new Callback<Void>() {
                 @Override
                 public void run(Void value) {
