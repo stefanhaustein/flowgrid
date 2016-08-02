@@ -1,23 +1,31 @@
 package org.flowgrid.swt.operation;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Slider;
 import org.flowgrid.model.*;
 import org.flowgrid.model.api.ConstructorCommand;
 import org.flowgrid.model.api.LocalCallCommand;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.api.PropertyCommand;
+import org.flowgrid.model.hutn.Hutn;
+import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.hutn.HutnWriter;
 import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.SwtFlowgrid;
@@ -33,6 +41,7 @@ import java.util.Set;
 
 public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener {
     static final float ZOOM_STEP = 1.1f;
+    static final int PIXEL_SNAP = 16;
 
     // Move elsewhere?
     protected static final String MENU_ITEM_CANCEL = "Cancel";
@@ -91,6 +100,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     static final String MENU_ITEM_TUTORIAL_MODE = "Tutorial mode";
 
 
+    static final String[] OPERATION_MENU_FILTER = {"control", "examples", "missions", "system"};
+    static final String[] TUTORIAL_EDITOR_OPERATION_MENU_FILTER = {"control", "missions", "system"};
+
     float startX;
     float startY;
     float lastX;
@@ -137,6 +149,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
     Slider speedBar;
 
+
     public OperationCanvas(final OperationEditor operationEditor, Composite parent) {
         super(parent, SWT.RIGHT_TO_LEFT);
         this.operationEditor = operationEditor;
@@ -146,9 +159,30 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         operation.ensureLoaded();  // FIXME
 
-        setLayout(new RowLayout());
+        setLayout(new Layout(){
 
-        speedBar = new Slider(this, SWT.HORIZONTAL);
+            @Override
+            protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+                return new Point(wHint == SWT.DEFAULT ? 512 : wHint, hHint == SWT.DEFAULT ? 400 : hHint);
+            }
+
+            @Override
+            protected void layout(Composite composite, boolean flushCache) {
+                if (composite != OperationCanvas.this) {
+                    throw new RuntimeException();
+                }
+                Rectangle bounds = getBounds();
+                Point playButtonSize = playButton.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                Point speedBarSize = speedBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                playButton.setBounds(bounds.width - playButtonSize.x - 5, 5, playButtonSize.x, playButtonSize.y);
+
+                speedBar.setBounds(bounds.width - speedBarSize.x - (playButtonSize.x - speedBarSize.x) / 2 - 5, 5 + playButtonSize.y + 5,
+                        speedBarSize.x, bounds.height - 5 - playButtonSize.y - 5 - 5);
+                menuAnchor.setBounds(-1, -1, 1, 1);
+            }
+        });
+
+        speedBar = new Slider(this, SWT.VERTICAL);
 
         playButton = new Button(this, SWT.PUSH);
         playButton.setText("\u25b6");
@@ -161,15 +195,77 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         menuAnchor = new Label(this, SWT.NONE);
 
-        addMouseListener(new MouseListener() {
-            boolean armed = false;
+        addMouseMoveListener(new MouseMoveListener() {
+
             @Override
-            public void mouseDoubleClick(MouseEvent e) {
+            public void mouseMove(MouseEvent e) {
+                if (!armed) {
+                    return;
+                }
+                if (!moved) {
+                    float dx = e.x - startX;
+                    float dy = e.y - startY;
+                    if (dx * dx + dy * dy < 8 * 8) {
+                        return ;
+                    }
+                    moved = true;
+                    if (mayScroll) {
+                        scroll = true;
+                    }
+                }
+                if (scroll) {
+                    float dx = e.x - lastX;
+                    float dy = e.y - lastY;
+                    originX -= dx;
+                    originY -= dy;
+                    lastX = e.x;
+                    lastY = e.y;
+                    sge.setState(originX, originY, cellSize);
+                } else {
+                    int col = (int) Math.floor((e.x + originX) / cellSize);
+                    int row = (int) Math.floor((e.y + originY) / cellSize);
+                    if (!dragging || (col == lastCol && row == lastRow)) {
+                        return ;
+                    }
+
+/*      if (!inRange(lastRow) && !inRange(row)) {
+        return false;
+      } */
+
+                    if (col > lastCol + 1) col = lastCol + 1;
+                    if (col < lastCol - 1) col = lastCol - 1;
+                    if (row > lastRow + 1) row = lastRow + 1;
+                    if (row < lastRow - 1) row = lastRow - 1;
+                    if (col != lastCol && row != lastRow) {
+                        col = lastCol;
+                    }
+                    Edge edge2;
+                    if (col != lastCol) {
+                        edge2 = col > lastCol ? Edge.RIGHT : Edge.LEFT;
+                    } else {
+                        edge2 = row > lastRow ? Edge.BOTTOM : Edge.TOP;
+                    }
+                    if (edge2 == lastEdge || !inRange(lastRow, lastCol)) {
+                        dragging = false;
+                    } else if (operation().connect(lastRow, lastCol, lastEdge, edge2)) {
+                        changed = true;
+                    } else {
+                        dragging = false;
+                    }
+                    lastCol = col;
+                    lastRow = row;
+                    lastEdge = edge2.opposite();
+                }
+
+                redraw();    // FIXME limit range
             }
+
+        });
+
+        addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseDown(MouseEvent e) {
-
                 System.out.println(playButton.toString());
 
                 armed = true;
@@ -227,9 +323,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 armed = false;
                 if (moved) {
                     if (scroll) {
-//                        onScaleEnd(null);   FIXME
+                        onScaleEnd();
                     } else if (changed) {
-  //                      fragment.afterChange();    FIXME
+                        afterChange();
                     }
                     changed = false;
                 } else {
@@ -251,11 +347,49 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
         });
 
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseScrolled(MouseEvent e) {
+                int fx = e.x;
+                int fy = e.y;
+
+
+                float scale = e.count < 0 ? ZOOM_STEP : 1/ZOOM_STEP;
+/*
+                originX += lastFocusX - fx;
+                originY += lastFocusY - fy;
+*/
+                // we want fx at the same position after scaling
+
+                // absolute coordiantes before scaling.
+                float absFx = originX + fx;
+                float absFy = originY + fy;
+
+                absFx *= scale;
+                absFy *= scale;
+
+                // fx / fy need to remain at the same point...
+                originX = absFx - fx;
+                originY = absFy - fy;
+
+                lastFocusX = fx;
+                lastFocusY = fy;
+
+                cellSize *= scale;
+                sge.setState(originX, originY, cellSize);
+
+               // onScaleEnd();
+                redraw();
+            }
+        });
+
+
         HutnWriter writer = new HutnWriter(new StringWriter());
         writer.startObject();
         operation.toJson(writer, Artifact.SerializationType.FULL);
         writer.endObject();
         undoHistory.add(writer.close().toString());
+        initialCellSize = cellSize;
     }
 
     void attachAll() {
@@ -319,7 +453,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             flowgrid.log("push json: " + currentJson);
             undoHistory.add(currentJson);
 
-            // operationView.invalidate(); FIXME
+            redraw();
 
             operation.save();
             operation.validate();
@@ -330,6 +464,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 updateMenu();
             }
         }
+
     }
 
 
@@ -529,7 +664,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         */
 
         int selectionX = sge.screenX(selection.col);
-        int selectionY = sge.screenX(selection.row);
+        int selectionY = sge.screenY(selection.row);
 
         gc.setBackground(colors.selection);
         gc.fillRectangle(selectionX, selectionY,
@@ -573,6 +708,26 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 (row >= operation().tutorialData.editableStartRow &&
                         row < operation().tutorialData.editableEndRow && col >= 0);
     }
+
+
+    public void onScaleEnd() {
+//    originX -= lastFocusX;
+//    originY -= lastFocusY;
+        float scale = cellSize / initialCellSize;
+        double f = Math.pow(ZOOM_STEP, Math.round(Math.log(scale) / Math.log(ZOOM_STEP)));
+        scale = (float) (initialCellSize * f) / cellSize;
+        cellSize *= scale;
+
+        originX += lastFocusX * scale - lastFocusX;
+        originY += lastFocusY * scale - lastFocusY;
+
+        originX = Math.round(originX / PIXEL_SNAP) * PIXEL_SNAP;
+        originY = Math.round(originY / PIXEL_SNAP) * PIXEL_SNAP;
+        selection.setVisibility(false);
+        sge.setState(originX, originY, cellSize);
+        redraw();
+    }
+
 
     void showPopupMenu(Cell cell) {
         if (menu != null) {
@@ -768,11 +923,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             tutorialMode = !item.isChecked();
             updateMenu();
             return true;
-        }
+        } */
 
         if (label.equals(MENU_ITEM_UNDO)) {
             HutnObject json = (HutnObject) Hutn.parse(undoHistory.get(undoHistory.size() - 2));
-            platform.log("undo to: " + json.toString());
+            flowgrid.log("undo to: " + json.toString());
             beforeBulkChange();
             operation.clear();
             operation.setPublic(false);
@@ -785,15 +940,15 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 updateMenu();
             }
         }
-
+/*
         if (label.equals(MENU_ITEM_TUTORIAL_SETTINGS)) {
             TutorialSettingsDialog.show(this);
             return true;
-        }
+        } */
 
         if (currentTypeFilter.size() > 0 && currentTypeFilter.get(0) instanceof Classifier &&
                 label.equals(currentTypeFilter.get(0).name() + "\u2026")) {
-            new CommandMenu(selection, item, operation.module(), currentTypeFilter, new Callback<Command>() {
+            new CommandMenu(menuAnchor, item, operation.module(), currentTypeFilter, new Callback<Command>() {
                 @Override
                 public void run(Command value) {
                     addMemberCommand(value);
@@ -804,7 +959,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         if (label.equals(MENU_ITEM_THIS_CLASS)) {
             System.out.println("calling new artifactment.show");
-            new CommandMenu(selection, item, operation.module(), currentTypeFilter, new Callback<Command>() {
+            new CommandMenu(menuAnchor, item, operation.module(), currentTypeFilter, new Callback<Command>() {
                 @Override
                 public void run(Command value) {
                     addMemberCommand(value);
@@ -813,26 +968,28 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             return true;
         }
 
+        /*
+
         // Needs to be after MENU_ITEM_PUBLIC because we implement slightly different
         // behavior here.
         if (super.onContextMenuItemClick(item)) {
             return true;
         }
-
+*/
         Module module = null;
         String[] filter = {};
         if (label.equals(MENU_ITEM_OPERATIONS_CLASSES)) {
-            module = platform.model().rootModule;
-            filter = operation().isTutorial() && !tutorialMode
+            module = flowgrid.model().rootModule;
+            filter = operation().isTutorial() && !operationEditor.tutorialMode
                     ? TUTORIAL_EDITOR_OPERATION_MENU_FILTER
                     : OPERATION_MENU_FILTER;
         } else if (label.equals(MENU_ITEM_THIS_MODULE)) {
             module = operation.module();
         } else if (label.equals(MENU_ITEM_CONTROL)) {
-            module = platform.model().rootModule.module("control");
+            module = flowgrid.model().rootModule.module("control");
         }
         if (module != null) {
-            new CommandMenu(selection, item, operation.module(), currentTypeFilter, new Callback<Command>() {
+            new CommandMenu(menuAnchor, item, operation.module(), currentTypeFilter, new Callback<Command>() {
                 @Override
                 public void run(Command result) {
                     addMemberCommand(result);
@@ -841,7 +998,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
             return true;
         }
-
+/*
         if (SENSOR_MAP.containsKey(label)) {
             beforeChange();
             addPortCommand("Sensor", label, true, false, "sensor", SENSOR_MAP.get(label));
@@ -849,7 +1006,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             suggestContinuous("Most sensors provide a continous stream of input and may not work for " +
                     "regular operations.");
             return true;
-        }
+        } */
 
         Command command = null;
         int row = selection.row();
@@ -872,7 +1029,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(MENU_ITEM_CLEAR_CELL)) {
             beforeChange();
             operation.removeCell(row, col);
-            afterChange();
+            afterChange(); /*
         } else if (label.equals(MENU_ITEM_EDIT_CELL)) {
             Command cmd = operation.cell(row, col).command();
             if (cmd instanceof CustomOperation) {
@@ -912,7 +1069,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(MENU_ITEM_COMBINED_FIELD)) {
             addWidgetPort(true, true, null);
         } else if (label.equals(MENU_ITEM_CONSTANT_VALUE)) {
-            addLiteral();
+            addLiteral(); */
         } else if (label.equals(MENU_ITEM_INSERT_ROW)) {
             beforeChange();
             operation.insertRow(row);
@@ -928,7 +1085,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(MENU_ITEM_DELETE_COLUMN)) {
             beforeChange();
             operation.deleteCol(col);
-            afterChange();
+            afterChange();  /*
         } else if (label.equals(MENU_ITEM_PASTE)) {
             beforeBulkChange();
             operation.cellsFromJson(platform.editBuffer(), selection.row, selection.col);
@@ -942,7 +1099,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(MENU_ITEM_FIRMATA_DIGITAL_OUTPUT)) {
             addFirmataPort(false, true, FirmataPort.Mode.DIGITAL);
         } else if (label.equals(MENU_ITEM_FIRMATA_SERVO_OUTPUT)) {
-            addFirmataPort(false, true, FirmataPort.Mode.SERVO);
+            addFirmataPort(false, true, FirmataPort.Mode.SERVO);*/
         }
 
         if (command != null) {
@@ -950,10 +1107,13 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             operation.setCommand(row, col, command);
             afterChange();
         }
-
-                 */
-
         return true;
+    }
+
+    private void addMemberCommand(Command command) {
+        beforeChange();
+        operation.setCommand(selection.row(), selection.col(), command);
+        afterChange();
     }
 
     void stop() {

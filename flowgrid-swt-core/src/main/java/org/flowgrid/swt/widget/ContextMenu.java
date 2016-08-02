@@ -88,6 +88,14 @@ public class ContextMenu {
         public String getTitle() {
             return swtItem.getText();
         }
+
+        public void propagateDisabledState(ContextMenu menu) {
+            System.out.println("FIXME: ContextMenu.Item.propagateDisabledState()");  // FIXME
+        }
+
+        public boolean hasSubMenu() {
+            return subMenu != null;
+        }
     }
 
     public interface ItemClickListener {
