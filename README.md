@@ -70,7 +70,6 @@ If you have any feedback, please don't hesitate to send me feedback via stefan@f
 
 FlowGrid Android depends on:
 
-- https://github.com/FlowGrid/flowgrid-core
 - https://github.com/kobjects/emoji
 
 
@@ -78,9 +77,9 @@ FlowGrid Android depends on:
 
 Links:
 
-- [Languagce concepts](https://github.com/FlowGrid/flowgrid/android/blob/master/src/main/assets/documentation.md)
-- [User interface](https://github.com/FlowGrid/flowgrid/android/blob/master/src/main/assets/ui.md)
-- [System library](https://github.com/FlowGrid/flowgrid/android/blob/master/src/main/assets/api.md)
+- [Languagce concepts](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/documentation.md)
+- [User interface](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/ui.md)
+- [System library](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/api.md)
 
 
 ## Creating and Managing Missions
