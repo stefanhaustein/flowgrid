@@ -88,7 +88,10 @@ public class Model {
     mapJavaClass(List.class, Model.JavaTypeSupportLevel.FULL, ArrayType.ANY);
 
     new ApiSetup().run(this);
-    platform.platformApiSetup().run(this);
+    Callback<Model> platformApiSetup = platform.platformApiSetup();
+    if (platformApiSetup != null) {
+      platformApiSetup.run(this);
+    }
 
     aliases("/system/Boolean", "/boolean/Boolean", "/logic/Boolean", "/system/boolean");
     aliases("/system/Number", "/system/number", "/math/number", "/math/Number");
