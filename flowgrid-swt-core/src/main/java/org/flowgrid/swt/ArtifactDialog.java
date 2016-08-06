@@ -29,6 +29,8 @@ public class ArtifactDialog {
 
         scrolledComposite = new ScrolledComposite(shell, 0);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
 
         list = new Composite(scrolledComposite, 0);
         list.setLayout(new RowLayout(SWT.VERTICAL));

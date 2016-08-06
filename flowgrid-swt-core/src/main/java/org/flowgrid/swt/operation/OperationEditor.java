@@ -2,6 +2,7 @@ package org.flowgrid.swt.operation;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -53,6 +54,7 @@ public class OperationEditor implements PortManager {
     public int counted;
     public int countedToRow;
     boolean running;
+    ScrolledComposite scrolledComposite;
 
     public OperationEditor(SwtFlowgrid flowgrid, CustomOperation operation) {
         this.flowgrid = flowgrid;
@@ -93,7 +95,9 @@ public class OperationEditor implements PortManager {
         shellLayout.marginHeight = 0;
         flowgrid.shell().setLayout(shellLayout);
 
-        ScrolledComposite scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.V_SCROLL);
+        scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.V_SCROLL);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         controlPanel = new Composite(scrolledComposite, SWT.NONE);
 
@@ -109,11 +113,13 @@ public class OperationEditor implements PortManager {
         operationCanvas = new OperationCanvas(this, flowgrid.shell());
         operationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-
-
         attachAll();
 
-        flowgrid.shell().layout();  // FIXME
+        for (int i = 0; i < 10; i++) {
+            System.out.println("");
+        }
+
+       // flowgrid.shell().layout(true, true);  // FIXME
     }
 
 
@@ -144,6 +150,14 @@ public class OperationEditor implements PortManager {
             }
         }
         operation.validate();
+
+ //       controlPanel.layout();
+
+        Point minSize = controlPanel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        System.out.println("****attachAll: control panel min size: " + minSize);
+        scrolledComposite.setMinSize(minSize);
+
+        flowgrid.shell().layout(true, true);
     }
 
     public void detachAll() {
