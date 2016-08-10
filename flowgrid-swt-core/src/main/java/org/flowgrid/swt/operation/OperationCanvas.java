@@ -189,7 +189,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         playButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                operationEditor.controller.start();
+                operationEditor.start();
             }
         });
 

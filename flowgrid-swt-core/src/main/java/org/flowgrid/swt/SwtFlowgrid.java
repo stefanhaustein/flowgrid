@@ -150,4 +150,8 @@ public class SwtFlowgrid implements Platform {
     public Model model() {
         return model;
     }
+
+    public void runOnUiThread(Runnable runnable) {
+
+    }
 }

@@ -21,6 +21,11 @@ import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.port.PortManager;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.widget.ControlManager;
+import sun.rmi.runtime.Log;
+
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class OperationEditor implements PortManager {
 
@@ -48,13 +53,14 @@ public class OperationEditor implements PortManager {
     Classifier classifier;
     Controller controller;
     Composite controlPanel;
-
+    int inactiveTicks;
     OperationCanvas operationCanvas;
     boolean tutorialMode;
     public int counted;
     public int countedToRow;
     boolean running;
     ScrolledComposite scrolledComposite;
+    Timer timer;
 
     public OperationEditor(SwtFlowgrid flowgrid, CustomOperation operation) {
         this.flowgrid = flowgrid;
@@ -123,6 +129,25 @@ public class OperationEditor implements PortManager {
     }
 
 
+    @Override
+    public void addInput(WidgetPort inputPort) {
+       /* int pos = 0;
+        for (;pos < controlLayout.getChildCount(); pos++) {
+            View view = controlLayout.getChildAt(pos);
+            WidgetPort other = findWidgetPort(view);
+            if (other == null || other.port.cell().compareTo(input.port.cell()) > 0) {
+                break;
+            }
+        }
+        View view = input.view();
+        int colSpan = input.port.peerJson().getInt("width", 1);
+        int rowSpan = input.port.peerJson().getInt("height", 1);
+        controlLayout.addView(pos, view, colSpan, rowSpan); */
+
+        inputPort.createControl(controlPanel);
+    }
+
+
     Port attachPort(PortCommand portCommand) {
         Port result;
 
@@ -160,10 +185,48 @@ public class OperationEditor implements PortManager {
         flowgrid.shell().layout(true, true);
     }
 
+    @Override
+    public Controller controller() {
+        return controller;
+    }
+
     public void detachAll() {
         for (PortCommand portCommand : operation.portCommands()) {
             portCommand.detach();
         }
+    }
+
+
+    @Override
+    public SwtFlowgrid flowgrid() {
+        return flowgrid;
+    }
+
+    /**
+     * Checks whether all input is available. If the missing parameter is
+     * not null, missing input names will be accumulated there, and
+     * Missing fields will be highlighted.
+     */
+    boolean isInputComplete(StringBuilder missing) {
+        boolean checkOnly = missing == null;
+        if (checkOnly) {
+            missing = new StringBuilder();
+        }
+        for (WidgetPort port: portWidgets()) {
+            WidgetPort widget = (WidgetPort) port;
+            if (widget.port.input && widget.value() == null) {
+                if (missing.length() > 0) {
+                    missing.append(", ");
+                }
+                missing.append(widget.port.name());
+                /*
+                if (!checkOnly) {
+                    widget.view().setBackgroundColor(0x088ff0000);         FIXME
+                }
+                */
+            }
+        }
+        return missing.length() == 0;
     }
 
     @Override
@@ -172,45 +235,206 @@ public class OperationEditor implements PortManager {
     }
 
     @Override
-    public Controller controller() {
-        return controller;
-    }
-
-    @Override
-    public SwtFlowgrid flowgrid() {
-        return flowgrid;
-    }
-
-    @Override
-    public void start() {
-        System.out.println("TBD: OperationEditor.start()");
-    }
-
-    @Override
     public CustomOperation operation() {
         return operation;
     }
 
-    @Override
-    public void addInput(WidgetPort inputPort) {
-       /* int pos = 0;
-        for (;pos < controlLayout.getChildCount(); pos++) {
-            View view = controlLayout.getChildAt(pos);
-            WidgetPort other = findWidgetPort(view);
-            if (other == null || other.port.cell().compareTo(input.port.cell()) > 0) {
-                break;
-            }
-        }
-        View view = input.view();
-        int colSpan = input.port.peerJson().getInt("width", 1);
-        int rowSpan = input.port.peerJson().getInt("height", 1);
-        controlLayout.addView(pos, view, colSpan, rowSpan); */
 
-       inputPort.createControl(controlPanel);
+    public Iterable<Port> ports() {
+        return new Iterable<Port>() {
+            @Override
+            public Iterator<Port> iterator() {
+                final Iterator<PortCommand> base = operation.portCommands().iterator();
+                return new Iterator<Port>() {
+                    private Port next;
+
+                    @Override
+                    public boolean hasNext() {
+                        while (next == null && base.hasNext()) {
+                            next = base.next().port();
+                        }
+                        return next != null;
+                    }
+
+                    @Override
+                    public Port next() {
+                        hasNext();
+                        Port result = next;
+                        next = null;
+                        return result;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            };
+        };
+    }
+
+
+    public Iterable<WidgetPort> portWidgets() {
+        return new Iterable<WidgetPort>() {
+            @Override
+            public Iterator<WidgetPort> iterator() {
+                return new Iterator<WidgetPort>() {
+                    private Iterator<Port> base = ports().iterator();
+                    private WidgetPort next;
+
+                    @Override
+                    public WidgetPort next() {
+                        hasNext();
+                        WidgetPort result = next;
+                        next = null;
+                        return result;
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        if (next != null) {
+                            return true;
+                        }
+                        while (base.hasNext()) {
+                            Port n = base.next();
+                            if (n instanceof  WidgetPort) {
+                                next = (WidgetPort) n;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void remove() {
+                        base.remove();
+                    }
+                };
+            };
+        };
     }
 
     @Override
     public void removeWidget(ControlManager widget) {
         System.out.println("TBD: OperationEditor.removeWidget()");
     }
+
+
+    @Override
+    public void start() {
+        if (!operation.asyncInput() && !isInputComplete(null)) {
+            return;
+        }
+
+        if (running) {
+            stop();
+        }
+
+        inactiveTicks = 0;
+        if (controller != null) {
+            controller.start();
+        }
+        running = true;
+        timer = new Timer();
+        timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            timerTick();
+                        } catch (Exception e) {
+                            flowgrid.error("TimerTick", e);
+                        }
+                    }
+                }, 33, 33);
+
+        for (Port port : ports()) {
+            if (operation.asyncInput()) {
+                port.start();
+            } else {
+                port.ping();
+            }
+        }
+
+        flowgrid.display().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("FIXME: updateMenu();");
+            }
+        });
+    }
+
+    void stop() {
+        if (!running) {
+            return;
+        }
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        if (operation.asyncInput()) {
+            for (Port port: ports()) {
+                port.stop();
+            }
+        }
+        if (controller != null) {
+            controller.stop();
+        }
+        running = false;
+        flowgrid.display().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("FIXME: updateMenu();");
+            }
+        });
+    }
+
+    void timerTick() {
+        if (running && controller.pendingCount() == 0 &&
+                (operation.isTutorial() || !operation.asyncInput())) {
+            inactiveTicks += 2;
+            if (inactiveTicks == 10) {
+                boolean allSent = true;
+                for (Port port: ports()) {
+                    /*
+                    if (port instanceof  TestPort) {                           FIXME
+                        TestPort test = (TestPort) port;
+                        if (test.outputPending()) {
+                            allSent = false;
+                        }
+                    }
+                    */
+                }
+                if (!allSent) {
+                    inactiveTicks = 0;
+                } else if (operation.isTutorial()) {
+                    /*                                                          FIXME
+                    Log.d(TAG, "scheduling check tutorial success");
+                    new Timer().schedule(new UiTimerTask(platform) {
+                        @Override
+                        public void runOnUiThread() {
+                            checkTutorialSuccess();
+                        }
+                    }, 0);
+                    */
+                } else {
+                    stop();
+                }
+            }
+        } else {
+            inactiveTicks = 0;
+        }
+
+        // This is at the end because it may cause pending activity, preventing tutorial end.
+        for (Port port : ports()) {
+            port.timerTick(2);
+        }
+        flowgrid.display().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                operationCanvas.redraw();
+            }
+        });
+    }
+
 }
