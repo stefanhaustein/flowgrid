@@ -151,7 +151,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
 
     public OperationCanvas(final OperationEditor operationEditor, Composite parent) {
-        super(parent, SWT.RIGHT_TO_LEFT);
+        super(parent, SWT.DOUBLE_BUFFERED);
         this.operationEditor = operationEditor;
         this.operation = operationEditor.operation;
         this.flowgrid = operationEditor.flowgrid;
