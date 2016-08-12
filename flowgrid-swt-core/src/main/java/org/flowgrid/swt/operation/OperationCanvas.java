@@ -143,6 +143,10 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     ArrayList<Integer> currentAutoConnectStartRow = new ArrayList<>();
     Label menuAnchor;
     Button playButton;
+    Button helpButton;
+    Button moreButton;
+    Button pauseButton;
+    Button fastButton;
     boolean changing;
     SwtFlowgrid flowgrid;
     ArrayList<String> undoHistory = new ArrayList<>();
@@ -172,17 +176,56 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     throw new RuntimeException();
                 }
                 Rectangle bounds = getBounds();
-                Point playButtonSize = playButton.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                Point speedBarSize = speedBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                playButton.setBounds(bounds.width - playButtonSize.x - 5, 5, playButtonSize.x, playButtonSize.y);
 
-                speedBar.setBounds(bounds.width - speedBarSize.x - (playButtonSize.x - speedBarSize.x) / 2 - 5, 5 + playButtonSize.y + 5,
-                        speedBarSize.x, bounds.height - 5 - playButtonSize.y - 5 - 5);
+                int spacing = 5;
+
+                Point speedBarSize = speedBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                Point buttonSize = fastButton.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                Button[] topButtons = new Button[]{playButton, helpButton, moreButton};
+
+                for (Button button: topButtons) {
+                    Point size = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                    if (size.x > buttonSize.x) {
+                        buttonSize.x = size.x;
+                    }
+                    if (size.y > buttonSize.y) {
+                        buttonSize.y = size.y;
+                    }
+                }
+
+                for (int i = 0; i < topButtons.length; i++) {
+                    topButtons[i].setBounds(bounds.width - (buttonSize.x + spacing) * (3 - i), spacing,
+                            buttonSize.x, buttonSize.y);
+                }
+
+                fastButton.setBounds(bounds.width - buttonSize.x - spacing, 2 * spacing + buttonSize.y,
+                        buttonSize.x, buttonSize.y);
+
+                speedBar.setBounds(bounds.width - speedBarSize.x - (buttonSize.x - speedBarSize.x) / 2 - 5,
+                        spacing * 3 + 2 * buttonSize.y,
+                        speedBarSize.x,
+                        bounds.height - 5 * spacing - 3 * buttonSize.y);
+
+                pauseButton.setBounds(bounds.width - buttonSize.x - spacing, bounds.height - buttonSize.y - spacing,
+                        buttonSize.x, buttonSize.y);
+
                 menuAnchor.setBounds(-1, -1, 1, 1);
             }
         });
 
         speedBar = new Slider(this, SWT.VERTICAL);
+
+        moreButton = new Button(this, SWT.PUSH);
+        moreButton.setText("\u22ee");
+
+        helpButton = new Button(this, SWT.PUSH);
+        helpButton.setText("?");
+
+        pauseButton = new Button(this, SWT.PUSH);
+        pauseButton.setText("\u23f8");
+
+        fastButton = new Button(this, SWT.PUSH);
+        fastButton.setText("\u23e9");
 
         playButton = new Button(this, SWT.PUSH);
         playButton.setText("\u25b6");
