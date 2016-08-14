@@ -25,7 +25,10 @@ public class ArtifactDialog {
         this.flowgrid = flowgrid;
         shell = new Shell(flowgrid.shell);
         shell.setText(title);
-        shell.setLayout(new GridLayout(1, true));
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginHeight = 0;
+        gridLayout.marginWidth = 0;
+        shell.setLayout(gridLayout);
 
         scrolledComposite = new ScrolledComposite(shell, 0);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -48,9 +51,8 @@ public class ArtifactDialog {
             control.dispose();
         }
         for (final Artifact artifact: module) {
-            Label label = new Label(list, 0);
-            label.setText(artifact.name());
-            label.addMouseListener(new MouseAdapter() {
+            ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, artifact);
+            artifactComposite.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseUp(MouseEvent e) {
                     if (artifact instanceof Module) {
@@ -62,7 +64,7 @@ public class ArtifactDialog {
                 }
             });
         }
-        list.layout();
+        list.layout(true, true);
     }
 
 }

@@ -8,7 +8,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Widget;
 import org.flowgrid.model.Cell;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Controller;
@@ -20,8 +19,7 @@ import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.port.PortManager;
 import org.flowgrid.swt.port.WidgetPort;
-import org.flowgrid.swt.widget.ControlManager;
-import sun.rmi.runtime.Log;
+import org.flowgrid.swt.widget.Widget;
 
 import java.util.Iterator;
 import java.util.Timer;
@@ -71,7 +69,7 @@ public class OperationEditor implements PortManager {
         controller = new Controller(operation);
         controller.setInstance(this.instance);
 
-        /*
+/*
         if (classifier != null) {
             TextView separator = new TextView(platform);
             separator.setText(classifier.name() + " properties");
@@ -91,10 +89,6 @@ public class OperationEditor implements PortManager {
         operation.validate();
 
         // UI Setup
-
-        for(Control control: flowgrid.shell().getChildren()) {
-            control.dispose();
-        }
 
         final GridLayout shellLayout = new GridLayout(2, false);
         shellLayout.marginWidth = 0;
@@ -212,8 +206,7 @@ public class OperationEditor implements PortManager {
         if (checkOnly) {
             missing = new StringBuilder();
         }
-        for (WidgetPort port: portWidgets()) {
-            WidgetPort widget = (WidgetPort) port;
+        for (WidgetPort widget: portWidgets()) {
             if (widget.port.input && widget.value() == null) {
                 if (missing.length() > 0) {
                     missing.append(", ");
@@ -315,7 +308,7 @@ public class OperationEditor implements PortManager {
     }
 
     @Override
-    public void removeWidget(ControlManager widget) {
+    public void removeWidget(Widget widget) {
         System.out.println("TBD: OperationEditor.removeWidget()");
     }
 
@@ -359,7 +352,7 @@ public class OperationEditor implements PortManager {
         flowgrid.display().asyncExec(new Runnable() {
             @Override
             public void run() {
-                System.out.println("FIXME: updateMenu();");
+                updateMenu();
             }
         });
     }
@@ -384,7 +377,8 @@ public class OperationEditor implements PortManager {
         flowgrid.display().asyncExec(new Runnable() {
             @Override
             public void run() {
-                System.out.println("FIXME: updateMenu();");
+                updateMenu();
+                operationCanvas.redraw();
             }
         });
     }
@@ -436,5 +430,94 @@ public class OperationEditor implements PortManager {
             }
         });
     }
+
+    protected void updateMenu() {
+        operationCanvas.updateButtons();
+
+        /*
+        clearMenu();
+
+        SpannableString title = new SpannableString("\u2039 " + operation().name());
+        if (operation().asyncInput()) {
+            title.setSpan(new UnderlineSpan(), 2, title.length(), 0);
+        }
+        if (artifact.isPublic()) {
+            title.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 2, title.length(), 0);
+        }
+
+        fakeActionBar.setText(title);
+        setArtifact(operation());  // Updates the action bar.
+
+        if (selectionMode) {
+            addMenuItem(MENU_ITEM_COPY);
+            addMenuItem(MENU_ITEM_CUT);
+            addMenuItem(MENU_ITEM_CANCEL);
+        } else {
+            addMenuItem(running ? MENU_ITEM_STOP : MENU_ITEM_PLAY);
+            addMenuItem(operation().hasDocumentation() ? MENU_ITEM_DOCUMENTATION : MENU_ITEM_ADD_DOCUMENTATION);
+
+            addMenuItem(MENU_ITEM_UNDO).setEnabled(undoHistory.size() > 1);
+
+            if (!operation.isTutorial()) {
+                addMenuItem(MENU_ITEM_RUN_MODE);
+                if (operation.name().equals("main")) {
+                    addMenuItem(MENU_ITEM_CREATE_SHORTCUT);
+                }
+                addMenuItem(MENU_ITEM_PUBLIC);
+                addMenuItem(MENU_ITEM_CONTINUOUS_INPUT).setCheckable(true).setChecked(operation.asyncInput());
+            } else if (!tutorialMode) {
+                addMenuItem(MENU_ITEM_TUTORIAL_SETTINGS);
+            }
+
+            if (operation.isTutorial() && platform.settings().developerMode()) {
+                Item tmt = addMenuItem(MENU_ITEM_TUTORIAL_MODE);
+                tmt.setCheckable(true);
+                tmt.setChecked(tutorialMode);
+            }
+
+            if (operation.isTutorial()) {
+                addMenuItem(MENU_ITEM_RESET);
+            }
+
+            if (!tutorialMode) {
+                if (operation().classifier == null) {
+                    addMenuItem(MENU_ITEM_RENAME_MOVE);
+                } else {
+                    addMenuItem(MENU_ITEM_RENAME);
+                }
+                addMenuItem(MENU_ITEM_DELETE);
+            }
+        }
+        topRightButtons.removeAllViews();
+        int padding = Views.px(platform, 12);
+        for (Object action: actions.items()) {
+            final ContextMenu.Item item = (ContextMenu.Item) action;
+            ImageButton button = new ImageButton(platform);
+            button.setImageResource(item.getIcon());
+            button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            button.setPadding(padding, padding, padding, padding);
+            topRightButtons.addView(button);
+            button.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onContextMenuItemClick(item);
+                }
+            });
+        }
+        if (!selectionMode) {
+            ImageButton menuButton = new ImageButton(platform);
+            menuButton.setImageResource(R.drawable.ic_more_vert_white_24dp);
+            menuButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            menuButton.setPadding(padding, padding, padding, padding);
+            topRightButtons.addView(menuButton);
+            menuButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMenu();
+                }
+            });
+        } */
+    }
+
 
 }

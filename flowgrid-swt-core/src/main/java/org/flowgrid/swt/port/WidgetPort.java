@@ -6,14 +6,14 @@ import org.flowgrid.model.Port;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.api.PortCommand;
-import org.flowgrid.swt.data.DataControlManager;
-import org.flowgrid.swt.widget.ControlManager;
+import org.flowgrid.swt.data.DataWidget;
+import org.flowgrid.swt.widget.Widget;
 
-public class WidgetPort implements ControlManager, Port {
+public class WidgetPort implements Widget, Port {
 
     public final PortCommand port;
     private final PortManager manager;
-    DataControlManager dataWidget;
+    DataWidget dataWidget;
     Type type;
     /*Histogram histogram;
     RunChart runChart;
@@ -72,7 +72,7 @@ public class WidgetPort implements ControlManager, Port {
             });
 
         } else { */
-            dataWidget = new DataControlManager(manager.flowgrid(), manager.operation(), null,
+            dataWidget = new DataWidget(manager.flowgrid(), manager.operation(), null,
                     widget, port.outputCount() != 0, "port", port.name());
 //            view = dataWidget.view();
             if (port.input) {
@@ -84,11 +84,11 @@ public class WidgetPort implements ControlManager, Port {
                     dataWidget.setValue(0.0);
                 }
             }
-            /*
-            dataWidget.setOnValueChangedListener(new OnValueChangedListener() {
+
+            dataWidget.setOnValueChangedListener(new DataWidget.OnValueChangedListener() {
                 @Override
                 public void onValueChanged(final Object newValue) {
-                    view.setBackgroundColor(0);
+                    //view.setBackgroundColor(0);
                     if (!manager.operation().asyncInput() || !manager.isRunning()) {
                         manager.start();  // This will send all values
                     } else {
@@ -97,7 +97,7 @@ public class WidgetPort implements ControlManager, Port {
                 }
             });
 
-        }*/
+       // }
 
         /*
         if (dataWidget == null && port.peerJson().getInt("height", 1) > 0) {

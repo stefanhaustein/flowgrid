@@ -4,7 +4,7 @@ package org.flowgrid.swt.widget;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public interface ControlManager {
+public interface Widget {
 
     Control createControl(Composite parent);
 

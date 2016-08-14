@@ -5,12 +5,14 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
+import org.flowgrid.model.Classifier;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.Image;
 import org.flowgrid.model.Model;
@@ -18,6 +20,7 @@ import org.flowgrid.model.Module;
 import org.flowgrid.model.Platform;
 import org.flowgrid.model.Sound;
 import org.flowgrid.model.io.IOCallback;
+import org.flowgrid.swt.classifier.ClassifierEditor;
 import org.flowgrid.swt.operation.OperationEditor;
 
 import java.io.File;
@@ -73,6 +76,11 @@ public class SwtFlowgrid implements Platform {
         new ArtifactDialog(this, title, module);
     }
 
+    void clear() {
+        for(Control control: shell.getChildren()) {
+            control.dispose();
+        }
+    }
 
     @Override
     public void log(String message) {
@@ -132,10 +140,18 @@ public class SwtFlowgrid implements Platform {
     public void openArtifact(Artifact artifact) {
         if (artifact instanceof CustomOperation) {
             openOperation((CustomOperation) artifact);
+        } else if (artifact instanceof Classifier) {
+            openClassifier((Classifier) artifact);
         }
     }
 
+    public void openClassifier(Classifier classifier) {
+        clear();
+        new ClassifierEditor(this, classifier);
+    }
+
     private void openOperation(CustomOperation operation) {
+        clear();
         new OperationEditor(this, operation);
     }
 
