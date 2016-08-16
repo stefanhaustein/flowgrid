@@ -3,6 +3,7 @@ package org.flowgrid.swt.operation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,6 +30,7 @@ import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.hutn.HutnWriter;
 import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.DefaultSelectionAdapter;
+import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.widget.ContextMenu;
 
@@ -43,65 +45,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     static final float ZOOM_STEP = 1.1f;
     static final int PIXEL_SNAP = 16;
 
-    // Move elsewhere?
-    protected static final String MENU_ITEM_CANCEL = "Cancel";
-    protected static final String MENU_ITEM_ADD_DOCUMENTATION = "Add documentation";
-    protected static final String MENU_ITEM_COPY = "Copy";
-    protected static final String MENU_ITEM_CUT = "Cut";
-    protected static final String MENU_ITEM_DELETE = "Delete";
-    protected static final String MENU_ITEM_DOCUMENTATION = "Documentation";
-    protected static final String MENU_ITEM_PLAY = "Play";
-    protected static final String MENU_ITEM_PUBLIC = "Public";
-    protected static final String MENU_ITEM_RENAME = "Rename";
-    protected static final String MENU_ITEM_RENAME_MOVE = "Rename / move";
-    protected static final String MENU_ITEM_RESTART = "Restart";
-    protected static final String MENU_ITEM_RESTORE = "Restore";
-    protected static final String MENU_ITEM_STOP = "Stop";
+    public static final String[] OPERATION_MENU_FILTER = {"control", "examples", "missions", "system"};
+    public static final String[] TUTORIAL_EDITOR_OPERATION_MENU_FILTER = {"control", "missions", "system"};
 
-
-    static final String MENU_ITEM_CANVAS = "Canvas";
-    static final String MENU_ITEM_COMBINED_FIELD = "Combined field";
-    static final String MENU_ITEM_CONSTANT_VALUE = "Constant value\u2026";
-    static final String MENU_ITEM_CONTINUOUS_INPUT = "Continuous input";
-    static final String MENU_ITEM_CLEAR_CELL = "Clear cell";
-    static final String MENU_ITEM_CREATE_SHORTCUT = "Create shortcut";
-    static final String MENU_ITEM_DATA_IO = "Data / IO\u2026";
-    static final String MENU_ITEM_DELETE_COLUMN = "Delete column";
-    static final String MENU_ITEM_DELETE_PATH = "Delete path";
-    static final String MENU_ITEM_DELETE_ROW = "Delete row";
-    static final String MENU_ITEM_EDIT = "Edit\u2026";
-    static final String MENU_ITEM_EDIT_CELL = "Edit cell";
-    static final String MENU_ITEM_EXPECTATION = "Expectation";
-    static final String MENU_ITEM_FIRMATA_ANALOG_INPUT = "Firmata Analog input";
-    static final String MENU_ITEM_FIRMATA_ANALOG_OUTPUT = "Firmata Analog output";
-    static final String MENU_ITEM_FIRMATA_DIGITAL_OUTPUT = "Firmata Digital output";
-    static final String MENU_ITEM_FIRMATA_DIGITAL_INPUT = "Firmata Digital input";
-    static final String MENU_ITEM_FIRMATA_SERVO_OUTPUT = "Firmata Servo output";
-    static final String MENU_ITEM_HISTOGRAM = "Histogram";
-    static final String MENU_ITEM_INPUT_FIELD = "Input field";
-    static final String MENU_ITEM_CONTROL = "Control\u2026";
-    static final String MENU_ITEM_PASTE = "Paste";
-    static final String MENU_ITEM_PERCENT_BAR = "Percent bar";
-    static final String MENU_ITEM_TEST_INPUT = "Test input";
-    static final String MENU_ITEM_TUTORIAL_SETTINGS = "Tutorial settings";
-    static final String MENU_ITEM_OUTPUT_FIELD = "Output field";
-    static final String MENU_ITEM_RUN_CHART = "Run chart";
-    static final String MENU_ITEM_RUN_MODE = "Run mode";
-    static final String MENU_ITEM_RESET = "Reset";
-    static final String MENU_ITEM_UNDO = "Undo";
-    static final String MENU_ITEM_WEB_VIEW = "Web view";
-    static final String MENU_ITEM_INSERT_COLUMN = "Insert column";
-    static final String MENU_ITEM_INSERT_ROW = "Insert row";
-    static final String MENU_ITEM_ADD_BUFFER = "Add buffer";
-    static final String MENU_ITEM_REMOVE_BUFFER = "Remove buffer";
-    static final String MENU_ITEM_OPERATIONS_CLASSES = "Operations / classes\u2026";
-    static final String MENU_ITEM_THIS_MODULE = "This module\u2026";
-    static final String MENU_ITEM_THIS_CLASS = "This class\u2026";
-    static final String MENU_ITEM_TUTORIAL_MODE = "Tutorial mode";
-
-
-    static final String[] OPERATION_MENU_FILTER = {"control", "examples", "missions", "system"};
-    static final String[] TUTORIAL_EDITOR_OPERATION_MENU_FILTER = {"control", "missions", "system"};
 
     float startX;
     float startY;
@@ -145,8 +91,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     Button startStopButton;
     Button helpButton;
     Button moreButton;
-    Button pauseButton;
-    Button fastButton;
+    Label pauseLabel;
+    Label fastLabel;
     boolean changing;
     SwtFlowgrid flowgrid;
     ArrayList<String> undoHistory = new ArrayList<>();
@@ -155,7 +101,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     Scale speedBar;
 
 
-    public OperationCanvas(final OperationEditor operationEditor, Composite parent) {
+    public OperationCanvas(final OperationEditor operationEditor, final Composite parent) {
         super(parent, SWT.DOUBLE_BUFFERED);
         this.operationEditor = operationEditor;
         this.operation = operationEditor.operation;
@@ -167,11 +113,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         if (!operationEditor.tutorialMode) {
             speedBar = new Scale(this, SWT.VERTICAL);
             speedBar.setSelection(50);
-            fastButton = new Button(this, SWT.PUSH);
-            fastButton.setText("\u23e9");
-            fastButton.addSelectionListener(new DefaultSelectionAdapter() {
+            fastLabel = new Label(this, SWT.NONE);
+            fastLabel.setText(">>"); // "\u23e9";
+            fastLabel.addMouseListener(new MouseAdapter() {
                 @Override
-                public void widgetSelected(SelectionEvent e) {
+                public void mouseUp(MouseEvent e) {
                     if (speedBar.getSelection() == 100) {
                         speedBar.setSelection(previousSpeed);
                     } else {
@@ -180,11 +126,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     }
                 }
             });
-            pauseButton = new Button(this, SWT.PUSH);
-            pauseButton.setText("\u23f8");
-            pauseButton.addSelectionListener(new DefaultSelectionAdapter() {
+            pauseLabel = new Label(this, SWT.NONE);
+            pauseLabel.setText("||"); // \u23f8");
+            pauseLabel.addMouseListener(new MouseAdapter() {
                 @Override
-                public void widgetSelected(SelectionEvent e) {
+                public void mouseUp(MouseEvent e) {
                     if (speedBar.getSelection() == 0) {
                         speedBar.setSelection(previousSpeed);
                     } else {
@@ -441,47 +387,48 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     }
                 }
 
+                if (buttonW > 3 * buttonH / 2) {
+                    buttonW = 3 * buttonH / 2;
+                }
                 for (int i = 0; i < topButtons.length; i++) {
                     topButtons[i].setBounds(bounds.width - (buttonW + spacing) * (3 - i), spacing, buttonW, buttonH);
                 }
 
                 if (speedBar != null) {
                     Point speedBarSize = speedBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                    Point fastSize = fastLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                    Point pauseSize = pauseLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                    int speedW = Math.max(Math.max(fastSize.x, pauseSize.x), Math.max(buttonW, speedBarSize.x));
+                    int speedX = bounds.width - speedW - spacing;
+                    int speedY = buttonH + 2 * spacing;
 
-                    fastButton.setBounds(bounds.width - buttonW - spacing, 2 * spacing + buttonH, buttonW, buttonH);
+                    fastLabel.setBounds(speedX + (speedW - fastSize.x) / 2,
+                            speedY,
+                            fastSize.x, fastSize.y);
 
-                    speedBar.setBounds(bounds.width - speedBarSize.x - (buttonW - speedBarSize.x) / 2 - 5,
-                            spacing * 3 + 2 * buttonH,
+                    speedBar.setBounds(speedX + (speedW - speedBarSize.x) / 2,
+                            speedY + fastSize.y + 2 * spacing,
                             speedBarSize.x,
-                            bounds.height - 5 * spacing - 3 * buttonH);
+                            bounds.height - speedY - fastSize.y - pauseSize.y - 4 * spacing);
 
-                    pauseButton.setBounds(bounds.width - buttonW - spacing, bounds.height - buttonH - spacing,
-                            buttonW, buttonH);
+                    pauseLabel.setBounds(speedX + (speedW - pauseSize.x) / 2,
+                            bounds.height - pauseSize.y - spacing,
+                            pauseSize.x, pauseSize.y);
                 }
 
                 menuAnchor.setBounds(-1, -1, 1, 1);
             }
         });
-
     }
-
-    void attachAll() {
-        System.out.println("TBD: attachAll");   // FIXME
-    }
-
-    void detachAll() {
-        System.out.println("TBD: detachAll");   // FIXME
-    }
-
 
     void afterBulkChange() {
-        attachAll();
+        operationEditor.attachAll();
         afterChange();
     }
 
     void beforeBulkChange() {
         beforeChange();
-        detachAll();
+        operationEditor.detachAll();
     }
 
     void beforeChange() {
@@ -537,7 +484,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 operationEditor.updateMenu();
             }
         }
-
     }
 
 
@@ -824,15 +770,15 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         if (cell != null) {
             Command cmd = cell.command();
             if (cmd == null) {
-                menu.add(MENU_ITEM_DELETE_PATH);
+                menu.add(Strings.MENU_ITEM_DELETE_PATH);
             } else if ((cmd instanceof CustomOperation && cmd != operation)
                     || (cmd instanceof PropertyCommand)
                     || (cmd instanceof PortCommand && !((PortCommand) cmd).peerJson().containsKey("sensor"))
                     || (cmd instanceof LocalCallCommand && ((LocalCallCommand) cmd).operation() != operation) ||
                     (cmd instanceof ConstructorCommand)) {
-                menu.add(MENU_ITEM_EDIT_CELL);
+                menu.add(Strings.MENU_ITEM_EDIT_CELL);
             }
-            menu.add(MENU_ITEM_CLEAR_CELL);
+            menu.add(Strings.MENU_ITEM_CLEAR_CELL);
         } else {
             buildTypeFilter();
         }
@@ -844,14 +790,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         boolean showConstantMenu = !hasInput || (cellBelow != null && cellBelow.command() != null);
 
         if (cell == null || showConstantMenu) {
-            ContextMenu ioMenu = menu.addSubMenu(MENU_ITEM_DATA_IO).getSubMenu();
+            ContextMenu ioMenu = menu.addSubMenu(Strings.MENU_ITEM_DATA_IO).getSubMenu();
             if (ioMenu != null) {
-                ioMenu.add(MENU_ITEM_CONSTANT_VALUE);
+                ioMenu.add(Strings.MENU_ITEM_CONSTANT_VALUE);
                 if (cell == null) {
                     if (!hasInput) {
-                        ioMenu.add(MENU_ITEM_INPUT_FIELD);
+                        ioMenu.add(Strings.MENU_ITEM_INPUT_FIELD);
                     }
-                    ioMenu.add(MENU_ITEM_COMBINED_FIELD);
+                    ioMenu.add(Strings.MENU_ITEM_COMBINED_FIELD);
                     if (!hasInput) {
                         /*  FIXME
                         ContextMenu sensorMenu = ioMenu.addSubMenu("Sensor\u2026").getSubMenu();
@@ -861,63 +807,63 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                         */
                     }
                     ContextMenu outputMenu = ioMenu.addSubMenu("Output\u2026").getSubMenu();
-                    outputMenu.add(MENU_ITEM_OUTPUT_FIELD);
-                    outputMenu.add(MENU_ITEM_CANVAS);
-                    outputMenu.add(MENU_ITEM_HISTOGRAM);
-                    outputMenu.add(MENU_ITEM_PERCENT_BAR);
-                    outputMenu.add(MENU_ITEM_RUN_CHART);
-                    outputMenu.add(MENU_ITEM_WEB_VIEW);
+                    outputMenu.add(Strings.MENU_ITEM_OUTPUT_FIELD);
+                    outputMenu.add(Strings.MENU_ITEM_CANVAS);
+                    outputMenu.add(Strings.MENU_ITEM_HISTOGRAM);
+                    outputMenu.add(Strings.MENU_ITEM_PERCENT_BAR);
+                    outputMenu.add(Strings.MENU_ITEM_RUN_CHART);
+                    outputMenu.add(Strings.MENU_ITEM_WEB_VIEW);
 
                     ContextMenu firmataMenu = ioMenu.addSubMenu("Firmata\u2026").getSubMenu();
-                    firmataMenu.add(MENU_ITEM_FIRMATA_ANALOG_INPUT);
-                    firmataMenu.add(MENU_ITEM_FIRMATA_ANALOG_OUTPUT);
-                    firmataMenu.add(MENU_ITEM_FIRMATA_DIGITAL_INPUT);
-                    firmataMenu.add(MENU_ITEM_FIRMATA_DIGITAL_OUTPUT);
-                    firmataMenu.add(MENU_ITEM_FIRMATA_SERVO_OUTPUT);
+                    firmataMenu.add(Strings.MENU_ITEM_FIRMATA_ANALOG_INPUT);
+                    firmataMenu.add(Strings.MENU_ITEM_FIRMATA_ANALOG_OUTPUT);
+                    firmataMenu.add(Strings.MENU_ITEM_FIRMATA_DIGITAL_INPUT);
+                    firmataMenu.add(Strings.MENU_ITEM_FIRMATA_DIGITAL_OUTPUT);
+                    firmataMenu.add(Strings.MENU_ITEM_FIRMATA_SERVO_OUTPUT);
 
                     ContextMenu testMenu = ioMenu.addSubMenu("Test\u2026").getSubMenu();
-                    testMenu.add(MENU_ITEM_TEST_INPUT);
-                    testMenu.add(MENU_ITEM_EXPECTATION);
+                    testMenu.add(Strings.MENU_ITEM_TEST_INPUT);
+                    testMenu.add(Strings.MENU_ITEM_EXPECTATION);
                 }
             }
         }
 
         if (cell == null) {
-            menu.add(MENU_ITEM_CONTROL);
+            menu.add(Strings.MENU_ITEM_CONTROL);
 
             if (operation.classifier != null) {
-                menu.add(MENU_ITEM_THIS_CLASS);
+                menu.add(Strings.MENU_ITEM_THIS_CLASS);
             }
             if (operation.module().parent() != null) {
-                menu.add(MENU_ITEM_THIS_MODULE);
+                menu.add(Strings.MENU_ITEM_THIS_MODULE);
             }
             if (currentTypeFilter.size() > 0 && (currentTypeFilter.get(0) instanceof Classifier)) {
                 Classifier classifier = (Classifier) currentTypeFilter.get(0);
                 menu.add(classifier.name() + "\u2026");
             }
 
-            menu.add(MENU_ITEM_OPERATIONS_CLASSES);
+            menu.add(Strings.MENU_ITEM_OPERATIONS_CLASSES);
         }
 
         if (cellBelow != null && cellBelow.command() != null) {
             int index = selection.col - cellBelow.col();
             if (index < cellBelow.inputCount()) {
                 if (cellBelow.isBuffered(index)) {
-                    menu.add(MENU_ITEM_REMOVE_BUFFER);
+                    menu.add(Strings.MENU_ITEM_REMOVE_BUFFER);
                 } else {
-                    menu.add(MENU_ITEM_ADD_BUFFER);
+                    menu.add(Strings.MENU_ITEM_ADD_BUFFER);
                 }
             }
         }
 
-        ContextMenu editMenu = menu.addSubMenu(MENU_ITEM_EDIT).getSubMenu();
+        ContextMenu editMenu = menu.addSubMenu(Strings.MENU_ITEM_EDIT).getSubMenu();
         if (editMenu != null) {
-            ContextMenu.Item pasteItem = editMenu.add(MENU_ITEM_PASTE);
+            ContextMenu.Item pasteItem = editMenu.add(Strings.MENU_ITEM_PASTE);
             // pasteItem.setEnabled(platform.editBuffer() != null);     // FIXME
-            editMenu.add(MENU_ITEM_INSERT_ROW);
-            editMenu.add(MENU_ITEM_INSERT_COLUMN);
-            editMenu.add(MENU_ITEM_DELETE_ROW);
-            editMenu.add(MENU_ITEM_DELETE_COLUMN);
+            editMenu.add(Strings.MENU_ITEM_INSERT_ROW);
+            editMenu.add(Strings.MENU_ITEM_INSERT_COLUMN);
+            editMenu.add(Strings.MENU_ITEM_DELETE_ROW);
+            editMenu.add(Strings.MENU_ITEM_DELETE_COLUMN);
         }
 
         menu.setOnMenuItemClickListener(this);
@@ -929,12 +875,12 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     public boolean onContextMenuItemClick(ContextMenu.Item item) {
         final String label = item.getTitle().toString();
 
-        if (MENU_ITEM_STOP.equals(label)) {
+        if (Strings.MENU_ITEM_STOP.equals(label)) {
             operationEditor.stop();
             // updateButtons();
             return true;
         }
-/*        if (MENU_ITEM_PLAY.equals(label)) {
+/*        if (Strings.MENU_ITEM_PLAY.equals(label)) {
             StringBuilder missing = new StringBuilder();
             if (!operation.asyncInput() && !isInputComplete(missing)) {
                 Toast.makeText(platform, "Missing input: " + missing, Toast.LENGTH_LONG).show();
@@ -944,16 +890,16 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
             return true;
         }
-        if (MENU_ITEM_DOCUMENTATION.equals(label)) {
+        if (Strings.MENU_ITEM_DOCUMENTATION.equals(label)) {
             OperationHelpDialog.show(EditOperationFragment.this);
             return true;
         }
-        if (MENU_ITEM_COPY.equals(label)) {
+        if (Strings.MENU_ITEM_COPY.equals(label)) {
             platform.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
             setSelectionMode(false);
             return true;
         }
-        if (MENU_ITEM_CUT.equals(label)) {
+        if (Strings.MENU_ITEM_CUT.equals(label)) {
             platform.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
             beforeBulkChange();
             operation.clear(selection.row, selection.col, selection.height, selection.width);
@@ -961,18 +907,18 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             setSelectionMode(false);
             return true;
         }
-        if (MENU_ITEM_CANCEL.equals(label)) {
+        if (Strings.MENU_ITEM_CANCEL.equals(label)) {
             setSelectionMode(false);
             return true;
         }
-        if (label.equals(MENU_ITEM_CONTINUOUS_INPUT)) {
+        if (label.equals(Strings.MENU_ITEM_CONTINUOUS_INPUT)) {
             beforeChange();
             operation.setAsyncInput(!operation.asyncInput());
             afterChange();
             updateButtons();
             return true;
         }
-        if (MENU_ITEM_PUBLIC.equals(label)) {
+        if (Strings.MENU_ITEM_PUBLIC.equals(label)) {
             beforeChange();
             artifact.setPublic(!artifact.isPublic());
             afterChange();
@@ -980,7 +926,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             return true;
         } 
 
-        if (label.equals(MENU_ITEM_RESET)) {
+        if (label.equals(Strings.MENU_ITEM_RESET)) {
             if (operation.isTutorial()) {
                 TutorialData tutorialData = operation.tutorialData;
                 beforeChange();
@@ -993,13 +939,13 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             return true;
         }
 
-        if (label.equals(MENU_ITEM_TUTORIAL_MODE)) {
+        if (label.equals(Strings.MENU_ITEM_TUTORIAL_MODE)) {
             tutorialMode = !item.isChecked();
             updateButtons();
             return true;
         } */
 
-        if (label.equals(MENU_ITEM_UNDO)) {
+        if (label.equals(Strings.MENU_ITEM_UNDO)) {
             HutnObject json = (HutnObject) Hutn.parse(undoHistory.get(undoHistory.size() - 2));
             flowgrid.log("undo to: " + json.toString());
             beforeBulkChange();
@@ -1015,7 +961,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
         }
 /*
-        if (label.equals(MENU_ITEM_TUTORIAL_SETTINGS)) {
+        if (label.equals(Strings.MENU_ITEM_TUTORIAL_SETTINGS)) {
             TutorialSettingsDialog.show(this);
             return true;
         } */
@@ -1027,11 +973,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 public void run(Command value) {
                     addMemberCommand(value);
                 }
-            }).showType((Classifier) currentTypeFilter.get(0), false);
+            }).showType(currentTypeFilter.get(0), false);
             return true;
         }
 
-        if (label.equals(MENU_ITEM_THIS_CLASS)) {
+        if (label.equals(Strings.MENU_ITEM_THIS_CLASS)) {
             System.out.println("calling new artifactment.show");
             new CommandMenu(menuAnchor, item, operation.module(), currentTypeFilter, new Callback<Command>() {
                 @Override
@@ -1052,14 +998,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 */
         Module module = null;
         String[] filter = {};
-        if (label.equals(MENU_ITEM_OPERATIONS_CLASSES)) {
+        if (label.equals(Strings.MENU_ITEM_OPERATIONS_CLASSES)) {
             module = flowgrid.model().rootModule;
             filter = operation().isTutorial() && !operationEditor.tutorialMode
                     ? TUTORIAL_EDITOR_OPERATION_MENU_FILTER
                     : OPERATION_MENU_FILTER;
-        } else if (label.equals(MENU_ITEM_THIS_MODULE)) {
+        } else if (label.equals(Strings.MENU_ITEM_THIS_MODULE)) {
             module = operation.module();
-        } else if (label.equals(MENU_ITEM_CONTROL)) {
+        } else if (label.equals(Strings.MENU_ITEM_CONTROL)) {
             module = flowgrid.model().rootModule.module("control");
         }
         if (module != null) {
@@ -1086,25 +1032,25 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         int row = selection.row();
         int col = selection.col();
 
-        if (label.equals(MENU_ITEM_ADD_BUFFER) || label.equals(MENU_ITEM_REMOVE_BUFFER)) {
+        if (label.equals(Strings.MENU_ITEM_ADD_BUFFER) || label.equals(Strings.MENU_ITEM_REMOVE_BUFFER)) {
             Cell below = operation.cell(row + 1, col);
             int index = col - below.col();
             beforeChange();
-            below.setBuffered(index, label.equals(MENU_ITEM_ADD_BUFFER));
+            below.setBuffered(index, label.equals(Strings.MENU_ITEM_ADD_BUFFER));
             afterChange();
-        } else if (label.equals(MENU_ITEM_RUN_MODE)) {
+        } else if (label.equals(Strings.MENU_ITEM_RUN_MODE)) {
             // flowgrid.openOperation(operation, false);  FIXME
-        } else if (label.equals(MENU_ITEM_CREATE_SHORTCUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_CREATE_SHORTCUT)) {
             // createShortcut();                              FIXME
-        } else if (label.equals(MENU_ITEM_DELETE_PATH)) {
+        } else if (label.equals(Strings.MENU_ITEM_DELETE_PATH)) {
             beforeChange();
             operation.removePath(row, col, operationEditor.tutorialMode);
             afterChange();
-        } else if (label.equals(MENU_ITEM_CLEAR_CELL)) {
+        } else if (label.equals(Strings.MENU_ITEM_CLEAR_CELL)) {
             beforeChange();
             operation.removeCell(row, col);
             afterChange(); /*
-        } else if (label.equals(MENU_ITEM_EDIT_CELL)) {
+        } else if (label.equals(Strings.MENU_ITEM_EDIT_CELL)) {
             Command cmd = operation.cell(row, col).command();
             if (cmd instanceof CustomOperation) {
                 selection.setVisibility(false);
@@ -1122,57 +1068,57 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             } else if (cmd instanceof ConstructorCommand) {
                 platform.openClassifier(((ConstructorCommand) cmd).classifier());
             }
-        } else if (label.equals(MENU_ITEM_INPUT_FIELD)) {
+        } else if (label.equals(Strings.MENU_ITEM_INPUT_FIELD)) {
             addWidgetPort(true, false, null);
-        } else if (label.equals(MENU_ITEM_OUTPUT_FIELD)) {
+        } else if (label.equals(Strings.MENU_ITEM_OUTPUT_FIELD)) {
             addWidgetPort(false, true, null);
-        } else if (label.equals(MENU_ITEM_TEST_INPUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_TEST_INPUT)) {
             addPortCommand("Test", "TestInput", true, false, "testData", "");
-        } else if (label.equals(MENU_ITEM_EXPECTATION)) {
+        } else if (label.equals(Strings.MENU_ITEM_EXPECTATION)) {
             addPortCommand("Test", "Expectation", false, true, "testData", "");
-        } else if (label.equals(MENU_ITEM_CANVAS)) {
+        } else if (label.equals(Strings.MENU_ITEM_CANVAS)) {
             addWidgetPort(true, false, "canvas");
-        } else if (label.equals(MENU_ITEM_HISTOGRAM)) {
+        } else if (label.equals(Strings.MENU_ITEM_HISTOGRAM)) {
             addWidgetPort(false, true, "histogram");
-        } else if (label.equals(MENU_ITEM_RUN_CHART)) {
+        } else if (label.equals(Strings.MENU_ITEM_RUN_CHART)) {
             addWidgetPort(false, true, "runchart");
-        } else if (label.equals(MENU_ITEM_WEB_VIEW)) {
+        } else if (label.equals(Strings.MENU_ITEM_WEB_VIEW)) {
             addWidgetPort(true, true, "webview");
-        } else if (label.equals(MENU_ITEM_PERCENT_BAR)) {
+        } else if (label.equals(Strings.MENU_ITEM_PERCENT_BAR)) {
             addWidgetPort(false, true, "percent");
-        } else if (label.equals(MENU_ITEM_COMBINED_FIELD)) {
+        } else if (label.equals(Strings.MENU_ITEM_COMBINED_FIELD)) {
             addWidgetPort(true, true, null);
-        } else if (label.equals(MENU_ITEM_CONSTANT_VALUE)) {
+        } else if (label.equals(Strings.MENU_ITEM_CONSTANT_VALUE)) {
             addLiteral(); */
-        } else if (label.equals(MENU_ITEM_INSERT_ROW)) {
+        } else if (label.equals(Strings.MENU_ITEM_INSERT_ROW)) {
             beforeChange();
             operation.insertRow(row);
             afterChange();
-        } else if (label.equals(MENU_ITEM_INSERT_COLUMN)) {
+        } else if (label.equals(Strings.MENU_ITEM_INSERT_COLUMN)) {
             beforeChange();
             operation.insertCol(col);
             afterChange();
-        } else if (label.equals(MENU_ITEM_DELETE_ROW)) {
+        } else if (label.equals(Strings.MENU_ITEM_DELETE_ROW)) {
             beforeChange();
             operation.deleteRow(row);
             afterChange();
-        } else if (label.equals(MENU_ITEM_DELETE_COLUMN)) {
+        } else if (label.equals(Strings.MENU_ITEM_DELETE_COLUMN)) {
             beforeChange();
             operation.deleteCol(col);
             afterChange();  /*
-        } else if (label.equals(MENU_ITEM_PASTE)) {
+        } else if (label.equals(Strings.MENU_ITEM_PASTE)) {
             beforeBulkChange();
             operation.cellsFromJson(platform.editBuffer(), selection.row, selection.col);
             afterBulkChange();
-        } else if (label.equals(MENU_ITEM_FIRMATA_ANALOG_INPUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_FIRMATA_ANALOG_INPUT)) {
             addFirmataPort(true, false, FirmataPort.Mode.ANALOG);
-        } else if (label.equals(MENU_ITEM_FIRMATA_ANALOG_OUTPUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_FIRMATA_ANALOG_OUTPUT)) {
             addFirmataPort(false, true, FirmataPort.Mode.ANALOG);
-        } else if (label.equals(MENU_ITEM_FIRMATA_DIGITAL_INPUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_FIRMATA_DIGITAL_INPUT)) {
             addFirmataPort(true, false, FirmataPort.Mode.DIGITAL);
-        } else if (label.equals(MENU_ITEM_FIRMATA_DIGITAL_OUTPUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_FIRMATA_DIGITAL_OUTPUT)) {
             addFirmataPort(false, true, FirmataPort.Mode.DIGITAL);
-        } else if (label.equals(MENU_ITEM_FIRMATA_SERVO_OUTPUT)) {
+        } else if (label.equals(Strings.MENU_ITEM_FIRMATA_SERVO_OUTPUT)) {
             addFirmataPort(false, true, FirmataPort.Mode.SERVO);*/
         }
 

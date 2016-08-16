@@ -12,7 +12,7 @@ import org.flowgrid.swt.Colors;
 public class ArtifactIcon extends Canvas {
     public enum Kind {
         CONTINUOUS_OPERATION, OPERATION, PROPERTY, CLASSIFIER, MODULE, SOUND, TUTORIAL,
-        BRANCH_LEFT, BRANCH_RIGHT, BRANCH_ALL, BRANCH_LEFT_AND_RIGTH, IMAGE
+        BRANCH_LEFT, BRANCH_RIGHT, BRANCH_ALL, BRANCH_LEFT_AND_RIGTH, PARENT, IMAGE
     }
 
     final Kind kind;
@@ -85,8 +85,8 @@ public class ArtifactIcon extends Canvas {
 
             case CLASSIFIER:
                 gc.setBackground(colors.grays[1]);
-                gc.fillOval(xM, yM, cellSize / 2, cellSize / 2);
-                gc.drawOval(xM, yM, cellSize / 2, cellSize / 2);
+                gc.fillOval(x0, y0, cellSize, cellSize);
+                gc.drawOval(x0, y0, cellSize, cellSize);
                 break;
 
             case TUTORIAL:
@@ -139,21 +139,25 @@ public class ArtifactIcon extends Canvas {
                 return;
 
         }
-    }
-            /*)
-            if (text != null) {
-                paint.setStyle(Paint.Style.FILL);
-                if (kind == Kind.TUTORIAL) {
-                    paint.setTextSize(cellSize * 0.33f);
-                    paint.setTextAlign(Paint.Align.RIGHT);
-                    TextHelper.drawText(context, canvas, text, bounds.right, bounds.bottom, paint, TextHelper.VerticalAlign.BOTTOM);
-                } else {
-                    paint.setTextSize(cellSize * (kind == Kind.CLASSIFIER ? 0.66f : 0.5f));
-//      canvas.drawText(text, bounds.centerX(), bounds.bottom - cellSize * (kind == Kind.CLASSIFIER ? 0.25f : 0.33f), paint);
-                    TextHelper.drawText(context, canvas, text, bounds.centerX(), bounds.centerY(), paint, TextHelper.VerticalAlign.CENTER);
-                }
 
-                */
+        if (text != null) {
+            gc.setForeground(kind == Kind.CLASSIFIER ? colors.white : colors.foreground);
+            if (kind == Kind.TUTORIAL) {
+                gc.setFont(colors.getFont(Math.round(cellSize * 0.33f), 0));
+                Point size = gc.stringExtent(text);
+                gc.drawString(text, x0 + w - size.x, y0 + h - size.y, true);
+
+//            TextHelper.drawText(context, canvas, text, bounds.right, bounds.bottom, paint, TextHelper.VerticalAlign.BOTTOM);
+            } else {
+                gc.setFont(colors.getFont(Math.round(cellSize * (kind == Kind.CLASSIFIER ? 0.66f : 0.5f)), 0));
+                Point size = gc.stringExtent(text);
+                gc.drawString(text, x0 + (w - size.x) / 2, y0 + (h - size.y) / 2, true);
+            //                  paint.setTextSize();
+//      canvas.drawText(text, bounds.centerX(), bounds.bottom - cellSize * (kind == Kind.CLASSIFIER ? 0.25f : 0.33f), paint);
+//                    TextHelper.drawText(context, canvas, text, bounds.centerX(), bounds.centerY(), paint, TextHelper.VerticalAlign.CENTER);
+            }
+        }
+
 
          /*else {
       paint.setStyle(Paint.Style.FILL);
@@ -183,6 +187,7 @@ public class ArtifactIcon extends Canvas {
     //  canvas.drawLine(xM, y1, xM, y0 + 4* border, paint);
     }
 */
+    }
 
          @Override
          public Point computeSize(int wHint, int hHint, boolean changed) {

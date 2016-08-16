@@ -53,8 +53,8 @@ public class ScaledGraphElements {
         // valueFont.dispose();
 
         if (cellSize != this.cellSize || operatorFont == null) {
-            operatorFont = new Font(display, "Roboto", Math.round(cellSize / 2), 0);
-            valueFont = new Font(display, "Roboto", Math.round(cellSize / 3), 0);
+            operatorFont = colors.getFont(Math.round(cellSize / 2), 0);
+            valueFont = colors.getFont(Math.round(cellSize / 3), 0);
 
             arrayConnectorWidth = Math.max(1, Math.round(2 * cellSize / 16));
             connectorWidth = Math.max(1, Math.round(cellSize / 16));
@@ -191,7 +191,9 @@ public class ScaledGraphElements {
         } else {
 //            valueTextPaint.setColor(colors.white);
             gc.setForeground(colors.background);
-            Colors.Brightness brightness = mod > 0 ? Colors.Brightness.BRIGHTER : Colors.Brightness.DARKEST;
+            Colors.Brightness brightness = colors.dark
+                    ? (mod > 0 ? Colors.Brightness.BRIGHTER : Colors.Brightness.DARKEST)
+                    : (mod > 0 ? Colors.Brightness.DARKEST : Colors.Brightness.REGULAR);
             Color rgb = colors.typeColor(model.type(value), brightness);
 //            if (mod > 0) {
                 gc.setBackground(rgb);
@@ -334,7 +336,7 @@ public class ScaledGraphElements {
         //Paint boxPaint = highlight ? readyBoxPaint : operatorBoxPaint; FIXME
 
         gc.setForeground(colors.foreground);
-        gc.setBackground(colors.background);
+        gc.setBackground(highlight ? colors.highlight : colors.background);
         gc.setLineWidth(operatorOutlineWidth);
 
         int tX = Math.round(x0 + cellSize * width / 2);
@@ -601,10 +603,10 @@ public class ScaledGraphElements {
         // operatorTextPaint.setUnderlineText(shape == Shape.ASYNC);
 
         Point textExtent = gc.stringExtent(text);
-        /*
-        if (operatorTextPaint.measureText(text, 0, len) > available) {
-            operatorTextPaint.setTextSize(cellSize / 3);
-            while (operatorTextPaint.measureText(text, 0, len) > available) {
+
+        if (textExtent.x > available) {
+            gc.setFont(colors.getFont(Math.round(cellSize/3), 0));
+            while ((textExtent = gc.stringExtent(text.substring(0, len))).x > available) {
                 len--;
             }
             if (len < text.length()) {
@@ -624,19 +626,19 @@ public class ScaledGraphElements {
                     len = start2;
                 }
                 int len2 = text.length();
-                while (operatorTextPaint.measureText(text, start2, len2) > available) {
+                Point textExtent2;
+                while ((textExtent2 = gc.stringExtent(text.substring(start2, len2))).x > available) {
                     len2--;
                 }
 
-
-                float tY = y0 - cellSize / 6 + (cellSize - operatorTextPaint.descent() - operatorTextPaint.ascent()) / 2;
-                canvas.drawText(text, 0, len, tX, tY, operatorTextPaint);
+                int tY = y0; //  - cellSize / 6 + (cellSize - operatorTextPaint.descent() - operatorTextPaint.ascent()) / 2;
+                gc.drawString(text.substring(0, len), tX - textExtent.x / 2, tY);
                 tY += cellSize / 3;
-                canvas.drawText(text, start2, len2, tX, tY, operatorTextPaint);
+                gc.drawString(text.substring(start2, len2), tX - textExtent2.x / 2, tY);
                 return;
             }
         }
-        */
+
         //gc.setBackground(gc.getForeground());
         int tY = Math.round(y0 + (cellSize - textExtent.y) / 2);
         gc.drawString(text, tX - textExtent.x / 2, tY);

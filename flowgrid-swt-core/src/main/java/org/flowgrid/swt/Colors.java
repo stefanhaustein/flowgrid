@@ -2,24 +2,25 @@ package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
-import org.omg.CosNaming.Binding;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Colors {
 
-
-
     public enum Brightness {DARKEST, DARKER, REGULAR, BRIGHTER, BRIGHTEST};
-
 
     public static int brightenChannel(int value, boolean brighten) {
         return brighten ? Math.min(255, (255 - value) / 2 + value) : value;
     }
 
+    private Map<Integer,Font> fontMap = new HashMap<>();
 
     public final Color black;
     public final Color white;
@@ -29,6 +30,7 @@ public class Colors {
     public final Color grid;
     public final Color origin;
     public final Color selection;
+    public final Color highlight;
 
     public final Color[] blues;
     public final Color[] violets;
@@ -37,6 +39,7 @@ public class Colors {
     public final Color[] reds;
     public final Color[] grays;
     private final Display display;
+    public final boolean dark;
 
     private Color c(int argb) {
         return new Color(display, (argb >> 16) & 255, (argb >> 8) & 255, argb & 255);
@@ -44,6 +47,7 @@ public class Colors {
 
     Colors(Display display, boolean dark) {
         this.display = display;
+        this.dark = dark;
 
         black = display.getSystemColor(SWT.COLOR_BLACK);
         white = display.getSystemColor(SWT.COLOR_WHITE);
@@ -57,6 +61,9 @@ public class Colors {
 
         background = dark ? black : white;
         foreground = dark ? grays[Brightness.BRIGHTER.ordinal()] : grays[Brightness.DARKEST.ordinal()];
+
+        highlight = dark ? grays[Brightness.DARKEST.ordinal()] : grays[Brightness.BRIGHTER.ordinal()];
+
         grid = dark ? grays[0] : grays[Brightness.BRIGHTER.ordinal()];
         origin = dark ? white : black;
         selection = new Color(display, 0x33, 0xb5, 0xe5, 0x88);
@@ -64,7 +71,7 @@ public class Colors {
 
 
     public Color typeColor(Type type, boolean ready) {
-        return typeColor(type, ready ? Colors.Brightness.BRIGHTEST : Colors.Brightness.REGULAR);
+        return typeColor(type, ready ? (dark ? Colors.Brightness.BRIGHTEST : Brightness.DARKER) : Colors.Brightness.REGULAR);
     }
 
     public Color typeColor(Type type, Brightness brightness) {
@@ -86,6 +93,23 @@ public class Colors {
             return greens[index];
         }
         return grays[index];
+    }
+
+    public Font getFont(int size, int style) {
+        int id = (size << 2) | (style & 3);
+        Font font = fontMap.get(id);
+        if (font == null) {
+            font = new Font(display,  "Roboto", size, style);
+            fontMap.put(id, font);
+        }
+        return font;
+    }
+
+
+    public void dispose() {
+        for (Font font : fontMap.values()) {
+            font.dispose();
+        }
     }
 
 }

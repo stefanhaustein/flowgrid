@@ -2,16 +2,14 @@ package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.flowgrid.model.Artifact;
+import org.flowgrid.model.Callback;
 import org.flowgrid.model.Module;
 import org.flowgrid.swt.widget.Dialogs;
 
@@ -50,21 +48,27 @@ public class ArtifactDialog {
         for(Control control: list.getChildren()) {
             control.dispose();
         }
-        for (final Artifact artifact: module) {
-            ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, artifact);
-            artifactComposite.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseUp(MouseEvent e) {
-                    if (artifact instanceof Module) {
-                        setModule((Module) artifact);
-                    } else {
-                        shell.dispose();
-                        flowgrid.openArtifact(artifact);
-                    }
+        Callback callback = new Callback<Artifact>() {
+            @Override
+            public void run(Artifact artifact) {
+                if (artifact instanceof Module) {
+                    setModule((Module) artifact);
+                } else {
+                    flowgrid.openArtifact(artifact);
+                    shell.dispose();
                 }
-            });
+            }
+        };
+
+        if (module.parent() != null && module.parent().parent() != null) {
+            ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, module.parent(), true);
+            artifactComposite.setListener(callback);
+        }
+
+        for (final Artifact artifact: module) {
+            ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, artifact, false);
+            artifactComposite.setListener(callback);
         }
         list.layout(true, true);
     }
-
 }

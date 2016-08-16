@@ -1,9 +1,6 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -22,12 +19,14 @@ import org.flowgrid.model.Sound;
 import org.flowgrid.model.io.IOCallback;
 import org.flowgrid.swt.classifier.ClassifierEditor;
 import org.flowgrid.swt.operation.OperationEditor;
+import org.flowgrid.swt.widget.MenuAdapter;
+import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SwtFlowgrid implements Platform {
+public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     Model model;
     Display display;
     Shell shell;
@@ -36,6 +35,8 @@ public class SwtFlowgrid implements Platform {
     File flowgridRoot = new File(new File(System.getProperty("user.home")), "flowgrid");
     File storageRoot = new File(flowgridRoot, "files");
     File cacheRoot = new File(flowgridRoot, "cache");
+
+    final MenuAdapter menuAdapter = new MenuAdapter(this);
 
     public final Colors colors;
 
@@ -48,27 +49,28 @@ public class SwtFlowgrid implements Platform {
         shell = new Shell(display);
         shell.setText("FlowGrid");
 
-        Menu menuBar = new Menu(shell);
-        MenuItem fileMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-        fileMenuItem.setText("File");
-
-        Menu fileMenu = new Menu(fileMenuItem);
-        MenuItem examplesMenuItem = new MenuItem(fileMenu, SWT.PUSH);
-        examplesMenuItem.setText("Examples");
-        examplesMenuItem.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                openArtifactDialog("Open Example", "examples");
-            }
-        });
-
-        shell.setMenuBar(menuBar);
+        shell.setMenuBar(createMenuBar());
 
         openArtifact(model.artifact("examples/algorithm/factorial"));
 
         shell.pack();
         shell.open();
     }
+
+
+    public Menu createMenuBar() {
+        Menu menuBar = new Menu(shell);
+        MenuItem fileMenuItem = new MenuItem(menuBar, SWT.CASCADE);
+        fileMenuItem.setText("File");
+        Menu fileMenu = new Menu(fileMenuItem);
+
+        menuAdapter.addItem(fileMenu, "About");
+        menuAdapter.addItem(fileMenu, "Open");
+        menuAdapter.addItem(fileMenu, "Tutorials");
+        menuAdapter.addItem(fileMenu, "Examples");
+        return menuBar;
+    }
+
 
     void openArtifactDialog(String title, String moduleName) {
         Module module = (Module) model.artifact(moduleName);
@@ -169,5 +171,17 @@ public class SwtFlowgrid implements Platform {
 
     public void runOnUiThread(Runnable runnable) {
 
+    }
+
+    @Override
+    public void menuItemSelected(MenuItem menuItem) {
+        String label = menuItem.getText();
+        if ("Examples".equals(label)) {
+            openArtifactDialog("Open Example", "examples");
+        } else if ("Open".equals(label)) {
+            openArtifactDialog("Open", "myname");
+        } else if ("Tutorials".equals(label)) {
+            openArtifactDialog("Open Tutorial", "missions");
+        }
     }
 }
