@@ -22,6 +22,7 @@ import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.port.PortManager;
+import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
@@ -175,14 +176,14 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         /*
         if (portType.equals("Sensor")) {
             result = new SensorPort(this, portCommand);
-        } else if (portType.equals("Test")) {
+        } else*/ if (portType.equals("Test")) {
             result = new TestPort(this, portCommand);
-        } else if (portType.equals("Firmata")) {
-            result = new FirmataPort(this, portCommand);
-        } else { */
+     /*   } else if (portType.equals("Firmata")) {
+            result = new FirmataPort(this, portCommand); */
+        } else {
             result = new WidgetPort(this, portCommand);
-        //}
-        //   ports.add(result);
+        }
+        // ports.add(result);
         portCommand.setPort(result);
         return result;
     }

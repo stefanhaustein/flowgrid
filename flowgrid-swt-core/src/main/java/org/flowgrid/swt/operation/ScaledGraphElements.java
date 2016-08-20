@@ -21,6 +21,8 @@ import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.api.PropertyCommand;
 import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.graphics.Drawing;
+import org.flowgrid.swt.graphics.EmojiTextHelper;
+import org.flowgrid.swt.port.TestPort;
 
 public class ScaledGraphElements {
     private final Model model;
@@ -88,13 +90,11 @@ public class ScaledGraphElements {
                 y0 += Math.round(cellSize / 2 - radius);
             }
 
-
             for (int i = 0; i < cell.inputCount(); i++) {
                 if (cell.isBuffered(i)) {
                     drawBuffer(gc, Math.round(x0 + (i + 0.5f) * cellSize), y0);
                 }
             }
-
         }
     }
 
@@ -177,17 +177,19 @@ public class ScaledGraphElements {
             gc.fillPolygon(points);
             gc.drawPolygon(points);
 
-    /*    } else if (value instanceof Boolean || (value instanceof String && Emoji.isEmoji(text))) {  FIXME
-            if (value instanceof Boolean) {
+         } else if (
+                 //value instanceof Boolean ||
+               (value instanceof String && org.flowgrid.emoji.Emoji.isEmoji(text))) {
+         /*  if (value instanceof Boolean) {
                 text = value.equals(Boolean.TRUE) ? "\uf889" : "\uf888";
-            }
-            operatorTextPaint.setTextSize(cellSize / 2);
-            operatorTextPaint.setTextAlign(Align.CENTER);
+            } */
+
+            gc.setFont(colors.getFont(Math.round(cellSize / 2), 0));
             if (mod > 0) {
-                Drawing.drawHalo(canvas, x, y, cellSize * 2 / 3, Color.WHITE);
+//                Drawing.drawHalo(canvas, x, y, cellSize * 2 / 3, Color.WHITE);
             }
 
-            paint = operatorTextPaint; */
+        //    paint = operatorTextPaint; */
         } else {
 //            valueTextPaint.setColor(colors.white);
             gc.setForeground(colors.background);
@@ -208,11 +210,9 @@ public class ScaledGraphElements {
             gc.setForeground(colors.white);
         }
 
-        gc.drawString(text, tX, tY, true);
-        // TextHelper.drawText(platform, canvas, text, x, tY, paint);
+        //gc.drawString(text, tX, tY, true);
+        EmojiTextHelper.drawText(gc, text, tX, tY);
     }
-
-
 
 
     void drawOperator(Cell cell, GC gc, int x0, int y0, boolean ready) {
@@ -278,12 +278,12 @@ public class ScaledGraphElements {
         boolean regular = true;
         if (cmd instanceof PortCommand) {
             PortCommand portCommand = (PortCommand) cmd;
-            /*
+
             if (portCommand.port() instanceof TestPort) {
-                ((TestPort) portCommand.port()).draw(platform, canvas, x0, y0, cellSize, ready);
+                ((TestPort) portCommand.port()).draw(gc, x0, y0, cellSize, ready);
                 regular = false;
             }
-            */
+
         }
         if (regular) {
             drawOperator(gc, cmd, x0, y0, width, ready);
@@ -315,7 +315,7 @@ public class ScaledGraphElements {
         }
 
         if ("and".equals(text)) {
-            text = "&";//\u2227";
+            text = "&"; //\u2227";
         } else if ("or".equals(text)) {
             text = "\u2228";
         } else if("xor".equals(text)) {

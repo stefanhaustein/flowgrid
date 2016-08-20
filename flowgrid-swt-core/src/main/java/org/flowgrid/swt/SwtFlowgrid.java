@@ -170,7 +170,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     public void runOnUiThread(Runnable runnable) {
-
+        display.asyncExec(runnable);
     }
 
     @Override
