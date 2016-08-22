@@ -157,7 +157,7 @@ public class ScaledGraphElements {
         int x0 = x - width / 2;
         int y0 = y - h / 2;
 
-        int tX = x - textSize.x / 2;
+        int tX = x; // - textSize.x / 2;
         int tY = Math.round(y0 + (h - textSize.y) / 2); ; // + (h - valueTextPaint.descent() - valueTextPaint.ascent()) / 2;
 
         int x1 = x0 + width;
@@ -211,7 +211,7 @@ public class ScaledGraphElements {
         }
 
         //gc.drawString(text, tX, tY, true);
-        EmojiTextHelper.drawText(gc, text, tX, tY);
+        EmojiTextHelper.drawText(gc, text, tX, tY, SWT.CENTER, SWT.TOP);
     }
 
 

@@ -1,10 +1,11 @@
 package org.flowgrid.swt.graphics;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.flowgrid.swt.Colors;
 
 
 /**
@@ -20,97 +21,53 @@ public class EmojiTextHelper {
   }
 
 
-  /*
-  public static void drawBoolean(GC gc, boolean value, float cx, float cy,
-      float radius) {
-    shapePaint.setColor(value ? GREEN : RED);
-    if (paint != null) {
-      shapePaint.setAlpha(paint.getAlpha());
-    }
-    canvas.drawCircle(cx, cy, radius, shapePaint);
-    shapePaint.setColor(shapePaint.getColor() | 0x0ffffff);
-    shapePaint.setTypeface(Typeface.DEFAULT_BOLD);
-    shapePaint.setTextAlign(Align.CENTER);
-    shapePaint.setTextSize(radius * 3 / 2);
-    
-    shapePaint.setStyle(Style.STROKE);
-    shapePaint.setStrokeWidth(radius / 4);
-    shapePaint.setStrokeCap(value ? Cap.ROUND : Cap.BUTT);
-    float d = radius / 2;
+  public static void drawBoolean(GC gc, Colors colors, boolean value, int x, int y, int size) {
+    gc.setBackground(value ? colors.greens[Colors.Brightness.REGULAR.ordinal()]
+            : colors.reds[Colors.Brightness.REGULAR.ordinal()]);
+    gc.fillOval(x, x, size, size);
+    gc.setForeground(colors.white);
+    gc.setLineWidth(Math.max(1, size / 8));
+    gc.setLineCap(value ? SWT.CAP_ROUND : SWT.CAP_FLAT);
+    int d = size / 4;
+    int cx = x + size / 2;
+    int cy = y + size / 2;
     if (value) {
-      canvas.drawLine(cx - d, cy, cx-d/4, cy + d, shapePaint);
-      canvas.drawLine(cx-d/4, cy + d, cx + d, cy - d, shapePaint);
+      gc.drawLine(cx - d, cy, cx-d/4, cy + d);
+      gc.drawLine(cx-d/4, cy + d, cx + d, cy - d);
     } else {
-      canvas.drawLine(cx - d, cy - d, cx + d, cy + d, shapePaint);
-      canvas.drawLine(cx - d, cy + d, cx + d, cy - d, shapePaint);
+      gc.drawLine(cx - d, cy - d, cx + d, cy + d);
+      gc.drawLine(cx - d, cy + d, cx + d, cy - d);
     }
-    //drawText(null, canvas, value ? "\u2713" : "\u2715", cx, cy, shapePaint, VerticalAlign.CENTER);
-
-    shapePaint.setStyle(Style.FILL);
   }
-*/
+
 
   public static void drawText(GC gc, String text, int x, int y) {
-	  drawText(gc, text, 0, text.length(), x, y, SWT.LEFT | SWT.TOP);
+	  drawText(gc, text, x, y, SWT.LEFT, SWT.TOP);
   }
 
-  /*
-  public static void drawText(Context context, Canvas canvas, CharSequence text, 
-		  float x, float y, Paint paint, VerticalAlign verticalAlign) {
-	  drawText(context, canvas, text, 0, text.length(), x, y, paint, verticalAlign);
-  }
 
-  public static void drawText(Context context, Canvas canvas, CharSequence text, int start, int end, 
-		  float x, float y, Paint paint) {
-	  drawText(context, canvas, text, start, end, x, y, paint, VerticalAlign.BASELINE);
-  }
-
-  public static void getTextBounds(Paint paint, String text, VerticalAlign verticalAlign, RectF rectF) {
-    getTextBounds(paint, text, 0, text.length(), verticalAlign, rectF);
-  }
-
-  public static void getTextBounds(Paint paint, String text, int start, int end, VerticalAlign verticalAlign, RectF rectF) {
-    float ascent = Math.abs(paint.ascent());
-    float descent = Math.abs(paint.descent());
-    float size = ascent + descent;
-    Align horizontalAlign = paint.getTextAlign();
-    float width = measureText(paint, text, start, end);
-    switch(horizontalAlign) {
-      case LEFT: rectF.left = 0; rectF.right = width; break;
-      case RIGHT: rectF.left = -width; rectF.right = 0; break;
-      case CENTER: rectF.left = -width / 2; rectF.right = width / 2; break;
-    }
-    switch(verticalAlign) {
-      case CENTER: rectF.top = -size / 2; rectF.bottom = size / 2; break;
-      case BASELINE: rectF.top = -ascent; rectF.bottom = descent; break;
-      case BOTTOM: rectF.top = -size; rectF.bottom = 0; break;
-      case TOP: rectF.top = 0; rectF.bottom = size; break;
-    }
-  } */
-
-  public static void drawText(GC gc, String text, int start, int end,
-		  int x, int y, int align) {
-    Font font = gc.getFont();
-   // float ascent = Math.abs(gc.ascent());
-   // float descent = Math.abs(paint.descent());
+  public static void drawText(GC gc, String text, int x, int y, int horizontalAlign, int verticalAlign) {
+  //  Font font = gc.getFont();
+    FontMetrics metrics = gc.getFontMetrics();
 
     // FIXME: Use fontmetrics
-    int size = font.getFontData()[0].getHeight(); // ascent + descent;
- /*   Align horizontalAlign = paint.getTextAlign();
+  //  int size = font.getFontData()[0].getHeight(); // ascent + descent;
+    int size = metrics.getHeight();
     switch(horizontalAlign) {
-    case LEFT: break;
-    case RIGHT: x -= measureText(paint, text, start, end); break;
-    case CENTER: x -= measureText(paint, text, start, end) / 2; break;
+    //case SWT.LEFT: break;
+      case SWT.RIGHT: x -= gc.stringExtent(text).x; break;
+      case SWT.CENTER: x -= gc.stringExtent(text).x / 2; break;
     }
     switch(verticalAlign) {
-    case CENTER: y -= size / 2f; break;
-    case BASELINE: y -= ascent; break;
-    case BOTTOM: y -= size; break;
-    case TOP: y += 0; break;
+      case SWT.CENTER: y -= size / 2f; break;
+      //case SWT.BASELINE: y -= ascent; break;
+      case SWT.BOTTOM: y -= size; break;
+      case SWT.TOP: y += 0; break;
     }
-    paint.setTextAlign(Align.LEFT);*/
   //  int alpha = paint.getColor() & 0xff000000;
-    int pos = start;
+    int start = 0;
+    int pos = 0;
+    int end = text.length();
     while (pos < end) {
       int codepoint = Character.codePointAt(text, pos);
       System.out.println(Integer.toHexString(codepoint));
@@ -146,13 +103,8 @@ public class EmojiTextHelper {
     }
 
     gc.drawString(text.substring(start, end), x, y, true);
-//    canvas.drawText(text, start, end, x, y + ascent, paint);
- //   paint.setTextAlign(horizontalAlign);
   }
 
-  public static boolean isEmoji(String text) {
-    return false;
-  }
 
   /*
   public static float measureText(Paint paint, CharSequence text) {
