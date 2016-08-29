@@ -1,17 +1,21 @@
 package org.flowgrid.swt.port;
 
-import java.io.InputStream;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.flowgrid.emoji.Emoji;
 import org.flowgrid.model.Port;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.api.PortCommand;
+import org.flowgrid.swt.Colors;
+import org.flowgrid.swt.graphics.Drawing;
+import org.flowgrid.swt.graphics.EmojiTextHelper;
 import org.flowgrid.swt.graphics.ImageCache;
 
 
@@ -97,7 +101,7 @@ public class TestPort implements Port {
     public void draw(GC gc, int x0, int y0, float cellSize, boolean ready) {
         int h = (int) cellSize;
 
-        float y = y0 + h/2;
+        int y = y0 + h/2;
         String icon = command.peerJson().getString("icon", "");
         if (mode == Mode.SOURCE) {
             if ("pipe".equalsIgnoreCase(icon)) {
@@ -122,9 +126,9 @@ public class TestPort implements Port {
 
         gc.setForeground(manager.flowgrid().colors.white);
         gc.setLineWidth(h/10);
-        float border = h/10;
-        float x = x0 + border;
-   /*     paint.setTextSize(h * HEIGHT_FACTOR);
+        int border = h/10;
+        int x = x0 + border;
+        gc.setFont(manager.flowgrid().colors.getFont(Math.round(h * HEIGHT_FACTOR), 0));
 
         for (int i = 0; i < Math.max(values.size(), received.size()); i++) {
             String s;
@@ -132,38 +136,40 @@ public class TestPort implements Port {
             boolean matches = i < received.size() && received.get(i).equals(value);
             boolean sent = mode == Mode.SOURCE ? i < consumed : false;
 
-            float w;
+            int w;
             if (value != null) {
                 s = (value instanceof Boolean ? Boolean.TRUE.equals(value) ? "\uf889" : "\uf888" :
-                        manager.platform().model().toString(value));
-                w = TextHelper.measureText(paint, s);
+                        manager.flowgrid().model().toString(value));
+                w = EmojiTextHelper.stringExtent(gc, s);
 
                 if (value instanceof Boolean || Emoji.isEmoji(s)) {
-                    paint.setAlpha(sent ? 0x044 : 0xff);
+                    /* paint.setAlpha(sent ? 0x044 : 0xff); FIXME
                     if (matches) {
                         Drawing.drawHalo(canvas, x + w / 2, y, w, 0xff00ff00);
-                    }
+                    } */
                 } else {
+ /*
                     paint.setColor(matches ? Colors.GREEN[Colors.Brightness.REGULAR.ordinal()] : sent ? Color.GRAY : Color.WHITE);
                     paint.setTypeface(matches ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+                    */
                 }
-                TextHelper.drawText(context, canvas, s, x, y, paint, TextHelper.VerticalAlign.CENTER);
+                EmojiTextHelper.drawText(gc, s, x, y, SWT.CENTER, SWT.CENTER);
             } else {
-                w = h * HEIGHT_FACTOR;
+                w = Math.round(h * HEIGHT_FACTOR);
             }
 
-            paint.setAlpha(0xff);
+      //      paint.setAlpha(0xff);
 
             if (i < received.size() && !matches) {
-                paint.setColor(Colors.RED[Colors.Brightness.REGULAR.ordinal()]);
+                gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_RED));
 //        canvas.drawRect(x,  border, x + w - 2, h-border, paint);
-                float dy = h/2 - 2 * border;
-                canvas.drawLine(x, y - dy, x + w, y + dy, paint);
-                canvas.drawLine(x, y + dy, x + w, y - dy, paint);
+                int dy = h/2 - 2 * border;
+                gc.drawLine(x, y - dy, x + w, y + dy);
+                gc.drawLine(x, y + dy, x + w, y - dy);
             }
 
             x += w + h / 4;
-        }*/
+        }
     }
 
     public boolean passes() {

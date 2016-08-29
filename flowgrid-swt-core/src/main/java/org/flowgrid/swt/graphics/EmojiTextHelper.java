@@ -1,11 +1,11 @@
 package org.flowgrid.swt.graphics;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.flowgrid.swt.Colors;
 
 
 /**
@@ -21,11 +21,12 @@ public class EmojiTextHelper {
   }
 
 
-  public static void drawBoolean(GC gc, Colors colors, boolean value, int x, int y, int size) {
-    gc.setBackground(value ? colors.greens[Colors.Brightness.REGULAR.ordinal()]
-            : colors.reds[Colors.Brightness.REGULAR.ordinal()]);
+  public static void drawBoolean(GC gc, boolean value, int x, int y, int size) {
+    Device device = gc.getDevice();
+
+    gc.setBackground(device.getSystemColor(value ? SWT.COLOR_GREEN : SWT.COLOR_RED));
     gc.fillOval(x, x, size, size);
-    gc.setForeground(colors.white);
+    gc.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
     gc.setLineWidth(Math.max(1, size / 8));
     gc.setLineCap(value ? SWT.CAP_ROUND : SWT.CAP_FLAT);
     int d = size / 4;
@@ -55,8 +56,8 @@ public class EmojiTextHelper {
     int size = metrics.getHeight();
     switch(horizontalAlign) {
     //case SWT.LEFT: break;
-      case SWT.RIGHT: x -= gc.stringExtent(text).x; break;
-      case SWT.CENTER: x -= gc.stringExtent(text).x / 2; break;
+      case SWT.RIGHT: x -= stringExtent(gc, text); break;
+      case SWT.CENTER: x -= stringExtent(gc, text) / 2; break;
     }
     switch(verticalAlign) {
       case SWT.CENTER: y -= size / 2f; break;
@@ -71,29 +72,23 @@ public class EmojiTextHelper {
     while (pos < end) {
       int codepoint = Character.codePointAt(text, pos);
       System.out.println(Integer.toHexString(codepoint));
-      if (//codepoint == 0xf888 || codepoint == 0xf889 ||
+      if (codepoint == 0xf888 || codepoint == 0xf889 ||
          codepoint > 0x1f300) {
       //    (fallback == Fallback.FULL && codepoint >= FALLBACK_START && codepoint < FALLBACK_END) ||
       //    fallback == Fallback.COLOR_HEARTS_ONLY && codepoint >= 0x1F499 && codepoint <= 0x1f49c) {
         String part = text.substring(start, pos);
         gc.drawString(part, x, y, true);
         x += gc.stringExtent(part).x;
-      /*  switch (codepoint) {
-        case 0xf888:
-          drawBoolean(canvas, false, x + size / 2, y + size / 2, size / 2, paint);
-          break;
-        case 0xf889:
-          drawBoolean(canvas, true, x + size / 2, y + size / 2, size / 2, paint);
-          break;
-        default:
-          Bitmap bitmap = fallbackBitmap(context, codepoint);
-          rect.left = (int) x;
-          rect.top = (int) y;
-          rect.right = (int) (x + size);
-          rect.bottom = (int) (y + size);
-          canvas.drawBitmap(bitmap, null, rect, paint);
-        }*/
-        drawEmoji(gc, codepoint, x, y, size);
+        switch (codepoint) {
+          case 0xf888:
+            drawBoolean(gc, false, x, y, size);
+            break;
+          case 0xf889:
+            drawBoolean(gc, true, x, y, size);
+            break;
+          default:
+            drawEmoji(gc, codepoint, x, y, size);
+        }
         x += size;
         pos += codepoint > 0x10000 ? 2 : 1;
         start = pos; 
@@ -106,30 +101,24 @@ public class EmojiTextHelper {
   }
 
 
-  /*
-  public static float measureText(Paint paint, CharSequence text) {
-    return measureText(paint, text, 0, text.length());
-  }
-  
-  public static float measureText(Paint paint, CharSequence text, int start, int end) {
-    int pos = start;
-    float ascent = Math.abs(paint.ascent());
-    float descent = Math.abs(paint.descent());
-    float size = ascent + descent;
-    float width = 0;
+
+  public static int stringExtent(GC gc, String text) {
+    FontMetrics metrics = gc.getFontMetrics();
+    int size = metrics.getHeight();
+    int width = 0;
+    int start = 0;
+    int pos = 0;
+    int end = text.length();
     while (pos < end) {
       int codepoint = Character.codePointAt(text, pos);
-      if (codepoint == 0xf888 || codepoint == 0xf889 ||
-          (fallback == Fallback.FULL && codepoint >= FALLBACK_START && codepoint < FALLBACK_END)) {
-        width += paint.measureText(text, start, pos) + size;
+      if (codepoint == 0xf888 || codepoint == 0xf889 || codepoint > 0x1f300) {
+        width += gc.stringExtent(text.substring(start, pos)).x + size;
         pos += codepoint >= 0x10000 ? 2 : 1;
         start = pos;
       } else {
         pos += codepoint > 0x10000 ? 2 : 1;
       }
     }
-    return width + paint.measureText(text, start, end);
+    return width + gc.stringExtent(text.substring(start)).x;
   }
-  */
-  
 }
