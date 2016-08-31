@@ -1,6 +1,5 @@
 package org.flowgrid.swt.port;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,10 +36,12 @@ public class TestPort implements Port {
     static float HEIGHT_FACTOR = 0.5f; // see ColumLayout (16 vs. 64-16)
     private static HashMap<String,Image> bitmapCache = new HashMap<String,Image>();
     PortManager manager;
+    Colors colors;
 
     public TestPort(PortManager manager, PortCommand command) {
         this.manager = manager;
         this.command = command;
+        this.colors = manager.flowgrid().colors;
         Type dataType = command.dataType();
         mode = command.input ? Mode.SOURCE : Mode.CHECK;
 
@@ -128,7 +129,8 @@ public class TestPort implements Port {
         gc.setLineWidth(h/10);
         int border = h/10;
         int x = x0 + border;
-        gc.setFont(manager.flowgrid().colors.getFont(Math.round(h * HEIGHT_FACTOR), 0));
+        int fontSize = Math.round(h * HEIGHT_FACTOR);
+        gc.setFont(manager.flowgrid().colors.getFont(fontSize, 0));
 
         for (int i = 0; i < Math.max(values.size(), received.size()); i++) {
             String s;
@@ -143,22 +145,21 @@ public class TestPort implements Port {
                 w = EmojiTextHelper.stringExtent(gc, s);
 
                 if (value instanceof Boolean || Emoji.isEmoji(s)) {
-                    /* paint.setAlpha(sent ? 0x044 : 0xff); FIXME
-                    if (matches) {
-                        Drawing.drawHalo(canvas, x + w / 2, y, w, 0xff00ff00);
-                    } */
+                    gc.setAlpha(sent ? 0x044 : 0xff);
+                   if (matches) {
+                        Drawing.drawHalo(gc, x, y, w, colors.greens[Colors.Brightness.REGULAR.ordinal()]);
+                   }
                 } else {
- /*
-                    paint.setColor(matches ? Colors.GREEN[Colors.Brightness.REGULAR.ordinal()] : sent ? Color.GRAY : Color.WHITE);
-                    paint.setTypeface(matches ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
-                    */
+                    gc.setForeground(matches ? manager.flowgrid().colors.greens[Colors.Brightness.REGULAR.ordinal()]
+                            : sent ? colors.grays[Colors.Brightness.REGULAR.ordinal()] : colors.white);
+                    gc.setFont(manager.flowgrid().colors.getFont(fontSize, matches ? SWT.BOLD : SWT.NORMAL));
                 }
                 EmojiTextHelper.drawText(gc, s, x, y, SWT.CENTER, SWT.CENTER);
             } else {
                 w = Math.round(h * HEIGHT_FACTOR);
             }
 
-      //      paint.setAlpha(0xff);
+            gc.setAlpha(0xff);
 
             if (i < received.size() && !matches) {
                 gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_RED));

@@ -25,7 +25,7 @@ public class EmojiTextHelper {
     Device device = gc.getDevice();
 
     gc.setBackground(device.getSystemColor(value ? SWT.COLOR_GREEN : SWT.COLOR_RED));
-    gc.fillOval(x, x, size, size);
+    gc.fillOval(x, y, size, size);
     gc.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
     gc.setLineWidth(Math.max(1, size / 8));
     gc.setLineCap(value ? SWT.CAP_ROUND : SWT.CAP_FLAT);

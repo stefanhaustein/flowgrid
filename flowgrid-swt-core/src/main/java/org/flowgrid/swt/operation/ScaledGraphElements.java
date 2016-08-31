@@ -177,16 +177,15 @@ public class ScaledGraphElements {
             gc.fillPolygon(points);
             gc.drawPolygon(points);
 
-         } else if (
-                 //value instanceof Boolean ||
+         } else if (value instanceof Boolean ||
                (value instanceof String && org.flowgrid.emoji.Emoji.isEmoji(text))) {
-         /*  if (value instanceof Boolean) {
+            if (value instanceof Boolean) {
                 text = value.equals(Boolean.TRUE) ? "\uf889" : "\uf888";
-            } */
+            }
 
             gc.setFont(colors.getFont(Math.round(cellSize / 2), 0));
             if (mod > 0) {
-//                Drawing.drawHalo(canvas, x, y, cellSize * 2 / 3, Color.WHITE);
+                Drawing.drawHalo(gc, x, y, Math.round(cellSize * 2 / 3), colors.white);
             }
 
         //    paint = operatorTextPaint; */
@@ -197,13 +196,11 @@ public class ScaledGraphElements {
                     ? (mod > 0 ? Colors.Brightness.BRIGHTER : Colors.Brightness.DARKEST)
                     : (mod > 0 ? Colors.Brightness.DARKEST : Colors.Brightness.REGULAR);
             Color rgb = colors.typeColor(model.type(value), brightness);
-//            if (mod > 0) {
-                gc.setBackground(rgb);
-  /*          } else {
+            gc.setBackground(rgb);
+            if (mod <= 0) {
                 mod = -mod + 1;
-                valueBoxPaint.setARGB(255/mod, ((rgb >> 16) & 255) ,
-                        ((rgb >> 8) & 255), (rgb & 255));
-            } */
+                gc.setAlpha(255/mod);
+            }
             gc.fillRoundRectangle(x0, y0, x1 - x0, y1 - y0, 2 * border, 2 * border);
             gc.drawRoundRectangle(x0, y0, x1 - x0, y1 - y0, 2 * border, 2 * border);
 
@@ -212,6 +209,7 @@ public class ScaledGraphElements {
 
         //gc.drawString(text, tX, tY, true);
         EmojiTextHelper.drawText(gc, text, tX, tY, SWT.CENTER, SWT.TOP);
+        gc.setAlpha(255);
     }
 
 
