@@ -2,6 +2,7 @@ package org.flowgrid.swt.port;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -103,7 +104,7 @@ public class TestPort implements Port {
         int h = (int) cellSize;
 
         int y = y0 + h/2;
-        String icon = command.peerJson().getString("icon", "");
+        String icon = command.peerJson().getString("icon", "").toLowerCase(Locale.US);
         if (mode == Mode.SOURCE) {
             if ("pipe".equalsIgnoreCase(icon)) {
                 String id = command.dataType() == PrimitiveType.TEXT ? "pipe_string" :

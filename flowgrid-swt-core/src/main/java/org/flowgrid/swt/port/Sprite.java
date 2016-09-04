@@ -11,8 +11,6 @@ import org.flowgrid.swt.graphics.ImageCache;
 
 
 public class Sprite {
-    static String[] NAMES = {"None", "Fluffy", "Bluffy", "Robby"};
-
     enum Mood {NEUTRAL, HAPPY, SAD, SUPER_HAPPY};
 
     private static HashMap<String,Image> bitmapCache = new HashMap<>();
