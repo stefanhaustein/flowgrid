@@ -32,6 +32,7 @@ import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.widget.ContextMenu;
 
 import java.io.StringWriter;
@@ -421,22 +422,64 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         });
     }
 
+    void addLiteral() {
+        System.out.println("FIXME: OperationCanvas.addLiteral");    // FIXME
+        /*
+        platform.editStructuredDataValue(operation(), new String[]{"literal", Position.toString(selection.row, selection.col)},
+                selection, new Callback<TypeAndValue>() {
+                    @Override
+                    public void run(TypeAndValue variant) {
+                        beforeChange();
+                        LiteralCommand literal = new LiteralCommand(platform.model(), variant.type, variant.value);
+                        operation.setCommand(selection.row(), selection.col(), literal);
+                        selection.setVisibility(View.INVISIBLE);
+                        afterChange();
+                    }
+
+                    @Override
+                    public void cancel() {
+                        selection.setVisibility(View.INVISIBLE);
+                    }
+                });
+                */
+    }
+
+    void addPortCommand(String type, String name, boolean input, boolean output, Object... peerJson) {
+        PortCommand portCommand = new PortCommand(name, input, output);
+        portCommand.peerJson().put("portType", type);
+        for (int i = 0; i < peerJson.length; i += 2) {
+            portCommand.peerJson().put((String) peerJson[i], peerJson[i + 1]);
+        }
+        editPort(portCommand, true);
+    }
+
+    private void addWidgetPort(final boolean input, final boolean output, String widget) {
+        // TODO(haustein) Move name disambiguation into addPortCommand and remove this?
+        HashSet<String> usedNames = new HashSet<>();
+        for (WidgetPort i: operationEditor.portWidgets()) {
+            usedNames.add(i.port().name());
+        }
+        String namePrefix = widget != null ? widget :
+                input && output ? "io" : output ? "out" : "in";
+        int index = 1;
+        String suffix = "";
+        while (usedNames.contains(namePrefix + suffix)) {
+            index++;
+            suffix = String.valueOf(index);
+        }
+
+        String name = namePrefix + suffix;
+        if (widget != null) {
+            addPortCommand("Widget", name, input, output, "widget", widget);
+        } else {
+            addPortCommand("Widget", name, input, output);
+        }
+    }
+
+
     void afterBulkChange() {
         operationEditor.attachAll();
         afterChange();
-    }
-
-    void beforeBulkChange() {
-        beforeChange();
-        operationEditor.detachAll();
-    }
-
-    void beforeChange() {
-        if (changing) {
-            flowgrid.log("beforeChange called with changing = true");
-        }
-        changing = true;
-        operationEditor.stop();
     }
 
     void afterChange() {
@@ -486,6 +529,19 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         }
     }
 
+
+    void beforeBulkChange() {
+        beforeChange();
+        operationEditor.detachAll();
+    }
+
+    void beforeChange() {
+        if (changing) {
+            flowgrid.log("beforeChange called with changing = true");
+        }
+        changing = true;
+        operationEditor.stop();
+    }
 
 
     CustomOperation operation() {
@@ -722,6 +778,10 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
 
+    private void editPort(final PortCommand portCommand, final boolean creating) {
+        System.out.println("FIXME: OperationCanvas.editPort");   // FIXME
+    }
+
 
     private boolean inRange(int row, int col) {
         return !operationEditor.tutorialMode ||
@@ -754,15 +814,15 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             menu.dispose();
         }
         menu = new ContextMenu(menuAnchor);
-        // menu.setHelpProvider(platform);
-     /*   if (operation.isTutorial()) {                                     // FIXME
-            menu.setDisabledMap(operation().tutorialData.disabledMenus, !tutorialMode, new Callback<Void>() {
+        // menu.setHelpProvider(platform);                                     FIXME
+        if (operation.isTutorial()) {
+            menu.setDisabledMap(operation().tutorialData.disabledMenus, !operationEditor.tutorialMode, new Callback<Void>() {
                 @Override
                 public void run(Void value) {
                     operation().save();
                 }
             });
-        } */
+        }
 
 
         currentTypeFilter.clear();
@@ -877,7 +937,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         if (Strings.MENU_ITEM_STOP.equals(label)) {
             operationEditor.stop();
-            // updateButtons();
+            updateButtons();
             return true;
         }
 /*        if (Strings.MENU_ITEM_PLAY.equals(label)) {
@@ -910,7 +970,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         if (Strings.MENU_ITEM_CANCEL.equals(label)) {
             setSelectionMode(false);
             return true;
-        }
+        }*/
         if (label.equals(Strings.MENU_ITEM_CONTINUOUS_INPUT)) {
             beforeChange();
             operation.setAsyncInput(!operation.asyncInput());
@@ -920,12 +980,13 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         }
         if (Strings.MENU_ITEM_PUBLIC.equals(label)) {
             beforeChange();
-            artifact.setPublic(!artifact.isPublic());
+            operation.setPublic(!operation.isPublic());
             afterChange();
             updateButtons();
             return true;
-        } 
+        }
 
+        /*
         if (label.equals(Strings.MENU_ITEM_RESET)) {
             if (operation.isTutorial()) {
                 TutorialData tutorialData = operation.tutorialData;
@@ -938,12 +999,12 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
             return true;
         }
-
+*/
         if (label.equals(Strings.MENU_ITEM_TUTORIAL_MODE)) {
-            tutorialMode = !item.isChecked();
+            operationEditor.tutorialMode = !item.isChecked();
             updateButtons();
             return true;
-        } */
+        }
 
         if (label.equals(Strings.MENU_ITEM_UNDO)) {
             HutnObject json = (HutnObject) Hutn.parse(undoHistory.get(undoHistory.size() - 2));
@@ -960,11 +1021,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 operationEditor.updateMenu();
             }
         }
-/*
+
         if (label.equals(Strings.MENU_ITEM_TUTORIAL_SETTINGS)) {
             TutorialSettingsDialog.show(this);
             return true;
-        } */
+        }
 
         if (currentTypeFilter.size() > 0 && currentTypeFilter.get(0) instanceof Classifier &&
                 label.equals(currentTypeFilter.get(0).name() + "\u2026")) {
@@ -1049,24 +1110,24 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(Strings.MENU_ITEM_CLEAR_CELL)) {
             beforeChange();
             operation.removeCell(row, col);
-            afterChange(); /*
+            afterChange();
         } else if (label.equals(Strings.MENU_ITEM_EDIT_CELL)) {
             Command cmd = operation.cell(row, col).command();
             if (cmd instanceof CustomOperation) {
                 selection.setVisibility(false);
-                operationView.zoomOpen(operation.cell(row, col));
+                zoomOpen(operation.cell(row, col));
             } else if (cmd instanceof Artifact) {
-                platform.openArtifact((Artifact) cmd);
+                flowgrid.openArtifact((Artifact) cmd);
             } else if (cmd instanceof PropertyCommand) {
                 Property p = ((PropertyCommand) cmd).property();
-                platform.openProperty(p);
+                flowgrid.openProperty(p);
             } else if (cmd instanceof LocalCallCommand) {
                 CustomOperation op = ((LocalCallCommand) cmd).operation();
-                platform.openOperation(op, true);
+                flowgrid.openOperation(op, true);
             } else if (cmd instanceof PortCommand) {
                 editPort((PortCommand) cmd, false);
             } else if (cmd instanceof ConstructorCommand) {
-                platform.openClassifier(((ConstructorCommand) cmd).classifier());
+                flowgrid.openClassifier(((ConstructorCommand) cmd).classifier());
             }
         } else if (label.equals(Strings.MENU_ITEM_INPUT_FIELD)) {
             addWidgetPort(true, false, null);
@@ -1089,7 +1150,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(Strings.MENU_ITEM_COMBINED_FIELD)) {
             addWidgetPort(true, true, null);
         } else if (label.equals(Strings.MENU_ITEM_CONSTANT_VALUE)) {
-            addLiteral(); */
+            addLiteral();
         } else if (label.equals(Strings.MENU_ITEM_INSERT_ROW)) {
             beforeChange();
             operation.insertRow(row);
@@ -1105,12 +1166,12 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (label.equals(Strings.MENU_ITEM_DELETE_COLUMN)) {
             beforeChange();
             operation.deleteCol(col);
-            afterChange();  /*
+            afterChange();
         } else if (label.equals(Strings.MENU_ITEM_PASTE)) {
             beforeBulkChange();
-            operation.cellsFromJson(platform.editBuffer(), selection.row, selection.col);
+            operation.cellsFromJson(flowgrid.editBuffer(), selection.row, selection.col);
             afterBulkChange();
-        } else if (label.equals(Strings.MENU_ITEM_FIRMATA_ANALOG_INPUT)) {
+    /*  } else if (label.equals(Strings.MENU_ITEM_FIRMATA_ANALOG_INPUT)) {
             addFirmataPort(true, false, FirmataPort.Mode.ANALOG);
         } else if (label.equals(Strings.MENU_ITEM_FIRMATA_ANALOG_OUTPUT)) {
             addFirmataPort(false, true, FirmataPort.Mode.ANALOG);
@@ -1145,6 +1206,40 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
     void updateLayout() {
         System.out.println("TBD: updateLayout()");  // FIXME
+    }
+
+
+    protected void zoomOpen(Cell cell) {
+        int[] size = new int[4];
+        CustomOperation operation =  (CustomOperation) cell.command();
+        operation.size(size);
+
+        zoomData = new ZoomData();
+        zoomData.cell = cell;
+        zoomData.operation = operation;
+        zoomData.rows = size[2] + 2;
+        Point canvasSize = getSize();
+
+        System.out.println("FIXME: zoomOpen");
+        /*
+        zoomData.targetCellSize = size[2] * autoZoom(zoomData.operation, canvasSize.x, canvasSize.y);
+        zoomData.endTime = System.currentTimeMillis() + ZOOM_TIME_MS;
+
+        zoomData.originalOriginX = originX;
+        zoomData.originalOriginY = originY;
+        zoomData.orginalCellSize = cellSize;
+
+        zoomData.targetOriginX = cell.col() * zoomData.targetCellSize;
+        zoomData.targetOriginY = cell.row() * zoomData.targetCellSize;
+
+        zoomData.outlinePaint = new Paint(sge.operatorOutlinePaint);
+        zoomData.fillPaint = new Paint(sge.operatorBoxPaint);
+
+        zoomData.outlinePaint.setAlpha(0);
+        zoomData.fillPaint.setAlpha(0);
+
+        postInvalidate();
+        */
     }
 
 

@@ -21,6 +21,7 @@ import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.UiTimerTask;
 import org.flowgrid.swt.port.PortManager;
 import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
@@ -204,6 +205,97 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         scrolledComposite.setMinSize(minSize);
 
         flowgrid.shell().layout(true, true);
+    }
+
+    void checkTutorialSuccess() {
+        /*
+        final TutorialData tutorialData = operation.tutorialData;
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                resetTutorial();
+            }
+        });
+        alert.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                resetTutorial();
+            }
+        });
+        boolean success = true;
+        for (Port port : ports()) {
+            if (port instanceof TestPort) {
+                TestPort test = (TestPort) port;
+                if (!test.passes()) {
+                    alert.setTitle("Bummer!");
+                    success = false;
+                    alert.setMessage("The program did not generate the expected output. Consider the help text and try again!");
+                    break;
+                }
+            }
+        }
+        if (success) {
+            alert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    countedToRow = -1;
+                    Iterator<Artifact> it = operation.module().iterator();
+                    CustomOperation next = null;
+                    while (it.hasNext()) {
+                        if (it.next() == operation) {
+                            if (it.hasNext()) {
+                                Artifact nextArtifact = it.next();
+                                // Might be main.png, so we need to be careful here.
+                                if (nextArtifact instanceof CustomOperation) {
+                                    next = (CustomOperation) nextArtifact;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    if (next != null) {
+                        platform.openOperation(next, true);
+                    } else {
+                        navigateUp();
+                    }
+                }
+            });
+            this.countedToRow = tutorialData.editableStartRow;
+            operationView.postInvalidate();
+            new UiTimerTask(platform) {
+                @Override
+                public void runOnUiThread() {
+                    if (countedToRow < tutorialData.editableEndRow) {
+                        countedToRow++;
+                        operationView.invalidate();
+                    } else {
+                        cancel();
+
+                        beforeChange();
+                        tutorialData.passedWithStars = counted <= tutorialData.optimalCellCount ? 3
+                                : counted <= tutorialData.optimalCellCount * 4 / 3 ? 2 : 1;
+                        afterChange();
+                        alert.setTitle((tutorialData.passedWithStars == 3 ? "Perfect " : "Success ") + "\u2b50\u2b50\u2b50".substring(0, tutorialData.passedWithStars));
+                        alert.setMessage("Used cell units: " + counted + "\n" +
+                                "Optimal cell units: " + tutorialData.optimalCellCount);
+                        alert.show();
+                    }
+                }
+            }.schedule(100, 100);
+        } else {
+            if (operation.hasDocumentation() && !landscapeMode) {
+                alert.setNeutralButton("Help", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        OperationHelpDialog.show(EditOperationFragment.this);
+                    }
+                });
+            }
+            alert.show();
+        }
+
+        */
     }
 
     @Override
@@ -417,27 +509,23 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
             if (inactiveTicks == 10) {
                 boolean allSent = true;
                 for (Port port: ports()) {
-                    /*
-                    if (port instanceof  TestPort) {                           FIXME
+                    if (port instanceof  TestPort) {
                         TestPort test = (TestPort) port;
                         if (test.outputPending()) {
                             allSent = false;
                         }
                     }
-                    */
                 }
                 if (!allSent) {
                     inactiveTicks = 0;
                 } else if (operation.isTutorial()) {
-                    /*                                                          FIXME
-                    Log.d(TAG, "scheduling check tutorial success");
-                    new Timer().schedule(new UiTimerTask(platform) {
+//                    Log.d(TAG, "scheduling check tutorial success");
+                    new Timer().schedule(new UiTimerTask(flowgrid.display()) {
                         @Override
                         public void runOnUiThread() {
                             checkTutorialSuccess();
                         }
                     }, 0);
-                    */
                 } else {
                     stop();
                 }

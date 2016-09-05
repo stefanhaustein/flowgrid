@@ -15,7 +15,9 @@ import org.flowgrid.model.Image;
 import org.flowgrid.model.Model;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.Platform;
+import org.flowgrid.model.Property;
 import org.flowgrid.model.Sound;
+import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.io.IOCallback;
 import org.flowgrid.swt.classifier.ClassifierEditor;
 import org.flowgrid.swt.operation.OperationEditor;
@@ -30,13 +32,13 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     Model model;
     Display display;
     Shell shell;
-    GridLayout shellLayout;
 
     File flowgridRoot = new File(new File(System.getProperty("user.home")), "flowgrid");
     File storageRoot = new File(flowgridRoot, "files");
     File cacheRoot = new File(flowgridRoot, "cache");
 
     final MenuAdapter menuAdapter = new MenuAdapter(this);
+    private HutnObject editBuffer;
 
     public final Colors colors;
 
@@ -58,6 +60,11 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
 
+    @Override
+    public File cacheRoot() {
+        return cacheRoot;
+    }
+
     public Menu createMenuBar() {
         Menu menuBar = new Menu(shell);
         MenuItem fileMenuItem = new MenuItem(menuBar, SWT.CASCADE);
@@ -71,13 +78,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         return menuBar;
     }
 
-
-    void openArtifactDialog(String title, String moduleName) {
-        Module module = (Module) model.artifact(moduleName);
-        module.ensureLoaded();  // Move into to the iterator call?
-        new ArtifactDialog(this, title, module);
-    }
-
     void clear() {
         for(Control control: shell.getChildren()) {
             control.dispose();
@@ -85,12 +85,32 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     @Override
-    public void log(String message) {
+    public IOCallback<Void> defaultIoCallback(String message) {
+        return null;
+    }
 
+    public HutnObject editBuffer() {
+        return editBuffer;
     }
 
     @Override
     public Image image(InputStream is) throws IOException {
+        return null;
+    }
+
+    @Override
+    public void log(String message) {
+
+    }
+
+    void openArtifactDialog(String title, String moduleName) {
+        Module module = (Module) model.artifact(moduleName);
+        module.ensureLoaded();  // Move into to the iterator call?
+        new ArtifactDialog(this, title, module);
+    }
+
+    @Override
+    public Callback<Model> platformApiSetup() {
         return null;
     }
 
@@ -100,23 +120,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     @Override
-    public Callback<Model> platformApiSetup() {
-        return null;
-    }
-
-    @Override
     public File storageRoot() {
         return storageRoot;
-    }
-
-    @Override
-    public File cacheRoot() {
-        return cacheRoot;
-    }
-
-    @Override
-    public IOCallback<Void> defaultIoCallback(String message) {
-        return null;
     }
 
     @Override
@@ -153,8 +158,21 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     private void openOperation(CustomOperation operation) {
+        openOperation(operation, true);
+    }
+
+    public void openOperation(CustomOperation operation, boolean editable) {
         clear();
+
+        if (!editable) {
+            System.out.println("FIXME: SwtFlowgrid.openOperation for run mode");
+        }
+
         new OperationEditor(this, operation);
+    }
+
+    public void openProperty(Property p) {
+        System.out.println("FIXME: SwtFlowgrid.openProperty();");   // FIXME
     }
 
     public Shell shell() {
@@ -184,4 +202,5 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             openArtifactDialog("Open Tutorial", "missions");
         }
     }
+
 }

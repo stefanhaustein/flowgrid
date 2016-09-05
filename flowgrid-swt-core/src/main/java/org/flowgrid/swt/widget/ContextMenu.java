@@ -7,11 +7,17 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.model.Callback;
+import org.flowgrid.model.DisabledMap;
 
 public class ContextMenu {
     Menu swtMenu;
     ItemClickListener itemClickListener;
     ContextMenu.Item parentItem;
+
+    private boolean editDisabledMode;
+    private DisabledMap disabledMap;
+    private Callback<Void> editDisabledCallback;
 
     public ContextMenu(Control control) {
         swtMenu = new Menu(control);
@@ -37,6 +43,12 @@ public class ContextMenu {
 
     public void setOnMenuItemClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
+    }
+
+    public void setDisabledMap(DisabledMap disabledMap, boolean editDisabledMode, Callback<Void> editDisabledCallback) {
+        this.disabledMap = disabledMap;
+        this.editDisabledMode = editDisabledMode;
+        this.editDisabledCallback = editDisabledCallback;
     }
 
     public void show() {
@@ -95,6 +107,11 @@ public class ContextMenu {
 
         public boolean hasSubMenu() {
             return subMenu != null;
+        }
+
+        public boolean isChecked() {
+            System.out.println("FIXME: ContextMenu.Item.isChecked");   // FIXME
+            return false;
         }
     }
 
