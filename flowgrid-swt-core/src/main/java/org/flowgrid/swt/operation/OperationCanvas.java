@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Slider;
 import org.flowgrid.model.*;
 import org.flowgrid.model.api.ConstructorCommand;
+import org.flowgrid.model.api.LiteralCommand;
 import org.flowgrid.model.api.LocalCallCommand;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.api.PropertyCommand;
@@ -45,6 +46,7 @@ import java.util.Set;
 public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener {
     static final float ZOOM_STEP = 1.1f;
     static final int PIXEL_SNAP = 16;
+    static final int ZOOM_TIME_MS = 1000;
 
     public static final String[] OPERATION_MENU_FILTER = {"control", "examples", "missions", "system"};
     public static final String[] TUTORIAL_EDITOR_OPERATION_MENU_FILTER = {"control", "missions", "system"};
@@ -388,9 +390,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     }
                 }
 
-                if (buttonW > 3 * buttonH / 2) {
+             /*   if (buttonW > 3 * buttonH / 2) {
                     buttonW = 3 * buttonH / 2;
-                }
+                }*/
                 for (int i = 0; i < topButtons.length; i++) {
                     topButtons[i].setBounds(bounds.width - (buttonW + spacing) * (3 - i), spacing, buttonW, buttonH);
                 }
@@ -423,25 +425,22 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
     void addLiteral() {
-        System.out.println("FIXME: OperationCanvas.addLiteral");    // FIXME
-        /*
-        platform.editStructuredDataValue(operation(), new String[]{"literal", Position.toString(selection.row, selection.col)},
-                selection, new Callback<TypeAndValue>() {
+        flowgrid.editStructuredDataValue(operation(), new String[]{"literal", Position.toString(selection.row, selection.col)},
+                menuAnchor, new Callback<TypeAndValue>() {
                     @Override
                     public void run(TypeAndValue variant) {
                         beforeChange();
-                        LiteralCommand literal = new LiteralCommand(platform.model(), variant.type, variant.value);
+                        LiteralCommand literal = new LiteralCommand(flowgrid.model(), variant.type, variant.value);
                         operation.setCommand(selection.row(), selection.col(), literal);
-                        selection.setVisibility(View.INVISIBLE);
+                        selection.setVisibility(true);
                         afterChange();
                     }
 
                     @Override
                     public void cancel() {
-                        selection.setVisibility(View.INVISIBLE);
+                        selection.setVisibility(false);
                     }
                 });
-                */
     }
 
     void addPortCommand(String type, String name, boolean input, boolean output, Object... peerJson) {
@@ -569,7 +568,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
     @Override
-    public void drawBackground(GC gc, int x, int y, int width, int height) {
+    public void drawBackground(GC gc, int clipX, int clipY, int clipW, int clipH) {
         sge.setState(originX, originY, cellSize);
 
         Colors colors = operationEditor.flowgrid.colors;
@@ -580,7 +579,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         gc.setLineCap(SWT.CAP_ROUND);
 
         gc.setBackground(colors.background);
-        gc.fillRectangle(x, y, width, height);
+        gc.fillRectangle(clipX, clipY, clipW, clipH);
 
         gc.setLineWidth(Math.round(cellSize / 32));
 
@@ -601,7 +600,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         for (int col = -100; col <= 100; col++) {
             gc.setForeground(col == 0 ? colors.origin : colors.grid);
             int lx = Math.round(col * cellSize - originX - 1);
-            gc.drawLine(lx, y, lx, y + height);
+            gc.drawLine(lx, clipY, lx, clipY + clipH);
         }
 
 //        float minX = -100 * cellSize - originX - 1;
@@ -610,25 +609,22 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         for (int row = -100; row <= 100; row++) {
             gc.setForeground(row == minRow || row == maxRow ? colors.origin : colors.grid);
             int ly = Math.round(row * cellSize - originY - 1);
-            gc.drawLine(x, ly, x + width, ly);
+            gc.drawLine(clipX, ly, clipX + clipW, ly);
         }
 
-        /*                                 FIXME
         if (selection.isShown()) {
-            for (int i = 0; i < fragment.currentTypeFilter.size(); i++) {
-                Type t = fragment.currentTypeFilter.get(i);
-                int r0 = fragment.currentAutoConnectStartRow.get(i);
-                float x = (selection.col + i) * cellSize + cellSize / 2 - originX;
-                sge.drawConnector(canvas,
-                        x, r0 * cellSize - originY,
-                        x, selection.row * cellSize - originY,
+            for (int i = 0; i < currentTypeFilter.size(); i++) {
+                Type t = currentTypeFilter.get(i);
+                int r0 = currentAutoConnectStartRow.get(i);
+                int x = Math.round((selection.col + i) * cellSize + cellSize / 2 - originX);
+                sge.drawConnector(gc,
+                        x, Math.round(r0 * cellSize - originY),
+                        x, Math.round(selection.row * cellSize - originY),
                         t);
             }
         }
-        */
 
         /*
-
         if (tutorialData != null && tutorialData.order == 0) {
             float x0 = 1.5f * cellSize - originX;
             float y0 = 4.5f * cellSize - originY;
@@ -686,20 +682,23 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
         }
 
-        /*
         if (zoomData != null) {
-            float x0 = zoomData.cell.col() * cellSize - originX;
-            float y0 = zoomData.cell.row() * cellSize - originY;
+            int x0 = Math.round(zoomData.cell.col() * cellSize - originX);
+            int y0 = Math.round(zoomData.cell.row() * cellSize - originY);
 
-            canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, zoomData.fillPaint);
+            gc.setBackground(colors.black);
+            gc.setAlpha(zoomData.alpha);
+            gc.fillRectangle(x0, y0, Math.round(x0 + zoomData.cell.width() * cellSize),
+                    Math.round(y0 + cellSize));
+            gc.setAlpha(255);
             // canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, zoomData.outlinePaint);
 
-            ScaledGraphElements childSge = new ScaledGraphElements(fragment.platform(), zoomData.operation);
+            ScaledGraphElements childSge = new ScaledGraphElements(getDisplay(), colors, flowgrid.model());
             childSge.setState(-x0, -y0, cellSize / zoomData.rows);
             for (Cell childCell: zoomData.operation) {
-                childSge.drawCell(canvas, childCell, false);
+                childSge.drawCell(gc, childCell, false);
             }
-        } */
+        }
 
         cellsReady.clear();
         for (VisualData data: operationEditor.controller.getAndAdvanceVisualData(
@@ -709,9 +708,10 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         /*
         if (operationEditor.controller.isRunning()) {
-            canvas.drawText(operationEditor.controller.status(), Views.px(getContext(), 12),
+            gc.drawString(operationEditor.controller.status(), Views.px(getContext(), 12),
                     getHeight() - debugTextPaint.getFontMetrics(null) / 2, debugTextPaint);
         }
+        */
 
 
         // Update zoom etc.
@@ -722,22 +722,19 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 originX = zoomData.originalOriginX;
                 originY = zoomData.originalOriginY;
                 cellSize = zoomData.orginalCellSize;
-                fragment.platform().openArtifact(zoomData.operation);
+                flowgrid.openArtifact(zoomData.operation);
                 zoomData = null;
             } else {
-                int alpha = Math.min((int) (completed * 1024), 255);
-                zoomData.fillPaint.setAlpha(alpha);
-                zoomData.outlinePaint.setAlpha(alpha);
+                zoomData.alpha = Math.min((int) (completed * 1024), 255);
 
                 cellSize = zoomData.orginalCellSize * remaining + zoomData.targetCellSize * completed;
                 originX = zoomData.originalOriginX * remaining + zoomData.targetOriginX * completed;
                 originY = zoomData.originalOriginY * remaining + zoomData.targetOriginY * completed;
-                postInvalidate();
+                redraw();
             }
             sge.setState(originX, originY, cellSize);
         }
 
-        */
 
         int selectionX = sge.screenX(selection.col);
         int selectionY = sge.screenY(selection.row);
@@ -1251,6 +1248,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         // Paint outlinePaint;
         // Paint fillPaint;
+        int alpha;
 
         float originalOriginX;
         float originalOriginY;
