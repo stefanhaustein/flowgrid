@@ -33,7 +33,10 @@ import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.graphics.EmojiTextHelper;
+import org.flowgrid.swt.port.TestPortDialog;
 import org.flowgrid.swt.port.WidgetPort;
+import org.flowgrid.swt.port.WidgetPortDialog;
 import org.flowgrid.swt.widget.ContextMenu;
 
 import java.io.StringWriter;
@@ -528,6 +531,26 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         }
     }
 
+    public float autoZoom(CustomOperation op, int availableWidth, int availableHeight) {
+        int[] size = new int[4];
+        op.size(size);
+
+        if (size[0] >= 0 && size [1] >= 0) {
+            float newCellSize = Math.min(availableHeight / Math.max(8f, size[2] + 1),
+                    availableWidth / Math.max(8f, size[3] + 1));  // operator width, scrollbar
+
+            float newScale = newCellSize / initialCellSize;
+            double quantumScale = Math.pow(ZOOM_STEP, Math.floor(Math.log(newScale) / Math.log(ZOOM_STEP)));
+            //  scale = (float) (initialCellSize * f) / newCellSize;
+
+            //selection.setVisibility(INVISIBLE);
+
+            newCellSize = (float) (initialCellSize * quantumScale);
+
+            return newCellSize; // * scale;
+        }
+        return flowgrid.dpToPx(32);
+    }
 
     void beforeBulkChange() {
         beforeChange();
@@ -624,23 +647,22 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
         }
 
-        /*
+
         if (tutorialData != null && tutorialData.order == 0) {
-            float x0 = 1.5f * cellSize - originX;
-            float y0 = 4.5f * cellSize - originY;
-            downArrowPaint.setStyle(Paint.Style.FILL);
-            downArrowPaint.setColor(Color.WHITE);
-            downArrowPaint.setTextSize(cellSize);
-            downArrowPaint.setTextAlign(Paint.Align.CENTER);
-            TextHelper.drawText(getContext(), canvas, "\u21e9", x0, y0, downArrowPaint, TextHelper.VerticalAlign.CENTER);
-            if (!fragment.landscapeMode) {
+            int x0 = Math.round(1.5f * cellSize - originX);
+            int y0 = Math.round(4.5f * cellSize - originY);
+            gc.setForeground(colors.white);
+            gc.setFont(colors.getFont(Math.round(cellSize), 0));
+            EmojiTextHelper.drawText(gc, "\u21e9", x0, y0, SWT.CENTER, SWT.TOP);
+    /*        if (!landscapeMode) {
                 downArrowPaint.setColor(Color.LTGRAY);
                 downArrowPaint.setTextSize(cellSize / 3);
                 downArrowPaint.setTextAlign(Paint.Align.LEFT);
                 TextHelper.drawText(getContext(), canvas, "rotate for help", x0 + cellSize/2, y0, downArrowPaint, TextHelper.VerticalAlign.CENTER);
             }
+            */
         }
-*/
+
 
         for (Cell cell: operation()) {
             int x0 = Math.round(cell.col() * cellSize - originX);
@@ -776,7 +798,35 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
 
     private void editPort(final PortCommand portCommand, final boolean creating) {
-        System.out.println("FIXME: OperationCanvas.editPort");   // FIXME
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void run(Void value) {
+                beforeChange();
+                if (creating) {
+                    operationEditor.controller.operation.setCommand(selection.row(), selection.col(), portCommand);
+                } else {
+                    portCommand.detach();
+                }
+                operationEditor.attachPort(portCommand);
+                afterChange();
+            }
+
+            @Override
+            public void cancel() {
+                operationEditor.resetTutorial();
+            }
+        };
+
+        String portType = OperationEditor.portType(portCommand.peerJson());
+        if (portType.equals("Sensor")) {
+            callback.run(null);
+      /*  } else if (portType.equals("Firmata")) {
+            FirmataPortDialog.show(flowgrid, flowgrid.model(), portCommand, creating, callback); */
+        } else if (portType.equals("Test")) {
+            TestPortDialog.show(getDisplay(), portCommand, creating, callback);
+        } else {
+            WidgetPortDialog.show(flowgrid, operation.module, portCommand, creating, callback);
+        }
     }
 
 
@@ -804,7 +854,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         sge.setState(originX, originY, cellSize);
         redraw();
     }
-
 
     void showPopupMenu(Cell cell) {
         if (menu != null) {
@@ -916,7 +965,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         ContextMenu editMenu = menu.addSubMenu(Strings.MENU_ITEM_EDIT).getSubMenu();
         if (editMenu != null) {
             ContextMenu.Item pasteItem = editMenu.add(Strings.MENU_ITEM_PASTE);
-            // pasteItem.setEnabled(platform.editBuffer() != null);     // FIXME
+            pasteItem.setEnabled(flowgrid.editBuffer() != null);     // FIXME
             editMenu.add(Strings.MENU_ITEM_INSERT_ROW);
             editMenu.add(Strings.MENU_ITEM_INSERT_COLUMN);
             editMenu.add(Strings.MENU_ITEM_DELETE_ROW);
@@ -1217,8 +1266,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         zoomData.rows = size[2] + 2;
         Point canvasSize = getSize();
 
-        System.out.println("FIXME: zoomOpen");
-        /*
         zoomData.targetCellSize = size[2] * autoZoom(zoomData.operation, canvasSize.x, canvasSize.y);
         zoomData.endTime = System.currentTimeMillis() + ZOOM_TIME_MS;
 
@@ -1229,14 +1276,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         zoomData.targetOriginX = cell.col() * zoomData.targetCellSize;
         zoomData.targetOriginY = cell.row() * zoomData.targetCellSize;
 
-        zoomData.outlinePaint = new Paint(sge.operatorOutlinePaint);
-        zoomData.fillPaint = new Paint(sge.operatorBoxPaint);
+        zoomData.alpha = 0;
 
-        zoomData.outlinePaint.setAlpha(0);
-        zoomData.fillPaint.setAlpha(0);
-
-        postInvalidate();
-        */
+        redraw();
     }
 
 

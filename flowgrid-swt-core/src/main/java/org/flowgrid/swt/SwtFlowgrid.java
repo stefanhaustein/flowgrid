@@ -265,4 +265,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         }
     }
 
+    public int dpToPx(float dp) {
+        return Math.round(dp);
+    }
 }

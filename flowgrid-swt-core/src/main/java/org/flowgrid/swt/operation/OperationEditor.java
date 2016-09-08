@@ -431,6 +431,13 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         System.out.println("TBD: OperationEditor.removeWidget()");
     }
 
+    void resetTutorial() {
+        countedToRow = -1;
+        start();
+        stop();
+        operationCanvas.redraw();
+    }
+
 
     @Override
     public void start() {

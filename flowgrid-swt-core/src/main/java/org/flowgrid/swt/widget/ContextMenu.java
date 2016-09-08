@@ -113,6 +113,10 @@ public class ContextMenu {
             System.out.println("FIXME: ContextMenu.Item.isChecked");   // FIXME
             return false;
         }
+
+        public void setEnabled(boolean b) {
+            System.out.println("FIXMLE: ContextMenuItem.setEnabled()");  // FIXME
+        }
     }
 
     public interface ItemClickListener {
