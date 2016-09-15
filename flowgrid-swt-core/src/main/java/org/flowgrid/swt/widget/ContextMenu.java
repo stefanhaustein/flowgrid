@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.DisabledMap;
 
+import java.util.concurrent.Callable;
+
 public class ContextMenu {
     Menu swtMenu;
     ItemClickListener itemClickListener;
@@ -116,6 +118,10 @@ public class ContextMenu {
 
         public void setEnabled(boolean b) {
             System.out.println("FIXMLE: ContextMenuItem.setEnabled()");  // FIXME
+        }
+
+        public void setHelp(Callable<String> stringCallable) {
+            System.out.println("FIXMLE: ContextMenuItem.setHelp()");  // FIXME
         }
     }
 

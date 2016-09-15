@@ -3,12 +3,10 @@ package org.flowgrid.swt.operation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -19,8 +17,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Scale;
-import org.eclipse.swt.widgets.Slider;
-import org.flowgrid.model.*;
+import org.flowgrid.model.Artifact;
+import org.flowgrid.model.Callback;
+import org.flowgrid.model.Cell;
+import org.flowgrid.model.Classifier;
+import org.flowgrid.model.Command;
+import org.flowgrid.model.CustomOperation;
+import org.flowgrid.model.Edge;
+import org.flowgrid.model.Module;
+import org.flowgrid.model.Position;
+import org.flowgrid.model.Property;
+import org.flowgrid.model.TutorialData;
+import org.flowgrid.model.Type;
+import org.flowgrid.model.TypeAndValue;
+import org.flowgrid.model.VisualData;
 import org.flowgrid.model.api.ConstructorCommand;
 import org.flowgrid.model.api.LiteralCommand;
 import org.flowgrid.model.api.LocalCallCommand;
@@ -30,7 +40,6 @@ import org.flowgrid.model.hutn.Hutn;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.hutn.HutnWriter;
 import org.flowgrid.swt.Colors;
-import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.graphics.EmojiTextHelper;
@@ -80,7 +89,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     ScaledGraphElements sge;
 
     OperationEditor operationEditor;
-    //private Controller controller;
 
     Set<Cell> cellsReady = new HashSet<Cell>();
     private float lastFocusX;
@@ -152,6 +160,12 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         helpButton = new Button(this, SWT.PUSH);
         helpButton.setText("?");
+        helpButton.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    OperationHelpDialog.show(operationEditor);
+                }
+        });
 
         startStopButton = new Button(this, SWT.PUSH);
         startStopButton.setText("\u25b6");
@@ -986,27 +1000,27 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             updateButtons();
             return true;
         }
-/*        if (Strings.MENU_ITEM_PLAY.equals(label)) {
+        if (Strings.MENU_ITEM_PLAY.equals(label)) {
             StringBuilder missing = new StringBuilder();
-            if (!operation.asyncInput() && !isInputComplete(missing)) {
-                Toast.makeText(platform, "Missing input: " + missing, Toast.LENGTH_LONG).show();
+            if (!operation.asyncInput() && !operationEditor.isInputComplete(missing)) {
+                System.out.println("Toast.makeText(platform, \"Missing input: \" + missing, Toast.LENGTH_LONG).show();");  //FIXME
             } else {
-                start();
+                operationEditor.start();
                 updateButtons();
             }
             return true;
         }
         if (Strings.MENU_ITEM_DOCUMENTATION.equals(label)) {
-            OperationHelpDialog.show(EditOperationFragment.this);
+            OperationHelpDialog.show(operationEditor);
             return true;
         }
         if (Strings.MENU_ITEM_COPY.equals(label)) {
-            platform.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
+            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
             setSelectionMode(false);
             return true;
         }
         if (Strings.MENU_ITEM_CUT.equals(label)) {
-            platform.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
+            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
             beforeBulkChange();
             operation.clear(selection.row, selection.col, selection.height, selection.width);
             afterBulkChange();
@@ -1016,7 +1030,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         if (Strings.MENU_ITEM_CANCEL.equals(label)) {
             setSelectionMode(false);
             return true;
-        }*/
+        }
         if (label.equals(Strings.MENU_ITEM_CONTINUOUS_INPUT)) {
             beforeChange();
             operation.setAsyncInput(!operation.asyncInput());
@@ -1146,9 +1160,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             below.setBuffered(index, label.equals(Strings.MENU_ITEM_ADD_BUFFER));
             afterChange();
         } else if (label.equals(Strings.MENU_ITEM_RUN_MODE)) {
-            // flowgrid.openOperation(operation, false);  FIXME
+            flowgrid.openOperation(operation, false);
         } else if (label.equals(Strings.MENU_ITEM_CREATE_SHORTCUT)) {
-            // createShortcut();                              FIXME
+            System.out.println("FIXME: createShortcut();");                               // FIXME
         } else if (label.equals(Strings.MENU_ITEM_DELETE_PATH)) {
             beforeChange();
             operation.removePath(row, col, operationEditor.tutorialMode);
@@ -1235,6 +1249,10 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             afterChange();
         }
         return true;
+    }
+
+    private void setSelectionMode(boolean b) {
+        System.out.println("FIXME: setSelectionMode: " + b);   // FIXME
     }
 
     private void addMemberCommand(Command command) {

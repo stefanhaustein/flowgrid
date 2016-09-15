@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Module;
-import org.flowgrid.swt.widget.Dialogs;
+import org.flowgrid.swt.dialog.AlertDialog;
 
 public class ArtifactDialog {
     final SwtFlowgrid flowgrid;
@@ -23,7 +23,7 @@ public class ArtifactDialog {
         this.flowgrid = flowgrid;
         shell = new Shell(flowgrid.shell);
         shell.setText(title);
-        GridLayout gridLayout = new GridLayout(1, false);
+        GridLayout gridLayout = new GridLayout();
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         shell.setLayout(gridLayout);
@@ -40,7 +40,7 @@ public class ArtifactDialog {
         scrolledComposite.setContent(list);
 
         shell.pack();
-        Dialogs.center(shell, flowgrid.shell);
+        AlertDialog.center(shell);
         shell.open();
     }
 

@@ -29,9 +29,13 @@ import org.flowgrid.swt.operation.OperationEditor;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 
 public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     Model model;
@@ -39,11 +43,14 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     Shell shell;
 
     File flowgridRoot = new File(new File(System.getProperty("user.home")), "flowgrid");
+    File documentationRoot = new File(flowgridRoot, "documentation");
     File storageRoot = new File(flowgridRoot, "files");
     File cacheRoot = new File(flowgridRoot, "cache");
 
     final MenuAdapter menuAdapter = new MenuAdapter(this);
     private HutnObject editBuffer;
+    private Settings settings = new Settings();
+    private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
 
     public final Colors colors;
 
@@ -53,12 +60,14 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
         model = new Model(this);
 
+        loadDocumentation();
+
         shell = new Shell(display);
         shell.setText("FlowGrid");
 
         shell.setMenuBar(createMenuBar());
 
-        openArtifact(model.artifact("examples/algorithm/factorial"));
+        openArtifact(model.artifact(settings.getLastUsed()));
 
         shell.pack();
         shell.open();
@@ -160,9 +169,65 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         return null;
     }
 
+    private void loadDocumentation() {
+        try {
+            loadDocumentation("documentation.md");
+            loadDocumentation("ui.md");
+            loadDocumentation("api.md");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void loadDocumentation(String name) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                getClass().getResourceAsStream("/documentation/" + name), "UTF-8"));
+        String title = null;
+        StringBuilder body = new StringBuilder();
+        while (true) {
+            String line = reader.readLine();
+            if (line == null || line.startsWith("#")) {
+                if (title != null) {
+                    int pos = 0;
+                    while (pos < body.length() - 1) {
+                        if (body.charAt(pos) == '\n') {
+                            if (body.charAt(pos + 1) == '\n') {
+                                pos += 2;
+                            } else {
+                                body.setCharAt(pos, ' ');
+                            }
+                        } else {
+                            pos++;
+                        }
+                    }
+
+                    String text = body.toString().trim();
+                    documentation.put(title, text);
+                    Artifact artifact = model.artifact(title);
+                    if (artifact != null) {
+                        artifact.setDocumentation(text);
+                    }
+                }
+                if (line == null) {
+                    break;
+                }
+                int cut = 1;
+                while (line.charAt(cut) == '#') {
+                    cut++;
+                }
+                title = line.substring(cut).trim();
+                body.setLength(0);
+            } else {
+                body.append(line);
+                body.append('\n');
+            }
+        }
+    }
+
     @Override
     public void log(String message) {
-
+        System.out.println("FIXME: log: " + message);
     }
 
     void openArtifactDialog(String title, String moduleName) {
@@ -174,6 +239,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     @Override
     public Callback<Model> platformApiSetup() {
         return null;
+    }
+
+    public Settings settings() {
+        return settings;
     }
 
     @Override
@@ -230,6 +299,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             System.out.println("FIXME: SwtFlowgrid.openOperation for run mode");
         }
 
+        settings.setLastUsed(operation);
+
         new OperationEditor(this, operation);
     }
 
@@ -239,6 +310,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public Shell shell() {
         return shell;
+    }
+
+    public void setEditBuffer(HutnObject json) {
+        this.editBuffer = json;
     }
 
     public Display display() {
@@ -267,5 +342,9 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public int dpToPx(float dp) {
         return Math.round(dp);
+    }
+
+    public String documentation(String s) {
+        return ("FIXME: SwtFlowgrid.documentation(" + s + ")");   // FIXME
     }
 }

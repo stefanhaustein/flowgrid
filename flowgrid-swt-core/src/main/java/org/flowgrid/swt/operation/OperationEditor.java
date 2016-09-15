@@ -8,20 +8,25 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Cell;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Controller;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.Instance;
 import org.flowgrid.model.Port;
+import org.flowgrid.model.TutorialData;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.UiTimerTask;
+import org.flowgrid.swt.dialog.AlertDialog;
+import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.port.PortManager;
 import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
@@ -68,6 +73,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
     ScrolledComposite scrolledComposite;
     Timer timer;
     MenuAdapter menuAdapter = new MenuAdapter(this);
+    boolean landscapeMode = true;
 
 
     public OperationEditor(final SwtFlowgrid flowgrid, CustomOperation operation) {
@@ -208,9 +214,9 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
     }
 
     void checkTutorialSuccess() {
-        /*
         final TutorialData tutorialData = operation.tutorialData;
-        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+        final AlertDialog alert = new AlertDialog(flowgrid.shell());
         alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -255,27 +261,30 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
                         }
                     }
                     if (next != null) {
-                        platform.openOperation(next, true);
+                        flowgrid.openOperation(next, true);
                     } else {
-                        navigateUp();
+                        System.out.println("FIXME: navigateUp();");    // FIXME
                     }
                 }
             });
             this.countedToRow = tutorialData.editableStartRow;
-            operationView.postInvalidate();
-            new UiTimerTask(platform) {
+
+//            operationView.postInvalidate();
+            operationCanvas.redraw();
+
+            new UiTimerTask(flowgrid.display()) {
                 @Override
                 public void runOnUiThread() {
                     if (countedToRow < tutorialData.editableEndRow) {
                         countedToRow++;
-                        operationView.invalidate();
+                        operationCanvas.redraw();
                     } else {
                         cancel();
 
-                        beforeChange();
+                        operationCanvas.beforeChange();
                         tutorialData.passedWithStars = counted <= tutorialData.optimalCellCount ? 3
                                 : counted <= tutorialData.optimalCellCount * 4 / 3 ? 2 : 1;
-                        afterChange();
+                        operationCanvas.afterChange();
                         alert.setTitle((tutorialData.passedWithStars == 3 ? "Perfect " : "Success ") + "\u2b50\u2b50\u2b50".substring(0, tutorialData.passedWithStars));
                         alert.setMessage("Used cell units: " + counted + "\n" +
                                 "Optimal cell units: " + tutorialData.optimalCellCount);
@@ -284,18 +293,17 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
                 }
             }.schedule(100, 100);
         } else {
-            if (operation.hasDocumentation() && !landscapeMode) {
+            if (operation.hasDocumentation() // && !landscapeMode                     FIXME
+                 ) {
                 alert.setNeutralButton("Help", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        OperationHelpDialog.show(EditOperationFragment.this);
+                        OperationHelpDialog.show(OperationEditor.this);
                     }
                 });
             }
             alert.show();
         }
-
-        */
     }
 
     @Override
