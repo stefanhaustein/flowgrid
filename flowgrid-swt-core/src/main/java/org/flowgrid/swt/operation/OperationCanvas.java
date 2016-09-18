@@ -837,7 +837,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
       /*  } else if (portType.equals("Firmata")) {
             FirmataPortDialog.show(flowgrid, flowgrid.model(), portCommand, creating, callback); */
         } else if (portType.equals("Test")) {
-            TestPortDialog.show(getDisplay(), portCommand, creating, callback);
+            TestPortDialog.show(flowgrid.shell(), portCommand, creating, callback);
         } else {
             WidgetPortDialog.show(flowgrid, operation.module, portCommand, creating, callback);
         }

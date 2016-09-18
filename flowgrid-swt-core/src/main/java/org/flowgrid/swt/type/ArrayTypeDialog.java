@@ -1,50 +1,56 @@
 package org.flowgrid.swt.type;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Container;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.io.Stat;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.dialog.AlertDialog;
+import org.flowgrid.swt.dialog.DialogInterface;
 
 public class ArrayTypeDialog {
 
     public static void show(SwtFlowgrid platform, Container localModule, Type assignableTo, TypeFilter filter,
                             final Callback<Type> callback) {
 
-        System.out.println("FIXME: ArrayTypeDialog.show()");     // FIXME
-
-        /*
-
-        Context context = (Context) localModule.model().platform;
         final int fixedLength = (assignableTo instanceof ArrayType) ?
                 ((ArrayType) assignableTo).length : -1;
         final Type elementType = (assignableTo instanceof ArrayType) ? ((ArrayType) assignableTo).elementType :
                 Type.ANY;
-        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        AlertDialog alert = new AlertDialog(platform.shell());
         alert.setTitle("Array Type");
-        ColumnLayout layout = new ColumnLayout(context);
-        final CheckBox fixedLengthCheckBox = new CheckBox(context);
+        Composite layout = alert.getContentContainer();
+        final Button fixedLengthCheckBox = new Button(layout, SWT.CHECK);
         fixedLengthCheckBox.setText("Fixed length");
-        layout.addView(fixedLengthCheckBox, 0, 1);
-        final EditText lengthEditText = new EditText(context);
-        lengthEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        new Label(layout, SWT.SINGLE).setText("ArrayLength");
+        final Text lengthEditText = new Text(layout, SWT.SIMPLE);
+        //lengthEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         lengthEditText.setEnabled(false);
         if (fixedLength != -1) {
-            fixedLengthCheckBox.setChecked(true);
+            fixedLengthCheckBox.setSelection(true);
             fixedLengthCheckBox.setEnabled(false);
             lengthEditText.setText("" + fixedLength);
         }
-        fixedLengthCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        fixedLengthCheckBox.addSelectionListener(new SelectionAdapter() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                lengthEditText.setEnabled(isChecked);
+            public void widgetSelected(SelectionEvent e) {
+                System.out.println("FIXME: lengthEditText.setEnabled(isChecked);");
             }
+
         });
 
-        layout.addView(Views.addLabel("Array length", lengthEditText), 0, 1);
-        final TypeSpinner elementTypeSpinner = new TypeSpinner(platform, localModule, elementType, filter);
-        layout.addView(Views.addLabel("Element type", elementTypeSpinner), 0, 1);
-        alert.setView(layout);
+        new Label(layout, SWT.SINGLE).setText("Element type");
+        final TypeSpinner elementTypeSpinner = new TypeSpinner(layout, platform, localModule, elementType, filter);
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
@@ -60,9 +66,8 @@ public class ArrayTypeDialog {
                 callback.run(arrayType);
             }
         });
-        Dialogs.showWithoutKeyboard(alert);
 
-        */
+        alert.show();
     }
 
 }

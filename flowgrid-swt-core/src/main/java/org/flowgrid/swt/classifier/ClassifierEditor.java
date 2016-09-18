@@ -45,13 +45,7 @@ public class ClassifierEditor implements MenuSelectionHandler {
         operationPanel.setLayout(operationLayout);
         operationPanel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
 
-        Callback<Artifact> propertyCallback = new Callback<Artifact>() {
-            @Override
-            public void run(Artifact value) {
-                System.out.println("TBD: Property dialog");
-            }
-        };
-        Callback<Artifact> operationCallback = new Callback<Artifact>() {
+        Callback<Artifact> openCallback = new Callback<Artifact>() {
             @Override
             public void run(Artifact value) {
                 flowgrid.openArtifact(value);
@@ -61,7 +55,7 @@ public class ClassifierEditor implements MenuSelectionHandler {
         for (Artifact artifact: classifier) {
             final boolean isProperty = artifact instanceof Property;
             ArtifactComposite artifactComposite = new ArtifactComposite(isProperty ? propertyPanel : operationPanel, flowgrid.colors, artifact, false);
-            artifactComposite.setListener(isProperty ? propertyCallback : operationCallback);
+            artifactComposite.setListener(openCallback);
         }
 
         GridLayout contentLayout = new GridLayout(2, false);

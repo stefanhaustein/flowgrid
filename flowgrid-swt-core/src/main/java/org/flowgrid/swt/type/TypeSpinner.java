@@ -12,7 +12,7 @@ import org.flowgrid.model.Type;
 import org.flowgrid.swt.SwtFlowgrid;
 
 
-public class TypeSpinner extends Button { //implements TypeWidget {
+public class TypeSpinner extends Button implements TypeWidget {
         private Type type = PrimitiveType.NUMBER;
         private TypeWidget.OnTypeChangedListener listener = null;
 

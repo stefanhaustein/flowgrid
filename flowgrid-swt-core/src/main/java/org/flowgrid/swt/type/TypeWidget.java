@@ -1,14 +1,13 @@
 package org.flowgrid.swt.type;
 
 import org.flowgrid.model.Type;
-import org.flowgrid.swt.widget.Widget;
 
-public interface TypeWidget extends Widget {
+public interface TypeWidget {
     void setType(Type type);
     Type type();
     void setOnTypeChangedListener(OnTypeChangedListener onTypeChangedListener);
 
-    public interface OnTypeChangedListener {
+    interface OnTypeChangedListener {
         void onTypeChanged(Type type);
     }
 }

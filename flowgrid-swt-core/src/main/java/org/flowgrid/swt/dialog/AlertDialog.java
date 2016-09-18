@@ -50,15 +50,15 @@ public class AlertDialog implements DialogInterface {
     void setButton(final int code, String label, final OnClickListener onClickListener) {
         Button button = new Button(buttonRow, SWT.PUSH);
         button.setText(label);
-        if (onClickListener != null) {
-            button.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    shell.dispose();
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                shell.dispose();
+                if (onClickListener != null) {
                     onClickListener.onClick(AlertDialog.this, code);
                 }
-            });
-        }
+            }
+        });
     }
 
     public void setNegativeButton(String label, OnClickListener onClickListener) {

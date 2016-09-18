@@ -24,7 +24,9 @@ import org.flowgrid.model.TypeAndValue;
 import org.flowgrid.model.Types;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.io.IOCallback;
+import org.flowgrid.swt.api.SwtApiSetup;
 import org.flowgrid.swt.classifier.ClassifierEditor;
+import org.flowgrid.swt.classifier.PropertyDialog;
 import org.flowgrid.swt.operation.OperationEditor;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
@@ -238,7 +240,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     @Override
     public Callback<Model> platformApiSetup() {
-        return null;
+        return new SwtApiSetup(this);
     }
 
     public Settings settings() {
@@ -262,17 +264,17 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     @Override
     public void error(String message, Exception e) {
-
+        System.err.println("error: " + message + " -- " + e);
     }
 
     @Override
     public void info(String message, Exception e) {
-
+        System.err.println("info: " + message + " -- " + e);
     }
 
     @Override
     public void log(String message, Exception e) {
-
+        System.err.println("log: " + message + " -- " + e);
     }
 
     public void openArtifact(Artifact artifact) {
@@ -280,6 +282,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             openOperation((CustomOperation) artifact);
         } else if (artifact instanceof Classifier) {
             openClassifier((Classifier) artifact);
+        } else if (artifact instanceof Property) {
+            openProperty((Property) artifact);
         }
     }
 
@@ -305,7 +309,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     public void openProperty(Property p) {
-        System.out.println("FIXME: SwtFlowgrid.openProperty();");   // FIXME
+        PropertyDialog.show(this, p);
     }
 
     public Shell shell() {
@@ -337,6 +341,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             openArtifactDialog("Open", "myname");
         } else if ("Tutorials".equals(label)) {
             openArtifactDialog("Open Tutorial", "missions");
+        } else if ("About".equals(label)) {
+            AboutDialog.show(this);
         }
     }
 
@@ -345,6 +351,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     public String documentation(String s) {
-        return ("FIXME: SwtFlowgrid.documentation(" + s + ")");   // FIXME
+        return documentation.get(s);
+    }
+
+    public void reboot(Settings.BootCommand none, Object o) {
+        System.out.println("FIXME: SwtFlowgrid.reboot()");  // FIXME
     }
 }

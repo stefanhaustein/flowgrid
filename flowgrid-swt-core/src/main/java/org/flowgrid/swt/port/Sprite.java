@@ -15,6 +15,7 @@ public class Sprite {
 
     private static HashMap<String,Image> bitmapCache = new HashMap<>();
 
+    static String[] NAMES = {"None", "Fluffy", "Bluffy", "Robby"};
 
     static Image getImage(GC gc, String name) {
         return ImageCache.getImage(gc.getDevice(), "/sprites/" + name + ".png");
