@@ -1,11 +1,17 @@
 package org.flowgrid.swt.port;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.flowgrid.model.Port;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.api.PortCommand;
+import org.flowgrid.swt.api.CanvasControl;
 import org.flowgrid.swt.data.DataWidget;
 import org.flowgrid.swt.widget.Widget;
 
@@ -18,99 +24,16 @@ public class WidgetPort implements Widget, Port {
     /*Histogram histogram;
     RunChart runChart;
     WebView webView;
-    CanvasView canvasView;
     View view; 
     String inputUrl;
     Button button;
 */
+    boolean buttonPressed;
+    CanvasControl canvasControl;
+    Control control;
+
     public WidgetPort(final PortManager manager, PortCommand port) {
         type = port.dataType();
-        String widget = port.peerJson().getString("widget", "").toLowerCase();
-
-        /*
-
-
-        if (widget.equals("button")) {
-            Button button = new Button(manager.platform());
-            button.setText(port.name());
-            button.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    boolean sendValue;
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        sendValue = true;
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        sendValue = false;
-                    } else {
-                        return false;
-                    }
-                    if (!manager.operation().asyncInput() || !manager.isRunning()) {
-                        manager.start();  // This will send all values
-                    } else {
-                        sendValue(sendValue);
-                    }
-                    return true;
-                }
-            });
-
-            view = button;
-        } else if (widget.equals("canvas")) {
-            view = canvasView = new CanvasView(manager.platform(), manager.controller());
-        } else if (widget.equals("runchart")) {
-            view = runChart = new RunChart(manager.platform());
-        } else if (widget.equals("histogram")) {
-            view = histogram = new Histogram(manager.platform());
-        } else if (widget.equals("webview")) {
-            view = webView = new WebView(manager.platform());
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                    if (!url.equals(inputUrl)) {
-                        sendValue(url);
-                    }
-                }
-            });
-
-        } else { */
-            dataWidget = new DataWidget(manager.flowgrid(), manager.operation(), null,
-                    widget, port.outputCount() != 0, "port", port.name());
-//            view = dataWidget.view();
-            if (port.input) {
-                if (type == PrimitiveType.BOOLEAN) {
-                    dataWidget.setValue(false);
-                } else if (type == PrimitiveType.TEXT) {
-                    dataWidget.setValue("");
-                } else if (type == PrimitiveType.NUMBER) {
-                    dataWidget.setValue(0.0);
-                }
-            }
-
-            dataWidget.setOnValueChangedListener(new DataWidget.OnValueChangedListener() {
-                @Override
-                public void onValueChanged(final Object newValue) {
-                    //view.setBackgroundColor(0);
-                    if (!manager.operation().asyncInput() || !manager.isRunning()) {
-                        manager.start();  // This will send all values
-                    } else {
-                        sendValue();
-                    }
-                }
-            });
-
-       // }
-
-        /*
-        if (dataWidget == null && port.peerJson().getInt("height", 1) > 0) {
-            LinearLayout linearLayout = new LinearLayout(manager.platform());
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
-            TextView label = new TextView(manager.platform());
-            label.setText(port.name());
-            linearLayout.addView(label);
-            linearLayout.addView(view);
-            ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = 1;
-            view = linearLayout;
-        }
-        */
 
         this.manager = manager;
         this.port = port;
@@ -123,12 +46,10 @@ public class WidgetPort implements Widget, Port {
     }
 
     public void start() {
-    /*
-        if (canvasView != null) {
-            canvasView.removeAll();
-            canvasView.setOnClickListener((View.OnClickListener) null);
+        if (canvasControl != null) {
+            canvasControl.removeAll();
+//            canvasControl.setOnClickListener((View.OnClickListener) null);    // FIXME
         }
-    */
         sendValue();
     }
 
@@ -137,9 +58,9 @@ public class WidgetPort implements Widget, Port {
         if (port.outputCount() != 0) {
             if (dataWidget != null) {
                 sendValue(dataWidget.value());
-            } /* else if (canvasView != null) {
-                sendValue(canvasView);
-            } else if (button != null) {
+            } else if (canvasControl != null) {
+                sendValue(canvasControl);
+            } /*else if (button != null) {
                 sendValue(button.isPressed());
             }*/
         }
@@ -216,19 +137,107 @@ public class WidgetPort implements Widget, Port {
         /*
         if (runChart != null) {
             runChart.timerTick(frames);
-        } else if (canvasView != null) {
-            canvasView.timerTick(frames);
-        }*/
+        } else */
+        if (canvasControl != null) {
+            canvasControl.timerTick(frames);
+        }
     }
 
     @Override
     public Control createControl(Composite parent) {
-        return dataWidget.createControl(parent);
+        String widget = port.peerJson().getString("widget", "").toLowerCase();
+
+        if (widget.equals("button")) {
+            Button button = new Button(parent, SWT.PUSH);
+            button.setText(port.name());
+            button.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mouseDown(MouseEvent e) {
+                    trigger(true);
+                }
+
+                @Override
+                public void mouseUp(MouseEvent e) {
+                    trigger(false);
+                }
+
+                void trigger(boolean sendValue) {
+                    buttonPressed = sendValue;
+                    if (!manager.operation().asyncInput() || !manager.isRunning()) {
+                        manager.start();  // This will send all values
+                    } else {
+                        sendValue(sendValue);
+                    }
+                }
+            });
+            control = button;
+        } else if (widget.equals("canvas")) {
+            control = canvasControl = new CanvasControl(parent, manager.flowgrid(), manager.controller());
+        /*} else if (widget.equals("runchart")) {
+            view = runChart = new RunChart(manager.platform());
+        } else if (widget.equals("histogram")) {
+            view = histogram = new Histogram(manager.platform());
+        } else if (widget.equals("webview")) {
+            view = webView = new WebView(manager.platform());
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    if (!url.equals(inputUrl)) {
+                        sendValue(url);
+                    }
+                }
+            });
+*/
+        } else {
+            dataWidget = new DataWidget(manager.flowgrid(), manager.operation(), null, widget, port.outputCount() != 0, "port", port.name());
+//            view = dataWidget.view();
+            if (port.input) {
+                if (type == PrimitiveType.BOOLEAN) {
+                    dataWidget.setValue(false);
+                 } else if (type == PrimitiveType.TEXT) {
+                    dataWidget.setValue("");
+                } else if (type == PrimitiveType.NUMBER) {
+                    dataWidget.setValue(0.0);
+                }
+            }
+
+            dataWidget.setOnValueChangedListener(new DataWidget.OnValueChangedListener() {
+                @Override
+                public void onValueChanged(final Object newValue) {
+                    //view.setBackgroundColor(0);
+                    if (!manager.operation().asyncInput() || !manager.isRunning()) {
+                        manager.start();  // This will send all values
+                    } else {
+                        sendValue();
+                    }
+                }
+            });
+            control = dataWidget.createControl(parent);
+        }
+
+        /*
+        if (dataWidget == null && port.peerJson().getInt("height", 1) > 0) {
+            LinearLayout linearLayout = new LinearLayout(manager.platform());
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            TextView label = new TextView(manager.platform());
+            label.setText(port.name());
+            linearLayout.addView(label);
+            linearLayout.addView(view);
+            ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = 1;
+            view = linearLayout;
+        }
+        */
+        return control;
     }
 
     @Override
     public void disposeControl() {
-        dataWidget.disposeControl();
+        if (dataWidget != null) {
+            dataWidget.disposeControl();
+        } else {
+            control.dispose();
+        }
     }
 
 /*
@@ -238,10 +247,6 @@ public class WidgetPort implements Widget, Port {
         }
     }
 
-    @Override
-    public View view() {
-        return view;
-    }
 
 */
 

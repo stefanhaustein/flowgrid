@@ -1,5 +1,6 @@
 package org.flowgrid.swt.api;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -44,6 +45,8 @@ public class Graphics {
         if (canvasControl.getBitmap() != bitmap) {
             bitmap = canvasControl.getBitmap();
             gc = new GC(bitmap);
+            gc.setBackground(canvasControl.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+            gc.setForeground(canvasControl.getDisplay().getSystemColor(SWT.COLOR_WHITE));
             setStrokeWidth(strokeWidth);
         }
         canvasControl.postInvalidate();

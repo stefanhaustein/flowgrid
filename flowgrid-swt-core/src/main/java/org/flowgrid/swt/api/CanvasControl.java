@@ -1,7 +1,11 @@
 package org.flowgrid.swt.api;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.flowgrid.model.Artifact;
@@ -33,6 +37,7 @@ public class CanvasControl extends Canvas {
     //private Paint bitmapPaint = new Paint();
     private boolean invalidated;
 
+
     public CanvasControl(Composite parent, SwtFlowgrid platform, Controller controller) {
         super(parent, SWT.DEFAULT);
         this.controller = controller;
@@ -54,6 +59,20 @@ public class CanvasControl extends Canvas {
         borderPaint.setStyle(Style.STROKE);
         borderPaint.setColor(Color.DKGRAY);
         borderPaint.setAntiAlias(true); */
+
+        this.addControlListener(new ControlListener() {
+            @Override
+            public void controlMoved(ControlEvent e) {
+
+            }
+
+            @Override
+            public void controlResized(ControlEvent e) {
+                Rectangle bounds = getBounds();
+                sizeChanged(bounds.width, bounds.height);
+            }
+        });
+
     }
 
     /*
@@ -195,7 +214,7 @@ public class CanvasControl extends Canvas {
         return placeable.getNumber("height");
     }
 
-    private void drawObject(Canvas canvas, Instance instance) {
+    private void drawObject(GC gc, Instance instance) {
         double x = instance.getNumber("x");
         double y = instance.getNumber("y");
         Object colorObject = instance.get("color");
@@ -238,24 +257,24 @@ public class CanvasControl extends Canvas {
         */
     }
 
-    /*
+
     @Override
-    public synchronized void onDraw(Canvas canvas) {
+    public void drawBackground(GC gc, int clipX, int clipY, int clipW, int clipH) {
         invalidated = false;
         if (background != null) {
-            canvas.drawBitmap(background, 0, 0, bitmapPaint);
+            gc.drawImage(background, 0, 0);
         } else {
-            canvas.drawRect(1, 1, widthPx, heightPx, borderPaint);
+            gc.fillRectangle(1, 1, widthPx, heightPx);
         }
 
         for (Instance instance: objects) {
             try {
-                drawObject(canvas, instance);
+                drawObject(gc, instance);
             } catch (Exception e) {
-                Log.e("FlowGrid", "Exception", e);
+                e.printStackTrace();
             }
         }
-    }*/
+    }
 
     /*
     @Override
@@ -323,18 +342,20 @@ public class CanvasControl extends Canvas {
         }
     }
 
-    /*
-    @Override
-    protected synchronized void onSizeChanged(int w, int h, int oldW, int oldH) {
-        super.onSizeChanged(w, h, oldW, oldH);
+
+
+    synchronized void sizeChanged(int w, int h) {
+        int oldW = widthPx;
+        int oldH = heightPx;
         widthPx = w;
         heightPx = h;
         sizePx = Math.min(w, h);
         if (background != null) {
-            float oldBmW = background.getWidth();
-            float oldBmH = background.getHeight();
-            Bitmap newBackground = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            int newMin2 = sizePx / 2;
+            Rectangle oldBmSize = background.getBounds();
+            float oldBmW = oldBmSize.width;
+            float oldBmH = oldBmSize.height;
+            Image newBackground = new Image(getDisplay(), w, h);
+          /*  int newMin2 = sizePx / 2;
             rectF.set(w / 2 - newMin2, h / 2 - newMin2,
                     w / 2 + newMin2, h / 2 + newMin2);
             if (oldBmW > oldBmH) {
@@ -347,17 +368,17 @@ public class CanvasControl extends Canvas {
                 rectF.bottom = h/2 + newMin2 * scale;
             }
             Canvas canvas = new Canvas(newBackground);
-            canvas.drawBitmap(background, null, rectF, bitmapPaint);
+            canvas.drawBitmap(background, null, rectF, bitmapPaint); */
             background = newBackground;
         }
     }
-    */
 
 
     public void postInvalidate() {
         if (!invalidated) {
             invalidated = true;
             System.out.println("FIXME: CanvasControl.postInvalidate()");  // FIXME
+            redraw();
         }
     }
 
