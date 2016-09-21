@@ -36,11 +36,13 @@ public class CanvasControl extends Canvas {
     //private RectF rectF = new RectF();
     //private Paint bitmapPaint = new Paint();
     private boolean invalidated;
+    SwtFlowgrid flowgrid;
 
 
     public CanvasControl(Composite parent, SwtFlowgrid platform, Controller controller) {
         super(parent, SWT.DEFAULT);
         this.controller = controller;
+        this.flowgrid = platform;
 //        pixelPerDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
 
         pixelPerDp = platform.dpToPx(1);

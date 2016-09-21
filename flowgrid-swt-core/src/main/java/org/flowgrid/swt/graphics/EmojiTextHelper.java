@@ -48,6 +48,10 @@ public class EmojiTextHelper {
 
 
   public static void drawText(GC gc, String text, int x, int y, int horizontalAlign, int verticalAlign) {
+    drawText(gc, text, x, y, horizontalAlign, verticalAlign, false);
+  }
+
+    public static void drawText(GC gc, String text, int x, int y, int horizontalAlign, int verticalAlign, boolean eraseBackground) {
   //  Font font = gc.getFont();
     FontMetrics metrics = gc.getFontMetrics();
 
@@ -65,6 +69,11 @@ public class EmojiTextHelper {
       case SWT.BOTTOM: y -= size; break;
       case SWT.TOP: y += 0; break;
     }
+
+    if (eraseBackground) {
+      gc.fillRectangle(x, y, stringExtent(gc, text), size);
+    }
+
   //  int alpha = paint.getColor() & 0xff000000;
     int start = 0;
     int pos = 0;

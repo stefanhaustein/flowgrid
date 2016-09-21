@@ -1,20 +1,21 @@
 package org.flowgrid.swt.api;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.flowgrid.model.api.Color;
+import org.flowgrid.swt.Colors;
+import org.flowgrid.swt.graphics.EmojiTextHelper;
 
 public class Graphics {
 
     private int canvasViewEpoch = -1;
     private CanvasControl canvasControl;
     private GC gc;
-//    private Canvas canvas;
-//    private Paint fillPaint = new android.graphics.Paint();
-//    private Paint strokePaint = new android.graphics.Paint();
- //   private Paint clearPaint = new android.graphics.Paint();
+    private Color foreground;
+    private Color background;
+
     private boolean stroke = true;
     private boolean fill = true;
  //   private TextHelper.VerticalAlign verticalAlign = TextHelper.VerticalAlign.CENTER;
@@ -23,30 +24,23 @@ public class Graphics {
     private Rectangle rectF = new Rectangle(0, 0, 0, 0);
     private boolean eraseTextBackground = true;
     private double strokeWidth = 10;
+    private int strokeWidthPx;
+    private int horizontalAlign = SWT.LEFT;
+    private int verticalAlign = SWT.TOP;
 
     public Graphics(CanvasControl canvasControl) {
         this.canvasControl = canvasControl;
-
-        /*
-        fillPaint.setStyle(android.graphics.Paint.Style.FILL);
-        fillPaint.setColor(Colors.GRAY[Colors.Brightness.REGULAR.ordinal()]);
-        fillPaint.setTextAlign(Paint.Align.CENTER);
-        fillPaint.setAntiAlias(true);
-        strokePaint.setStyle(android.graphics.Paint.Style.STROKE);
-        strokePaint.setColor(Colors.BLUE[Colors.Brightness.REGULAR.ordinal()]);
-        strokePaint.setAntiAlias(true);
-        strokePaint.setStrokeJoin(Paint.Join.ROUND);
-        strokePaint.setStrokeCap(Paint.Cap.ROUND);
-        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        */
+        Colors colors = canvasControl.flowgrid.colors;
+        background = colors.grays[Colors.Brightness.REGULAR.ordinal()];
+        foreground = colors.blues[Colors.Brightness.REGULAR.ordinal()];
     }
 
     private GC gc() {
         if (canvasControl.getBitmap() != bitmap) {
             bitmap = canvasControl.getBitmap();
             gc = new GC(bitmap);
-            gc.setBackground(canvasControl.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-            gc.setForeground(canvasControl.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+            gc.setBackground(background);
+            gc.setForeground(foreground);
             setStrokeWidth(strokeWidth);
         }
         canvasControl.postInvalidate();
@@ -82,32 +76,30 @@ public class Graphics {
         rectF.height = y1i - y0i;
     }
 
-    public void drawImage(double x, double y, Image image) {
+    public void drawImage(double x, double y, org.flowgrid.model.Image image) {
         synchronized (canvasControl) {
-            /*
             ImageImpl imageImpl = (ImageImpl) image;
-            double w = imageImpl.width();
-            double h = imageImpl.height();
-            switch (fillPaint.getTextAlign()) {
-                case CENTER:
+            int w = imageImpl.width();
+            int h = imageImpl.height();
+            switch (horizontalAlign) {
+                case SWT.CENTER:
                     x -= w / 2;
                     break;
-                case RIGHT:
+                case SWT.RIGHT:
                     x -= w;
                     break;
             }
             switch (verticalAlign) {
-                case CENTER:
+                case SWT.CENTER:
                     y -= h / 2;
                     break;
-                case TOP:
+                case SWT.TOP:
                     y -= h;
                     break;
             }
 
             setRect(x, y, x + w, y + h);
-            gc().drawBitmap(imageImpl.bitmap(), null, rectF, null);
-            */
+            gc().drawImage(imageImpl.bitmap(), 0, 0, w, h, rectF.x, rectF.y, rectF.width, rectF.height);
         }
     }
 
@@ -135,43 +127,40 @@ public class Graphics {
 
     public void drawText(double x, double y, String text) {
         synchronized (canvasControl) {
-            float pxSize = canvasControl.pixelSize(textSize);
+            int pxSize = Math.round(canvasControl.pixelSize(textSize));
 
-            System.out.println("FIXME: CanvasControl.drawText");   // FIXME
+            gc().setFont(canvasControl.flowgrid.colors.getFont(pxSize, 0));
 
-            /*
-            fillPaint.setTextSize(pxSize);
+            int pX = Math.round(canvasControl.pixelX(x));
+            int pY = Math.round(canvasControl.pixelY(y));
 
-            float pX = canvasControl.pixelX(x);
-            float pY = canvasControl.pixelY(y);
-
-            if (eraseTextBackground) {
-                TextHelper.getTextBounds(fillPaint, text, verticalAlign, rectF);
-                rectF.offset(pX, pY);
-                gc().drawRect(rectF, clearPaint);
-            }
-            TextHelper.drawText(canvasControl.getContext(), canvas(),
-                    text, pX, pY, fillPaint, verticalAlign);
-
-                    */
+            EmojiTextHelper.drawText(gc(), text, pX, pY, horizontalAlign, verticalAlign, eraseTextBackground);
         }
     }
 
-    public void setFillColor(Color color) {
-        // fillPaint.setColor(color.argb());
-        fill = (color.argb() & 0x0ff000000) != 0;
+    public void setFillColor(org.flowgrid.model.api.Color color) {
+        int argb = color.argb();
+        fill = (argb & 0x0ff000000) != 0;
+        background = canvasControl.flowgrid.colors.getColor(argb);
+        if (gc != null) {
+            gc.setBackground(background);
+        }
     }
 
-    public void setStrokeColor(Color color) {
-        //        strokePaint.setColor(color.argb());
-        stroke = Math.round(strokeWidth) > 0 && (color.argb() & 0x0ff000000) != 0;
+    public void setStrokeColor(org.flowgrid.model.api.Color color) {
+        int argb = color.argb();
+        stroke = strokeWidthPx > 0 && (argb & 0x0ff000000) != 0;
+        foreground = canvasControl.flowgrid.colors.getColor(argb);
+        if (gc != null) {
+            gc.setForeground(background);
+        }
     }
 
     public void setStrokeWidth(double sw) {
         strokeWidth = sw;
-        int rounded = Math.round(canvasControl.pixelSize(sw));
-        gc().setLineWidth(rounded);
-        stroke = rounded > 0; // && strokePaint.getAlpha() != 0;
+        strokeWidthPx = Math.round(canvasControl.pixelSize(sw));
+        gc().setLineWidth(strokeWidthPx);
+        stroke = strokeWidthPx > 0 && foreground.getAlpha() != 0;
     }
 
     public void setEraseTextBackground(boolean eraseTextBackground) {
@@ -179,29 +168,23 @@ public class Graphics {
     }
 
     public void setAlignRight() {
-
-        //fillPaint.setTextAlign(Paint.Align.RIGHT);
+        horizontalAlign = SWT.RIGHT;
     }
 
     public void setAlignLeft() {
-
-        //fillPaint.setTextAlign(Paint.Align.LEFT);
+        horizontalAlign = SWT.LEFT;
     }
 
     public void setAlignHCenter() {
-        //fillPaint.setTextAlign(Paint.Align.CENTER);
+        horizontalAlign = SWT.CENTER;
     }
 
     public void setAlignTop() {
-//        verticalAlign = TextHelper.VerticalAlign.TOP;
+        verticalAlign = SWT.TOP;
     }
 
     public void setAlignBottom() {
-        //verticalAlign = TextHelper.VerticalAlign.BOTTOM;
-    }
-
-    public void setAlignBaseline() {
-        //verticalAlign = TextHelper.VerticalAlign.BASELINE;
+        verticalAlign = SWT.BOTTOM;
     }
 
     public void setAlignVCenter() {

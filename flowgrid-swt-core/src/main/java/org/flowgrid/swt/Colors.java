@@ -40,6 +40,7 @@ public class Colors {
     public final Color[] grays;
     private final Display display;
     public final boolean dark;
+    private Map<Integer,Color> colors = new HashMap<>();
 
     private Color c(int argb) {
         return new Color(display, (argb >> 16) & 255, (argb >> 8) & 255, argb & 255);
@@ -105,6 +106,18 @@ public class Colors {
         return font;
     }
 
+    public Color getColor(int argb) {
+        Color result = colors.get(argb);
+        if (result == null) {
+            result = new Color(display, (argb >> 16) & 255, (argb >> 8) & 255, argb & 255, (argb >> 24) & 255);
+            colors.put(argb, result);
+        }
+        return result;
+    }
+
+    public void releaseColor(Color color) {
+
+    }
 
     public void dispose() {
         for (Font font : fontMap.values()) {
