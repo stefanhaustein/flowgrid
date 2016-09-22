@@ -220,22 +220,22 @@ public class CanvasControl extends Canvas {
         double x = instance.getNumber("x");
         double y = instance.getNumber("y");
         Object colorObject = instance.get("color");
-        /*
-        fillPaint.setColor(colorObject instanceof org.flowgrid.model.api.Color
-                ? ((org.flowgrid.model.api.Color) colorObject).argb() : 0xffffffff);
+
+        gc.setBackground(flowgrid.colors.getColor(colorObject instanceof org.flowgrid.model.api.Color
+                ? ((org.flowgrid.model.api.Color) colorObject).argb() : 0xffffffff));
         Object imageObject = instance.get("image");
         Object textObject = instance.get("text");
         if (imageObject instanceof ImageImpl) {
             ImageImpl image = (ImageImpl) imageObject;
-            Rect dst = new Rect();
-            dst.left = (int) pixelX(x - image.width() / 2);
-            dst.right = (int) pixelX(x + image.width() / 2);
-            dst.top = (int) pixelY(y + image.height() / 2);
-            dst.bottom = (int) pixelY(y - image.height() / 2);
+            int sw = (int) pixelSize(image.width());
+            int sh = (int) pixelSize(image.height());
+            int sx = (int) pixelX(x);
+            int sy = (int) pixelX(y);
+
             //  canvas.drawBitmap(image.bitmap(), dst.left, dst.top, null);
-            canvas.drawBitmap(image.bitmap(), null, dst, bitmapPaint);
+            gc.drawImage(image.bitmap(), 0, 0, image.width(), image.height(), sx - sw / 2, sy - sh / 2, sw, sh);
         } else if (textObject instanceof String) {
-            fillPaint.setTextSize(100 * sizePx / 1000);
+            gc.setFont(flowgrid.colors.getFont((int) (100 * sizePx / 1000), 0));
             int start = 0;
             String text = (String) textObject;
             while (start < text.length()) {
@@ -243,20 +243,23 @@ public class CanvasControl extends Canvas {
                 if (end == -1) {
                     end = text.length();
                 }
-                canvas.drawText((String) textObject, start, end, pixelX(x), pixelY(y), fillPaint);
+                gc.drawString(text.substring(start, end), Math.round(pixelX(x)), Math.round(pixelY(y)));
                 start = end + 1;
                 y -= 100;
             }
         } else if (instance.classifier().hasProperty("radius", PrimitiveType.NUMBER)) {
             double radius = instance.getNumber("radius");
-            canvas.drawCircle(pixelX(x), pixelY(y), (int) (radius * sizePx / 1000), fillPaint);
+            int sr = Math.round((float) radius * sizePx / 1000);
+            int sx = Math.round(pixelX(x));
+            int sy = Math.round(pixelY(y));
+            gc.fillOval(sx - sr, sy - sr, sr * 2, sr * 2);
         } else {
-            double width = instance.getNumber("width");
-            double height = instance.getNumber("height");
-            canvas.drawRect(pixelX(x - width / 2), pixelY(y + height / 2),
-                    pixelX(x + width / 2), pixelY(y - height / 2), fillPaint);
+            int sx = Math.round(pixelX(x));
+            int sy = Math.round(pixelY(y));
+            int sh = Math.round(pixelSize(instance.getNumber("width")));
+            int sw = Math.round(pixelSize(instance.getNumber("height")));
+            gc.fillRectangle(sx - sw / 2, sy - sh / 2, sw, sh);
         }
-        */
     }
 
 
@@ -340,7 +343,7 @@ public class CanvasControl extends Canvas {
                     controller.invoke((CustomOperation) tick, sprite, null, frames/60.0);
                 }
             }
-            System.out.println("FIXME: CanvasControl.postInvalidate();");
+            postInvalidate();
         }
     }
 
@@ -379,7 +382,7 @@ public class CanvasControl extends Canvas {
     public void postInvalidate() {
         if (!invalidated) {
             invalidated = true;
-            System.out.println("FIXME: CanvasControl.postInvalidate()");  // FIXME
+            // System.out.println("FIXME: CanvasControl.postInvalidate()");  // FIXME
             redraw();
         }
     }
