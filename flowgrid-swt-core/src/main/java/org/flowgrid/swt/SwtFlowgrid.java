@@ -24,6 +24,7 @@ import org.flowgrid.model.TypeAndValue;
 import org.flowgrid.model.Types;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.io.IOCallback;
+import org.flowgrid.swt.api.ImageImpl;
 import org.flowgrid.swt.api.SwtApiSetup;
 import org.flowgrid.swt.classifier.ClassifierEditor;
 import org.flowgrid.swt.classifier.PropertyDialog;
@@ -168,7 +169,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     @Override
     public Image image(InputStream is) throws IOException {
-        return null;
+        return new ImageImpl(new org.eclipse.swt.graphics.Image(display, is));
     }
 
     private void loadDocumentation() {
@@ -249,6 +250,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     @Override
     public Sound sound(InputStream is) throws IOException {
+        System.out.println("FIXME: SwtFlowgrid.sound() returning null.");  // FIXME.
         return null;
     }
 

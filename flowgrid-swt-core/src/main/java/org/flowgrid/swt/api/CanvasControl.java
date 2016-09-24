@@ -3,6 +3,9 @@ package org.flowgrid.swt.api;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -43,24 +46,8 @@ public class CanvasControl extends Canvas {
         super(parent, SWT.DEFAULT);
         this.controller = controller;
         this.flowgrid = platform;
-//        pixelPerDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
-
         pixelPerDp = platform.dpToPx(1);
 
-        /*
-        bitmapPaint.setAntiAlias(true);
-        bitmapPaint.setFilterBitmap(true);
-        bitmapPaint.setDither(true);
-
-        fillPaint.setStyle(Style.FILL);
-        fillPaint.setColor(Color.LTGRAY);
-        fillPaint.setFilterBitmap(true);
-        fillPaint.setAntiAlias(true);
-        fillPaint.setDither(true);
-
-        borderPaint.setStyle(Style.STROKE);
-        borderPaint.setColor(Color.DKGRAY);
-        borderPaint.setAntiAlias(true); */
 
         this.addControlListener(new ControlListener() {
             @Override
@@ -77,19 +64,17 @@ public class CanvasControl extends Canvas {
 
     }
 
-    /*
     public synchronized void setOnClickListener(final @FgType("/graphics/OnClick") Instance object) {
-        setOnClickListener(new OnClickListener() {
+        addMouseListener(new MouseAdapter() {
             @Override
-            public void onClick(View v) {
+            public void mouseUp(MouseEvent e) {
                 Artifact onClick = object.classifier.artifact("onClick");
                 if (onClick instanceof CustomOperation) {
-                    controller.invoke((CustomOperation) onClick, object, null /* resultCallback /, this);
+                    controller.invoke((CustomOperation) onClick, object, null /* resultCallback */, this);
                 }
             }
         });
     }
-    */
 
     public synchronized void add(@FgType("/graphics/sprite/Placeable") Instance object) {
         objects.add(object);
