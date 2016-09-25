@@ -3,7 +3,6 @@ package org.flowgrid.swt.port;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -115,7 +114,7 @@ public class WidgetPort implements Widget, Port {
     }
 
     public Object value() {
-        return dataWidget != null ? dataWidget.value() : /*canvasView != null ? canvasView : */null;
+        return dataWidget != null ? dataWidget.value() : canvasControl != null ? canvasControl : null;
     }
 
     @Override
@@ -141,6 +140,11 @@ public class WidgetPort implements Widget, Port {
         if (canvasControl != null) {
             canvasControl.timerTick(frames);
         }
+    }
+
+    @Override
+    public Control getControl() {
+        return control;
     }
 
     @Override

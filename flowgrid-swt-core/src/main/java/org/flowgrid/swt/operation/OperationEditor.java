@@ -8,7 +8,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.flowgrid.model.Artifact;
@@ -18,6 +17,7 @@ import org.flowgrid.model.Controller;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.Instance;
 import org.flowgrid.model.Port;
+import org.flowgrid.model.Property;
 import org.flowgrid.model.TutorialData;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.hutn.HutnObject;
@@ -25,6 +25,7 @@ import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.UiTimerTask;
+import org.flowgrid.swt.data.DataWidget;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.port.PortManager;
@@ -93,7 +94,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
 
         // UI Setup
 
-        final GridLayout shellLayout = new GridLayout(2, false);
+        final GridLayout shellLayout = new GridLayout(4, true);
         shellLayout.marginWidth = 0;
         shellLayout.marginHeight = 0;
         flowgrid.shell().setLayout(shellLayout);
@@ -114,6 +115,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
 
         if (classifier != null) {
             final Button classifierButton = new Button(controlPanel, SWT.PUSH);
+            classifierButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             classifierButton.setText(classifier.name());
             classifierButton.addSelectionListener(new DefaultSelectionAdapter() {
                 @Override
@@ -127,12 +129,14 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
             Views.applyEditTextStyle(separator, false);
             separator.setPaintFlags(separator.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             controlLayout.addView(separator);
+            */
             for (Property property: classifier.properties(null)) {
-                DataWidget input = new DataWidget(platform, operation, "instance", property.name());
-                View view = input.view();
-                controlLayout.addView(view);
-                propertyWidgets.add(input);
-            } */
+                DataWidget input = new DataWidget(flowgrid, operation, "instance", property.name());
+                //Control control =
+                input.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+                //                controlLayout.addView(view);
+              //  propertyWidgets.add(input);
+            }
         }
 
 
@@ -142,7 +146,10 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
 
         controller.setVisual(true);
         operationCanvas = new OperationCanvas(this, flowgrid.shell());
-        operationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        GridData canvasGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        canvasGridData.horizontalSpan = 3;
+        operationCanvas.setLayoutData(canvasGridData);
 
         attachAll();
 
@@ -172,7 +179,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         int rowSpan = input.port.peerJson().getInt("height", 1);
         controlLayout.addView(pos, view, colSpan, rowSpan); */
 
-        inputPort.createControl(controlPanel);
+        inputPort.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 
 

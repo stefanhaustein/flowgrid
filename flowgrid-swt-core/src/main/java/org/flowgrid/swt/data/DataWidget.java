@@ -48,6 +48,7 @@ public class DataWidget implements Widget {
     private Object value;
 
     private Control control;
+    private Composite parentComposite;
 
     public DataWidget(final SwtFlowgrid platform, Member owner, String... path) {
         this(platform, owner, null, "", true, path);
@@ -77,15 +78,19 @@ public class DataWidget implements Widget {
     }
 
     @Override
-    public Control createControl(Composite parent) {
+    public Control getControl() {
+        return control;
+    }
+
+    @Override
+    public Control createControl(Composite parentComposite) {
         if (control != null) {
-            throw new IllegalStateException(
-                    "control created already. Call disposeControl() before creating a new one.");
+            throw new IllegalStateException("Control created already.");
         }
 
         if (editable) {
             if (type == PrimitiveType.BOOLEAN) {
-                button = new Button(parent, SWT.CHECK);
+                button = new Button(parentComposite, SWT.CHECK);
                 button.setText(name);
                 button.setSelection(Boolean.TRUE.equals(value));
                 button.addSelectionListener(new SelectionListener() {
@@ -103,7 +108,7 @@ public class DataWidget implements Widget {
                 return control;
             }
             if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
-                Composite container = new Composite(parent, SWT.NONE);
+                Composite container = new Composite(parentComposite, SWT.NONE);
                 Label label = new Label(container, SWT.NONE);
                 label.setText(name);
                 text = new Text(container, SWT.NONE);
@@ -132,7 +137,7 @@ public class DataWidget implements Widget {
             }
         }
 
-        Composite container = new Composite(parent, SWT.NONE);
+        Composite container = new Composite(parentComposite, SWT.NONE);
         Label label = new Label(container, SWT.NONE);
         label.setText(name);
         this.label = new Label(container, SWT.NONE);
