@@ -31,7 +31,7 @@ public class Graphics {
     public Graphics(CanvasControl canvasControl) {
         this.canvasControl = canvasControl;
         Colors colors = canvasControl.flowgrid.colors;
-        background = colors.grays[Colors.Brightness.REGULAR.ordinal()];
+        background = colors.black;
         foreground = colors.blues[Colors.Brightness.REGULAR.ordinal()];
     }
 

@@ -6,8 +6,10 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -57,11 +59,40 @@ public class CanvasControl extends Canvas {
 
             @Override
             public void controlResized(ControlEvent e) {
+                System.out.println("*********** canvas resized ********");
                 Rectangle bounds = getBounds();
                 sizeChanged(bounds.width, bounds.height);
             }
         });
 
+
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                pointerId = e.button;
+                onTouchActionDown(normalizedX(e.x), normalizedY(e.y));
+            }
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+                if (pointerId != -1 && touchedInstance != null) {
+                    pointerId = -1;
+                    touchedInstance = null;
+                }
+            }
+        });
+
+        this.addMouseMoveListener(new MouseMoveListener() {
+            @Override
+            public void mouseMove(MouseEvent e) {
+                if (pointerId != -1 && touchedInstance != null) {
+                    //final int pointerIndex = e.button;
+                    //if (pointerIndex != -1) {
+                        onTouchActionMove(normalizedX(e.x),
+                                normalizedY(e.y));
+                }
+            }
+        });
     }
 
     public synchronized void setOnClickListener(final @FgType("/graphics/OnClick") Instance object) {
@@ -99,9 +130,9 @@ public class CanvasControl extends Canvas {
         return new Graphics(this);
     }
 
-    float pixelSize(double normalizedSize) { return (float) (normalizedSize * sizePx / 1000); }
-    float pixelX(double normalizedX) { return (float) (normalizedX * sizePx / 1000) + widthPx / 2; }
-    float pixelY(double normalizedY) { return (float) (-normalizedY * sizePx / 1000) + heightPx / 2; }
+    int pixelSize(double normalizedSize) { return Math.round((float) (normalizedSize * sizePx / 1000)); }
+    int pixelX(double normalizedX) { return Math.round((float) (normalizedX * sizePx / 1000) + widthPx / 2); }
+    int pixelY(double normalizedY) { return Math.round((float) (-normalizedY * sizePx / 1000) + heightPx / 2); }
 
 
     double normalizedX(float screenX) {
@@ -112,7 +143,7 @@ public class CanvasControl extends Canvas {
         return -(screenY - heightPx / 2) * 1000 / sizePx;
     }
 
-    /*
+
     private synchronized boolean onTouchActionDown(double x, double y) {
         touchedInstance = null;
         double bestDistanceSquared = 9e9;
@@ -143,6 +174,7 @@ public class CanvasControl extends Canvas {
         lastY = y;
     }
 
+/*
     @Override
     public synchronized boolean onTouchEvent(MotionEvent ev) {
         final int action =  ev.getActionMasked(); //ev.getAction();
@@ -212,10 +244,10 @@ public class CanvasControl extends Canvas {
         Object textObject = instance.get("text");
         if (imageObject instanceof ImageImpl) {
             ImageImpl image = (ImageImpl) imageObject;
-            int sw = (int) pixelSize(image.width());
-            int sh = (int) pixelSize(image.height());
-            int sx = (int) pixelX(x);
-            int sy = (int) pixelX(y);
+            int sw = pixelSize(image.width());
+            int sh = pixelSize(image.height());
+            int sx = pixelX(x);
+            int sy = pixelY(y);
 
             //  canvas.drawBitmap(image.bitmap(), dst.left, dst.top, null);
             gc.drawImage(image.bitmap(), 0, 0, image.width(), image.height(), sx - sw / 2, sy - sh / 2, sw, sh);
@@ -241,8 +273,8 @@ public class CanvasControl extends Canvas {
         } else {
             int sx = Math.round(pixelX(x));
             int sy = Math.round(pixelY(y));
-            int sh = Math.round(pixelSize(instance.getNumber("width")));
-            int sw = Math.round(pixelSize(instance.getNumber("height")));
+            int sw = Math.round(pixelSize(instance.getNumber("width")));
+            int sh = Math.round(pixelSize(instance.getNumber("height")));
             gc.fillRectangle(sx - sw / 2, sy - sh / 2, sw, sh);
         }
     }
@@ -254,7 +286,8 @@ public class CanvasControl extends Canvas {
         if (background != null) {
             gc.drawImage(background, 0, 0);
         } else {
-            gc.fillRectangle(1, 1, widthPx, heightPx);
+            gc.setBackground(flowgrid.colors.black);
+            gc.fillRectangle(0, 0, widthPx, heightPx);
         }
 
         for (Instance instance: objects) {
@@ -280,6 +313,10 @@ public class CanvasControl extends Canvas {
     public synchronized Image getBitmap() {
         if (background == null) {
             background = new Image(getDisplay(), widthPx, heightPx);
+            GC gc = new GC(background);
+            gc.setBackground(flowgrid.colors.black);
+            gc.fillRectangle(0, 0, widthPx, heightPx);
+            gc.dispose();
         }
         return background;
     }
@@ -335,31 +372,39 @@ public class CanvasControl extends Canvas {
 
 
     synchronized void sizeChanged(int w, int h) {
+
+        System.out.println("Size changed to: " + w + "x" + h);
         int oldW = widthPx;
         int oldH = heightPx;
         widthPx = w;
         heightPx = h;
         sizePx = Math.min(w, h);
         if (background != null) {
-            Rectangle oldBmSize = background.getBounds();
-            float oldBmW = oldBmSize.width;
-            float oldBmH = oldBmSize.height;
-            Image newBackground = new Image(getDisplay(), w, h);
-          /*  int newMin2 = sizePx / 2;
-            rectF.set(w / 2 - newMin2, h / 2 - newMin2,
-                    w / 2 + newMin2, h / 2 + newMin2);
+            Image oldBackground = background;
+            Rectangle bounds = oldBackground.getBounds();
+            int oldBmW = bounds.width;
+            int oldBmH = bounds.height;
+            background = null;
+            GC gc = new GC(getBitmap());
+
+            int newMin2 = sizePx / 2;
+            int x0 = w / 2 - newMin2;
+            int y0 = h / 2 - newMin2;
+            int width = sizePx;
+            int height = sizePx;
+                    // rectF.set(w / 2 - newMin2, h / 2 - newMin2,
+                            // w / 2 + newMin2, h / 2 + newMin2);
             if (oldBmW > oldBmH) {
                 float scale = oldBmW / oldBmH;
-                rectF.left = w / 2 - newMin2 * scale;
-                rectF.right = w / 2 + newMin2 * scale;
+                x0 = Math.round(w / 2 - newMin2 * scale);
+                width = Math.round(width * scale);
             } else if (oldH > oldW){
                 float scale = oldBmH / oldBmW;
-                rectF.top = h/2 - newMin2 * scale;
-                rectF.bottom = h/2 + newMin2 * scale;
+                y0 = Math.round(h/2 - newMin2 * scale);
+                height = Math.round(newMin2 * scale);
             }
-            Canvas canvas = new Canvas(newBackground);
-            canvas.drawBitmap(background, null, rectF, bitmapPaint); */
-            background = newBackground;
+            gc.drawImage(oldBackground, 0, 0, oldBmW, oldBmH, x0, y0, width, height);
+            gc.dispose();
         }
     }
 
@@ -371,6 +416,15 @@ public class CanvasControl extends Canvas {
             redraw();
         }
     }
+
+    @Override
+    public Point computeSize(int wHint, int hHint, boolean changed) {
+        if (wHint == SWT.DEFAULT) {
+            return hHint == SWT.DEFAULT ? new Point(128, 128) : new Point(hHint, hHint);
+        }
+        return new Point(wHint, hHint == SWT.DEFAULT ? wHint : hHint);
+    }
+
 
     public String toString() {
         return "Canvas#" + (hashCode() % 1000);
