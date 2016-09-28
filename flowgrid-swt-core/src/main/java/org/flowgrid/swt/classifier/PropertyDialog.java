@@ -32,8 +32,10 @@ public class PropertyDialog {
         final TypeSpinner typeSpinner = new TypeSpinner(content, flowgrid, property.owner(), Type.ANY, property.classifier == null ? TypeFilter.INSTANTIABLE : TypeFilter.ALL);
         typeSpinner.setType(property.type());
 
-        new Label(content, SWT.SINGLE).setText("");
-        final DataWidget valueWidget = new DataWidget(flowgrid, property, property.classifier != null ? "Initial value" : "Constant value");
+        // FIXME: Adjust value widget type when type changes.
+
+        new Label(content, SWT.SINGLE).setText(property.classifier != null ? "Initial value" : "Constant value");
+        final DataWidget valueWidget = new DataWidget(property.type());
         valueWidget.createControl(content);
 
         alert.setNegativeButton("Cancel", null);

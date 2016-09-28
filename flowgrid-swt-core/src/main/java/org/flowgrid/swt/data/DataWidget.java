@@ -3,6 +3,7 @@ package org.flowgrid.swt.data;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -11,6 +12,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.Member;
 import org.flowgrid.model.PrimitiveType;
@@ -30,44 +32,25 @@ public class DataWidget implements Widget {
         return value == null ? "" : String.valueOf(value);
     }
 
-    final SwtFlowgrid flowgrid;
-    final Member owner;
-    final boolean editable;
-    final String[] path;
-    final StructuredData parent;
+    boolean editable = true;
     private final Type type;
-    private final String name;
+    private String name;
     private OnValueChangedListener onValueChangedListener;
 
     private Text text;
     private Label label;
     private Button button;
+    private Scale scale;
 
     // We keep a copy here because in some cases (e.g. adding literals), the value holder
     // needs to be created explicitly before it's possible to read the value back
     private Object value;
-
     private Control control;
-    private Composite parentComposite;
+    private String widget;
 
-    public DataWidget(final SwtFlowgrid platform, Member owner, String... path) {
-        this(platform, owner, null, "", true, path);
+    public DataWidget(Type type) {
+        this.type = type;
     }
-
-    public DataWidget(final SwtFlowgrid flowgrid, final Member owner, Type forceType, String widgetType,
-                      final boolean editable, final String... path) {
-        this.flowgrid = flowgrid;
-
-        parent = owner.structuredData(path);
-        name = path[path.length - 1];
-
-        //Data data = owner.data(path);
-        type = forceType != null ? forceType : parent.type(name);
-        this.editable = editable && Types.hasInstantiableImplementation(type);
-        this.owner = owner;
-        this.path = path;
-    }
-
 
     public Object value() {
         return value;
@@ -79,6 +62,30 @@ public class DataWidget implements Widget {
 
     @Override
     public Control getControl() {
+        return control;
+    }
+
+    private Composite maybeAddLabel(Composite parentComposite) {
+        if (name == null || name.isEmpty()) {
+            return parentComposite;
+        }
+        Composite container = new Composite(parentComposite, SWT.NONE);
+        Label label = new Label(container, SWT.NONE);
+        label.setText(name);
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginWidth = 0;
+        gridLayout.marginHeight = 0;
+        container.setLayout(gridLayout);
+        control = container;
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        return container;
+    }
+
+    private Control setControl(Control control) {
+        if (this.control == null) {
+            this.control = control;
+        }
+        control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return control;
     }
 
@@ -104,14 +111,26 @@ public class DataWidget implements Widget {
                         widgetSelected(e);
                     }
                 });
-                control = button;
+                return setControl(button);
+            }
+            if (type == PrimitiveType.NUMBER && "slider".equals(widget)) {
+                setControl(scale = new Scale(maybeAddLabel(parentComposite), SWT.NONE));
+                scale.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Double newValue = (double) scale.getSelection();
+                        if (!newValue.equals(value)){
+                            inputChangedTo((double) scale.getSelection(), false);
+                        }
+                    }
+                });
+
                 return control;
             }
+
             if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
-                Composite container = new Composite(parentComposite, SWT.NONE);
-                Label label = new Label(container, SWT.NONE);
-                label.setText(name);
-                text = new Text(container, SWT.NONE);
+                System.out.println("*** Widget for " + name + ": " + widget);
+                setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
                 text.addModifyListenr(new ModifyListener() {
                     @Override
                     public void modifyText(ModifyEvent eve) {
@@ -126,36 +145,20 @@ public class DataWidget implements Widget {
                         }
                     }
                 });
-                GridLayout gridLayout = new GridLayout(1, false);
-                gridLayout.marginWidth = 0;
-                gridLayout.marginHeight = 0;
-                container.setLayout(gridLayout);
-                text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-                control = container;
-                control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
                 return control;
             }
         }
 
-        Composite container = new Composite(parentComposite, SWT.NONE);
-        Label label = new Label(container, SWT.NONE);
-        label.setText(name);
-        this.label = new Label(container, SWT.NONE);
-        this.label.setText(toString(value));
-        GridLayout gridLayout = new GridLayout(1, false);
-        gridLayout.marginWidth = 0;
-        gridLayout.marginHeight = 0;
-        container.setLayout(gridLayout);
-        this.label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        control = container;
-        control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        setControl(label = new Label(maybeAddLabel(parentComposite), SWT.NONE));
         return control;
     }
 
     @Override
     public void disposeControl() {
-        control.dispose();
-        control = null;
+        if (control != null) {
+            control.dispose();
+            control = null;
+        }
     }
 
     /**
@@ -163,7 +166,7 @@ public class DataWidget implements Widget {
      */
     protected void inputChangedTo(Object newValue, boolean delayNotification) {
         value = newValue;
-        parent.set(name, newValue);
+        // parent.set(name, newValue);
 /*
         if (delayNotification) {
             if (sendTask != null) {
@@ -185,13 +188,26 @@ public class DataWidget implements Widget {
             }
             timer.schedule(sendTask, 1000);
         } else */ {
-            owner.saveData();
+            // owner.saveData();
             if (onValueChangedListener != null) {
                 onValueChangedListener.onValueChanged(newValue);
             }
         }
     }
 
+    public DataWidget setLabel(String label) {
+        this.name = label;
+        return this;
+    }
+
+    public DataWidget setEditable(boolean editable) {
+        this.editable = editable;
+        return this;
+    }
+
+    public void setOnValueChangedListener(OnValueChangedListener onValueChangedListener) {
+        this.onValueChangedListener = onValueChangedListener;
+    }
 
     public void setValue(Object newValue) {
         if (!newValue.equals(value)) {
@@ -202,11 +218,15 @@ public class DataWidget implements Widget {
                 button.setSelection(Boolean.TRUE.equals(value));
             } else if (label != null) {
                 label.setText((toString(value)));
+            } else if (scale != null) {
+                scale.setSelection(Math.round(((Number) value).floatValue()));
             }
         }
     }
 
-    public void setOnValueChangedListener(OnValueChangedListener onValueChangedListener) {
-        this.onValueChangedListener = onValueChangedListener;
+    public void setWidget(String widget) {
+        this.widget = widget;
     }
+
+
 }

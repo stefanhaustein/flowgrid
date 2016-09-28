@@ -194,7 +194,10 @@ public class WidgetPort implements Widget, Port {
             });
 */
         } else {
-            dataWidget = new DataWidget(manager.flowgrid(), manager.operation(), null, widget, port.outputCount() != 0, "port", port.name());
+            dataWidget = new DataWidget(port.dataType());
+            dataWidget.setEditable(port.outputCount() != 0);
+            dataWidget.setWidget(widget);
+            dataWidget.setLabel(port.name());
 //            view = dataWidget.view();
             if (port.input) {
                 if (type == PrimitiveType.BOOLEAN) {

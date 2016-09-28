@@ -26,6 +26,7 @@ import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.UiTimerTask;
 import org.flowgrid.swt.data.DataWidget;
+import org.flowgrid.swt.data.PropertyWidget;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.port.PortManager;
@@ -131,7 +132,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
             controlLayout.addView(separator);
             */
             for (Property property: classifier.properties(null)) {
-                DataWidget input = new DataWidget(flowgrid, operation, "instance", property.name());
+                DataWidget input = new PropertyWidget(property, instance);
                 //Control control =
                 input.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
                 //                controlLayout.addView(view);
