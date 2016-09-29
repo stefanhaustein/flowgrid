@@ -8,7 +8,6 @@ import org.flowgrid.model.Type;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.view.ViewGroup;
 
 public class DataDialog {
   

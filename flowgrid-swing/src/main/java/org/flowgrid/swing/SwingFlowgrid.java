@@ -3,7 +3,8 @@ package org.flowgrid.swing;
 import org.eclipse.swt.widgets.SwingDisplay;
 import org.flowgrid.swt.SwtFlowgrid;
 
-import javax.swing.*;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class SwingFlowgrid {
 

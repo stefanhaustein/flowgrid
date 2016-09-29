@@ -7,7 +7,6 @@ import org.flowgrid.android.api.ImageImpl;
 import org.flowgrid.android.data.DataWidget;
 import org.flowgrid.android.Widget;
 import org.flowgrid.android.data.DataWidget.OnValueChangedListener;
-import org.flowgrid.android.widget.ColumnLayout;
 import org.flowgrid.model.Instance;
 import org.flowgrid.model.Port;
 import org.flowgrid.model.PrimitiveType;

@@ -3,17 +3,14 @@ package org.flowgrid.android;
 import org.flowgrid.R;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
-import org.flowgrid.model.Classifier;
 import org.flowgrid.android.widget.ContextMenu;
 import org.flowgrid.android.widget.ContextMenu.Item;
 import org.flowgrid.android.widget.ContextMenu.ItemClickListener;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.DisplayType;
 import org.flowgrid.model.Module;
-import org.flowgrid.model.Operation;
 
 import android.support.v4.widget.DrawerLayout;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;

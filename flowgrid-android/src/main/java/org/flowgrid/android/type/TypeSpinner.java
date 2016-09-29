@@ -4,11 +4,9 @@ import org.flowgrid.android.MainActivity;
 import org.flowgrid.model.Callback;
 import org.flowgrid.android.Views;
 import org.flowgrid.model.Container;
-import org.flowgrid.model.Platform;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 

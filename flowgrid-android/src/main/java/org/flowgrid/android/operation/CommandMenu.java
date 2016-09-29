@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.flowgrid.R;
-import org.flowgrid.android.MainActivity;
 import org.flowgrid.android.graphics.ArtifactDrawable;
 import org.flowgrid.model.ActionFactory;
 import org.flowgrid.model.Callback;

@@ -1,6 +1,5 @@
 package org.flowgrid.android.data;
 
-import java.util.List;
 import java.util.Timer;
 
 import org.flowgrid.R;

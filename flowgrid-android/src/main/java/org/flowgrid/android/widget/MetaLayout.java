@@ -10,8 +10,6 @@ import com.mobidevelop.widget.SplitPaneLayout;
 import org.flowgrid.android.MainActivity;
 import org.flowgrid.android.UiTimerTask;
 import org.flowgrid.android.Widget;
-import org.flowgrid.android.widget.ColumnLayout;
-import org.flowgrid.android.widget.ColumnLayoutInterface;
 
 public class MetaLayout implements Widget, ColumnLayoutInterface {
   static final String TAG = "MetaLayout";

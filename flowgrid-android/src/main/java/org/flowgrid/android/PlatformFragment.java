@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class PlatformFragment<V extends View> extends Fragment implements ItemClickListener {
