@@ -5,6 +5,7 @@ import org.flowgrid.swt.SwtFlowgrid;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import java.io.File;
 
 public class SwingFlowgrid {
 
@@ -28,7 +29,8 @@ public class SwingFlowgrid {
         }
 
         SwingDisplay display = new SwingDisplay();
-        new SwtFlowgrid(display);
+        new SwtFlowgrid(display,
+                new File(new File(System.getProperty("user.home")), "flowgrid")).start();
     }
 
 }

@@ -45,10 +45,9 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     Display display;
     Shell shell;
 
-    File flowgridRoot = new File(new File(System.getProperty("user.home")), "flowgrid");
-    File documentationRoot = new File(flowgridRoot, "documentation");
-    File storageRoot = new File(flowgridRoot, "files");
-    File cacheRoot = new File(flowgridRoot, "cache");
+    File flowgridRoot;
+    File storageRoot;
+    File cacheRoot;
 
     final MenuAdapter menuAdapter = new MenuAdapter(this);
     private HutnObject editBuffer;
@@ -57,17 +56,35 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public final Colors colors;
 
-    public SwtFlowgrid(Display display) {
+    public SwtFlowgrid(Display display, File flowgridRootDir) {
         this.display = display;
+
+        flowgridRoot = flowgridRootDir;
+        storageRoot = new File(flowgridRoot, "files");
+        cacheRoot = new File(flowgridRoot, "cache");
+
         colors = new Colors(display, false);
-
-        model = new Model(this);
-
-        loadDocumentation();
-
         shell = new Shell(display);
         shell.setText("FlowGrid");
+    }
 
+    public void start() {
+        Settings.BootCommand bootCommand = settings.bootCommand();
+
+        if (!storageRoot().exists() || storageRoot().list().length == 0) {
+            storageRoot().mkdirs();
+            cacheRoot().mkdirs();
+            bootCommand = Settings.BootCommand.INITIALIZE_FILESYSTEM;
+            settings().setBootCommand(bootCommand, null);
+        }
+
+        if (bootCommand != null && bootCommand != Settings.BootCommand.NONE) {
+            new Installer(this).start();
+            return;
+        }
+
+        model = new Model(this);
+        loadDocumentation();
         shell.setMenuBar(createMenuBar());
 
         openArtifact(model.artifact(settings.getLastUsed()));
