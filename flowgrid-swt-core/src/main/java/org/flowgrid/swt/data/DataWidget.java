@@ -131,7 +131,7 @@ public class DataWidget implements Widget {
             if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
                 System.out.println("*** Widget for " + name + ": " + widget);
                 setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
-                text.addModifyListenr(new ModifyListener() {
+                text.addModifyListener(new ModifyListener() {
                     @Override
                     public void modifyText(ModifyEvent eve) {
                         try {

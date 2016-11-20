@@ -102,17 +102,15 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     ArrayList<Type> currentTypeFilter = new ArrayList<>();
     ArrayList<Integer> currentAutoConnectStartRow = new ArrayList<>();
     Label menuAnchor;
-    Button startStopButton;
+    Button startPauseButton;
     Button helpButton;
-    Button moreButton;
-    Label pauseLabel;
-    Label fastLabel;
+    Button fasterButton;
+    Button slowerButton;
     boolean changing;
     SwtFlowgrid flowgrid;
     ArrayList<String> undoHistory = new ArrayList<>();
-    int previousSpeed = 50;
-
-    Scale speedBar;
+    int currentSpeed = 50;
+    int previousSpeed;
 
 
     public OperationCanvas(final OperationEditor operationEditor, final Composite parent) {
@@ -125,38 +123,25 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         operation.ensureLoaded();  // FIXME
 
         if (!operationEditor.tutorialMode) {
-            speedBar = new Scale(this, SWT.VERTICAL);
-            speedBar.setSelection(50);
-            fastLabel = new Label(this, SWT.NONE);
-            fastLabel.setText(">>"); // "\u23e9";
-            fastLabel.addMouseListener(new MouseAdapter() {
+            slowerButton = new Button(this, SWT.NONE);
+            slowerButton.setText("\u2212");
+            slowerButton.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseUp(MouseEvent e) {
-                    if (speedBar.getSelection() == 100) {
-                        speedBar.setSelection(previousSpeed);
-                    } else {
-                        previousSpeed = speedBar.getSelection();
-                        speedBar.setSelection(100);
-                    }
+                    currentSpeed = Math.max(10, currentSpeed - 10);
+                    updateButtons();
                 }
             });
-            pauseLabel = new Label(this, SWT.NONE);
-            pauseLabel.setText("||"); // \u23f8");
-            pauseLabel.addMouseListener(new MouseAdapter() {
+            fasterButton = new Button(this, SWT.NONE);
+            fasterButton.setText("+");
+            fasterButton.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseUp(MouseEvent e) {
-                    if (speedBar.getSelection() == 0) {
-                        speedBar.setSelection(previousSpeed);
-                    } else {
-                        previousSpeed = speedBar.getSelection();
-                        speedBar.setSelection(0);
-                    }
+                    currentSpeed = Math.min(100, currentSpeed + 10);
+                    updateButtons();
                 }
             });
-        }
-
-        moreButton = new Button(this, SWT.PUSH);
-        moreButton.setText("\u22ee");
+       }
 
         helpButton = new Button(this, SWT.PUSH);
         helpButton.setText("?");
@@ -167,13 +152,19 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 }
         });
 
-        startStopButton = new Button(this, SWT.PUSH);
-        startStopButton.setText("\u25b6");
-        startStopButton.addSelectionListener(new SelectionAdapter() {
+        startPauseButton = new Button(this, SWT.PUSH);
+        startPauseButton.setText("\u25b6");
+        startPauseButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (operationEditor.running) {
-                    operationEditor.stop();
+                    if (currentSpeed > 0) {
+                        previousSpeed = currentSpeed;
+                        currentSpeed = 0;
+                    } else {
+                        currentSpeed = previousSpeed;
+                    }
+                    updateButtons();
                 } else {
                     operationEditor.start();
                 }
@@ -260,7 +251,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
             @Override
             public void mouseDown(MouseEvent e) {
-                System.out.println(startStopButton.toString());
+                System.out.println(startPauseButton.toString());
 
                 armed = true;
                 autoZoom = false;
@@ -393,7 +384,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
                 int spacing = 5;
 
-                Button[] topButtons = new Button[]{startStopButton, helpButton, moreButton};
+                Button[] topButtons = operation.isTutorial() ?
+                        new Button[]{startPauseButton, helpButton} :
+                        new Button[]{slowerButton, startPauseButton, fasterButton, helpButton};
 
                 int buttonW = 0;
                 int buttonH = 0;
@@ -411,29 +404,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     buttonW = 3 * buttonH / 2;
                 }*/
                 for (int i = 0; i < topButtons.length; i++) {
-                    topButtons[i].setBounds(bounds.width - (buttonW + spacing) * (3 - i), spacing, buttonW, buttonH);
-                }
-
-                if (speedBar != null) {
-                    Point speedBarSize = speedBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                    Point fastSize = fastLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                    Point pauseSize = pauseLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                    int speedW = Math.max(Math.max(fastSize.x, pauseSize.x), Math.max(buttonW, speedBarSize.x));
-                    int speedX = bounds.width - speedW - spacing;
-                    int speedY = buttonH + 2 * spacing;
-
-                    fastLabel.setBounds(speedX + (speedW - fastSize.x) / 2,
-                            speedY,
-                            fastSize.x, fastSize.y);
-
-                    speedBar.setBounds(speedX + (speedW - speedBarSize.x) / 2,
-                            speedY + fastSize.y + 2 * spacing,
-                            speedBarSize.x,
-                            bounds.height - speedY - fastSize.y - pauseSize.y - 4 * spacing);
-
-                    pauseLabel.setBounds(speedX + (speedW - pauseSize.x) / 2,
-                            bounds.height - pauseSize.y - spacing,
-                            pauseSize.x, pauseSize.y);
+                    topButtons[i].setBounds(bounds.width - (buttonW + spacing) * (topButtons.length - i), spacing, buttonW, buttonH);
                 }
 
                 menuAnchor.setBounds(-1, -1, 1, 1);
@@ -738,7 +709,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         cellsReady.clear();
         for (VisualData data: operationEditor.controller.getAndAdvanceVisualData(
-                speedBar == null ? operation().tutorialData.speed : speedBar.getSelection())) {
+                operation().isTutorial() ? operation().tutorialData.speed : currentSpeed)) {
             drawData(data, gc);
         }
 
@@ -1265,7 +1236,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
      * Called from OperationEditor.updataMenu();
      */
     void updateButtons() {
-        startStopButton.setText(operationEditor.running ? "\u25FC" : "\u23f5");
+        startPauseButton.setText(operationEditor.running && currentSpeed > 0 ? "\u23f8" : "\u25b6"); //: */"\u25FC" );
+        fasterButton.setEnabled(operationEditor.running && currentSpeed < 100);
+        slowerButton.setEnabled(operationEditor.running && currentSpeed > 10);
     }
 
     void updateLayout() {

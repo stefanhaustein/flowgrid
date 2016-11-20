@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.kobjects.flowgrid"
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
