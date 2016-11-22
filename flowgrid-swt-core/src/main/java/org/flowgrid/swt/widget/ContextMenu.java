@@ -69,9 +69,9 @@ public class ContextMenu {
                 subMenu = new ContextMenu(this);
             } else {
                 swtItem = new MenuItem(parent.swtMenu, SWT.PUSH);
+                swtItem.addSelectionListener(Item.this);
             }
             swtItem.setText(title);
-            swtItem.addSelectionListener(this);
         }
 
         public ContextMenu getSubMenu() {
@@ -87,7 +87,7 @@ public class ContextMenu {
                     return;
                 }
                 if (parentMenu.itemClickListener != null) {
-                    parentMenu.itemClickListener.onContextMenuItemClick(current);
+                    parentMenu.itemClickListener.onContextMenuItemClick(this);
                     return;
                 }
                 current = parentMenu.parentItem;

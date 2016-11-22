@@ -964,6 +964,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
     @Override
     public boolean onContextMenuItemClick(ContextMenu.Item item) {
+
+        System.out.println("onContextMenuItemClick: " + item.getTitle());
+
         final String label = item.getTitle().toString();
 
         if (Strings.MENU_ITEM_STOP.equals(label)) {
