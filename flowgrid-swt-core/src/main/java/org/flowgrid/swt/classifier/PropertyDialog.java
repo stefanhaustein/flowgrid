@@ -35,7 +35,7 @@ public class PropertyDialog {
         // FIXME: Adjust value widget type when type changes.
 
         new Label(content, SWT.SINGLE).setText(property.classifier != null ? "Initial value" : "Constant value");
-        final DataWidget valueWidget = new DataWidget(property.type());
+        final DataWidget valueWidget = new DataWidget(flowgrid, property.type());
         valueWidget.createControl(content);
 
         alert.setNegativeButton("Cancel", null);

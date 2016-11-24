@@ -132,7 +132,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
             controlLayout.addView(separator);
             */
             for (Property property: classifier.properties(null)) {
-                DataWidget input = new PropertyWidget(property, instance);
+                DataWidget input = new PropertyWidget(flowgrid, property, instance);
                 //Control control =
                 input.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
                 //                controlLayout.addView(view);

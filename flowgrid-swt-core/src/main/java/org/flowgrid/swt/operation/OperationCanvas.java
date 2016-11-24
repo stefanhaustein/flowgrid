@@ -42,6 +42,7 @@ import org.flowgrid.model.hutn.HutnWriter;
 import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.data.DataDialog;
 import org.flowgrid.swt.graphics.EmojiTextHelper;
 import org.flowgrid.swt.port.TestPortDialog;
 import org.flowgrid.swt.port.WidgetPort;
@@ -413,15 +414,28 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
     void addLiteral() {
+        DataDialog.show(flowgrid, "Add Literal", Type.ANY, operation.module(), null, new Callback<Object>() {
+            @Override
+            public void run(Object value) {
+                beforeChange();
+                Type type = flowgrid.model().type(value);
+                LiteralCommand literal = new LiteralCommand(flowgrid.model(), type, value);
+                operation.setCommand(selection.row(), selection.col(), literal);
+                selection.setVisibility(true);
+                afterChange();
+            }
+
+            @Override
+            public void cancel() {
+                selection.setVisibility(false);
+            }
+        });
+
         flowgrid.editStructuredDataValue(operation(), new String[]{"literal", Position.toString(selection.row, selection.col)},
                 menuAnchor, new Callback<TypeAndValue>() {
                     @Override
                     public void run(TypeAndValue variant) {
-                        beforeChange();
-                        LiteralCommand literal = new LiteralCommand(flowgrid.model(), variant.type, variant.value);
-                        operation.setCommand(selection.row(), selection.col(), literal);
-                        selection.setVisibility(true);
-                        afterChange();
+
                     }
 
                     @Override

@@ -15,11 +15,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.Member;
+import org.flowgrid.model.Module;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.StructuredData;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.Types;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.type.TypeFilter;
+import org.flowgrid.swt.type.TypeSpinner;
+import org.flowgrid.swt.type.TypeWidget;
 import org.flowgrid.swt.widget.Widget;
 
 public class DataWidget implements Widget {
@@ -33,7 +37,7 @@ public class DataWidget implements Widget {
     }
 
     boolean editable = true;
-    private final Type type;
+    private Type type;
     private String name;
     private OnValueChangedListener onValueChangedListener;
 
@@ -47,8 +51,12 @@ public class DataWidget implements Widget {
     private Object value;
     private Control control;
     private String widget;
+    private SwtFlowgrid flowgrid;
+    private DataWidget inner;
+    private Module localModule;
 
-    public DataWidget(Type type) {
+    public DataWidget(SwtFlowgrid flowgrid, Type type) {
+        this.flowgrid = flowgrid;
         this.type = type;
     }
 
@@ -147,6 +155,40 @@ public class DataWidget implements Widget {
                 });
                 return control;
             }
+
+            if (type == Type.ANY) {
+                final Composite container = new Composite(parentComposite, SWT.NONE);
+                GridLayout gridLayout = new GridLayout(1, false);
+                gridLayout.marginWidth = 0;
+                gridLayout.marginHeight = 0;
+                container.setLayout(gridLayout);
+                if (name != null && !name.isEmpty()) {
+                    Label label = new Label(container, SWT.NONE);
+                    label.setText(name);
+                }
+                control = container;
+                container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+                TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.INSTANTIABLE);
+                inner = new DataWidget(flowgrid, typeSpinner.type());
+                inner.createControl(container);
+                inner.setOnValueChangedListener(new OnValueChangedListener() {
+                    @Override
+                    public void onValueChanged(Object newValue) {
+                        inputChangedTo(newValue, false);
+                    }
+                });
+                typeSpinner.setOnTypeChangedListener(new TypeWidget.OnTypeChangedListener() {
+                    @Override
+                    public void onTypeChanged(Type type) {
+                        inner.disposeControl();
+                        inner.type = type;
+                        inner.createControl(container);
+                    }
+                });
+
+                return container;
+            }
         }
 
         setControl(label = new Label(maybeAddLabel(parentComposite), SWT.NONE));
@@ -222,6 +264,10 @@ public class DataWidget implements Widget {
                 scale.setSelection(Math.round(((Number) value).floatValue()));
             }
         }
+    }
+
+    public void setLocalModule(Module localModule) {
+        this.localModule = localModule;
     }
 
     public void setWidget(String widget) {

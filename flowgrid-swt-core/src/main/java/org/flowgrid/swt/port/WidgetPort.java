@@ -194,7 +194,7 @@ public class WidgetPort implements Widget, Port {
             });
 */
         } else {
-            dataWidget = new DataWidget(port.dataType());
+            dataWidget = new DataWidget(manager.flowgrid(), port.dataType());
             dataWidget.setEditable(port.outputCount() != 0);
             dataWidget.setWidget(widget);
             dataWidget.setLabel(port.name());
