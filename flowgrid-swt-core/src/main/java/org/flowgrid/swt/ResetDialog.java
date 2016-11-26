@@ -28,8 +28,9 @@ public class ResetDialog {
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public boolean onClick(DialogInterface dialog, int which) {
                 platform.reboot(BOOT_COMMANDS[options.getSelectionIndex()], path);
+                return true;
             }
         });
         alert.show();

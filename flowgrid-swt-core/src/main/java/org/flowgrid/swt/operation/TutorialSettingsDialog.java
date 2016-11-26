@@ -57,7 +57,7 @@ public class TutorialSettingsDialog {
             alert.setNegativeButton("Cancel", null);
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public boolean onClick(DialogInterface dialog, int which) {
                     fragment.beforeChange();
                     tutorialData.editableStartRow = Integer.parseInt(editableRowsStartField.getText().toString());
                     tutorialData.editableEndRow = Integer.parseInt(editableRowsEndField.getText().toString());
@@ -65,6 +65,7 @@ public class TutorialSettingsDialog {
                     tutorialData.order = Double.parseDouble(orderField.getText().toString());
                     tutorialData.speed = Integer.parseInt(speedField.getText().toString());
                     fragment.afterChange();
+                    return true;
                 }
             });
             alert.show();

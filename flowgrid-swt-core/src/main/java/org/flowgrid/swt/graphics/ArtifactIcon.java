@@ -12,7 +12,7 @@ import org.flowgrid.swt.Colors;
 public class ArtifactIcon extends Canvas {
     public enum Kind {
         CONTINUOUS_OPERATION, OPERATION, PROPERTY, CLASSIFIER, MODULE, SOUND, TUTORIAL,
-        BRANCH_LEFT, BRANCH_RIGHT, BRANCH_ALL, BRANCH_LEFT_AND_RIGTH, PARENT, IMAGE
+        BRANCH_LEFT, BRANCH_RIGHT, BRANCH_ALL, BRANCH_LEFT_AND_RIGTH, PARENT, NO_ICON, IMAGE
     }
 
     final Kind kind;
@@ -68,6 +68,8 @@ public class ArtifactIcon extends Canvas {
         gc.setForeground(color);
 
         switch (kind) {
+            case NO_ICON:
+                break;
             case BRANCH_ALL:
             case BRANCH_LEFT:
             case BRANCH_LEFT_AND_RIGTH:

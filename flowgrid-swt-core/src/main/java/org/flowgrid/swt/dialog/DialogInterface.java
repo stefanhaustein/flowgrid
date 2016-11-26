@@ -14,6 +14,9 @@ public interface DialogInterface {
     }
 
     interface OnClickListener {
-        void onClick(DialogInterface dialog, int which);
+        /**
+         * If true is returned, the dialog will be dismissed.
+         */
+        boolean onClick(DialogInterface dialog, int which);
     }
 }

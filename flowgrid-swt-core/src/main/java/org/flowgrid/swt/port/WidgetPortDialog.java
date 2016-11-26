@@ -95,7 +95,7 @@ public class WidgetPortDialog {
 
         if (needsWidgetSpinner) {
             label = new Label(main, SWT.SINGLE);
-            label.setText("Widget");
+            label.setText("MetaControl");
         }
 
         final Combo widgetSpinner = needsWidgetSpinner ? new Combo(main, SWT.POP_UP) : null;
@@ -146,7 +146,7 @@ public class WidgetPortDialog {
         alert.setView(tabHost);*/
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, final int whichButton) {
+            public boolean onClick(DialogInterface dialog, final int whichButton) {
                 portCommand.setName(editText.getText().toString());
                 portCommand.setDataType(fixedType == null ? typeSpinner.type() : fixedType);
                 if (widgetSpinner != null) {
@@ -162,13 +162,15 @@ public class WidgetPortDialog {
                 peerJson.put("width", widthSpinner.getSelectionIndex());
                 peerJson.put("height", heightSpinner.getSelectionIndex());
                 callback.run(null);
+                return true;
             }
         };
 
         alert.setPositiveButton("Ok", listener);
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
+            public boolean onClick(DialogInterface dialog, int whichButton) {
                 callback.cancel();
+                return true;
             }
         });
 

@@ -12,23 +12,19 @@ import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Module;
 import org.flowgrid.swt.dialog.AlertDialog;
+import org.flowgrid.swt.dialog.DialogInterface;
 
-public class ArtifactDialog {
+public class OpenArtifactDialog {
     final SwtFlowgrid flowgrid;
     final ScrolledComposite scrolledComposite;
     final Composite list;
-    final Shell shell;
+    AlertDialog alertDialog;
 
-    ArtifactDialog(SwtFlowgrid flowgrid, String title, Module module) {
+    OpenArtifactDialog(final SwtFlowgrid flowgrid, final Module module) {
         this.flowgrid = flowgrid;
-        shell = new Shell(flowgrid.shell);
-        shell.setText(title);
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.marginHeight = 0;
-        gridLayout.marginWidth = 0;
-        shell.setLayout(gridLayout);
+        alertDialog = new AlertDialog(flowgrid.shell);
 
-        scrolledComposite = new ScrolledComposite(shell, 0);
+        scrolledComposite = new ScrolledComposite(alertDialog.getContentContainer(), 0);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
@@ -39,12 +35,21 @@ public class ArtifactDialog {
         setModule(module);
         scrolledComposite.setContent(list);
 
-        shell.pack();
-        AlertDialog.center(shell);
-        shell.open();
+        alertDialog.setNeutralButton("Home", new DialogInterface.OnClickListener() {
+            @Override
+            public boolean onClick(DialogInterface dialog, int which) {
+                setModule(flowgrid.model.rootModule);
+                return false;
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", null);
+
+        alertDialog.show();
     }
 
     void setModule(Module module) {
+        alertDialog.setTitle(module == flowgrid.model.rootModule ? "Open" : ("Open - " + module.name()));
+
         for(Control control: list.getChildren()) {
             control.dispose();
         }
@@ -55,20 +60,23 @@ public class ArtifactDialog {
                     setModule((Module) artifact);
                 } else {
                     flowgrid.openArtifact(artifact);
-                    shell.dispose();
+                    alertDialog.dismiss();
                 }
             }
         };
 
-        if (module.parent() != null && module.parent().parent() != null) {
+        if (module.parent() != null) {
             ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, module.parent(), true);
             artifactComposite.setListener(callback);
         }
 
         for (final Artifact artifact: module) {
-            ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, artifact, false);
-            artifactComposite.setListener(callback);
+            if (!artifact.isBuiltin()) {
+                ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.colors, artifact, false);
+                artifactComposite.setListener(callback);
+            }
         }
         list.layout(true, true);
+        scrolledComposite.layout(true, true);
     }
 }

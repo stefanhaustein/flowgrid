@@ -1,7 +1,6 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -18,10 +17,8 @@ import org.flowgrid.model.Module;
 import org.flowgrid.model.Platform;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.Sound;
-import org.flowgrid.model.StructuredData;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.TypeAndValue;
-import org.flowgrid.model.Types;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.io.IOCallback;
 import org.flowgrid.swt.api.ImageImpl;
@@ -34,7 +31,6 @@ import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,6 +49,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     private HutnObject editBuffer;
     private Settings settings = new Settings();
     private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
+    private ArtifactEditor currentEditor;
 
     public final Colors colors;
 
@@ -85,9 +82,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
         model = new Model(this);
         loadDocumentation();
-        shell.setMenuBar(createMenuBar());
 
         openArtifact(model.artifact(settings.getLastUsed()));
+
+        updateMenu();
 
         shell.pack();
         shell.open();
@@ -99,7 +97,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         return cacheRoot;
     }
 
-    public Menu createMenuBar() {
+    public void updateMenu() {
         Menu menuBar = new Menu(shell);
         MenuItem fileMenuItem = new MenuItem(menuBar, SWT.CASCADE);
         fileMenuItem.setText("File");
@@ -107,9 +105,12 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
         menuAdapter.addItem(fileMenu, "About");
         menuAdapter.addItem(fileMenu, "Open");
-        menuAdapter.addItem(fileMenu, "Tutorials");
-        menuAdapter.addItem(fileMenu, "Examples");
-        return menuBar;
+
+        if (currentEditor != null) {
+            currentEditor.addArtifactMenu(menuBar);
+        }
+
+        shell.setMenuBar(menuBar);
     }
 
     void clear() {
@@ -253,7 +254,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     void openArtifactDialog(String title, String moduleName) {
         Module module = (Module) model.artifact(moduleName);
         module.ensureLoaded();  // Move into to the iterator call?
-        new ArtifactDialog(this, title, module);
+        new OpenArtifactDialog(this, module);
     }
 
     @Override
@@ -308,7 +309,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public void openClassifier(Classifier classifier) {
         clear();
-        new ClassifierEditor(this, classifier);
+        currentEditor = new ClassifierEditor(this, classifier);
     }
 
     private void openOperation(CustomOperation operation) {
@@ -324,7 +325,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
         settings.setLastUsed(operation);
 
-        new OperationEditor(this, operation);
+        currentEditor = new OperationEditor(this, operation);
     }
 
     public void openProperty(Property p) {

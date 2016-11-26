@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -39,7 +40,9 @@ public class AlertDialog implements DialogInterface {
         shell.setLayout(gridLayout);
         contentContainer = new Composite(shell, 0);
         contentContainer.setLayout(new GridLayout());
+        contentContainer.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
         buttonRow = new Composite(shell, 0);
+        buttonRow.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
         buttonRow.setLayout(new RowLayout());
     }
 
@@ -53,9 +56,8 @@ public class AlertDialog implements DialogInterface {
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                shell.dispose();
-                if (onClickListener != null) {
-                    onClickListener.onClick(AlertDialog.this, code);
+                if (onClickListener == null || onClickListener.onClick(AlertDialog.this, code)) {
+                    dismiss();
                 }
             }
         });
@@ -91,5 +93,9 @@ public class AlertDialog implements DialogInterface {
         shell.pack();
         center(shell);
         shell.open();
+    }
+
+    public void dismiss() {
+        shell.dispose();
     }
 }

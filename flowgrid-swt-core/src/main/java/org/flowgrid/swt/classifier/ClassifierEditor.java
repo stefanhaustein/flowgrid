@@ -2,11 +2,13 @@ package org.flowgrid.swt.classifier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.swt.ArtifactEditor;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Classifier;
@@ -17,19 +19,22 @@ import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
 
-public class ClassifierEditor implements MenuSelectionHandler {
+public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
 
+    Classifier classifier;
     ScrolledComposite scrolledComposite;
     Composite propertyPanel;
     Composite operationPanel;
     MenuAdapter menuAdapter = new MenuAdapter(this);
 
     public ClassifierEditor(final SwtFlowgrid flowgrid, Classifier classifier) {
-
+        this.classifier = classifier;
         scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.NONE);
         Composite contentPanel = new Composite(scrolledComposite, SWT.NONE);
 
         flowgrid.shell().setText(classifier.name() + " - FlowGrid");
+
+        flowgrid.shell().setLayout(new FillLayout());
 
         propertyPanel = new Composite(contentPanel, SWT.NONE);
         GridLayout propertyLayout = new GridLayout(1, false);
@@ -65,19 +70,20 @@ public class ClassifierEditor implements MenuSelectionHandler {
         scrolledComposite.setContent(contentPanel);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         flowgrid.shell().layout(true, true);
+    }
 
-        Menu menuBar = flowgrid.createMenuBar();
+    @Override
+    public void menuItemSelected(MenuItem menuItem) {
+
+    }
+
+    @Override
+    public void addArtifactMenu(Menu menuBar) {
         MenuItem classifierMenuItem = new MenuItem(menuBar, SWT.CASCADE);
         classifierMenuItem.setText(classifier.isInterface() ? "Interface" : "Class");
         Menu classifierMenu = new Menu(classifierMenuItem);
         menuAdapter.addItem(classifierMenu, Strings.MENU_ITEM_ADD_PROPERTY);
         menuAdapter.addItem(classifierMenu, Strings.MENU_ITEM_ADD_METHOD);
-
-        flowgrid.shell().setMenuBar(menuBar);
-    }
-
-    @Override
-    public void menuItemSelected(MenuItem menuItem) {
 
     }
 }

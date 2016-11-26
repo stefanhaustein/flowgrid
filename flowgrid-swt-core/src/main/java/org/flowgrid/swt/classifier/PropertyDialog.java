@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Label;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.Type;
 import org.flowgrid.swt.SwtFlowgrid;
-import org.flowgrid.swt.data.DataWidget;
+import org.flowgrid.swt.data.DataMetaControl;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.type.TypeFilter;
@@ -35,13 +35,13 @@ public class PropertyDialog {
         // FIXME: Adjust value widget type when type changes.
 
         new Label(content, SWT.SINGLE).setText(property.classifier != null ? "Initial value" : "Constant value");
-        final DataWidget valueWidget = new DataWidget(flowgrid, property.type());
+        final DataMetaControl valueWidget = new DataMetaControl(flowgrid, property.type());
         valueWidget.createControl(content);
 
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public boolean onClick(DialogInterface dialog, int which) {
                 if (!Objects.equals(valueWidget.value(), property.value())) {
                     property.setValue(valueWidget.value());
                 }
@@ -53,6 +53,7 @@ public class PropertyDialog {
                     System.out.println("TBD: Rename");
                 }*/
                 property.save();
+                return true;
             }
         });
 

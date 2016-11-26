@@ -14,19 +14,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
-import org.flowgrid.model.Member;
 import org.flowgrid.model.Module;
+import org.flowgrid.model.Objects;
 import org.flowgrid.model.PrimitiveType;
-import org.flowgrid.model.StructuredData;
 import org.flowgrid.model.Type;
-import org.flowgrid.model.Types;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeSpinner;
 import org.flowgrid.swt.type.TypeWidget;
-import org.flowgrid.swt.widget.Widget;
+import org.flowgrid.swt.widget.MetaControl;
 
-public class DataWidget implements Widget {
+public class DataMetaControl implements MetaControl {
 
     public interface OnValueChangedListener {
         void onValueChanged(Object newValue);
@@ -52,10 +50,10 @@ public class DataWidget implements Widget {
     private Control control;
     private String widget;
     private SwtFlowgrid flowgrid;
-    private DataWidget inner;
+    private DataMetaControl inner;
     private Module localModule;
 
-    public DataWidget(SwtFlowgrid flowgrid, Type type) {
+    public DataMetaControl(SwtFlowgrid flowgrid, Type type) {
         this.flowgrid = flowgrid;
         this.type = type;
     }
@@ -137,7 +135,7 @@ public class DataWidget implements Widget {
             }
 
             if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
-                System.out.println("*** Widget for " + name + ": " + widget);
+                System.out.println("*** MetaControl for " + name + ": " + widget);
                 setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
                 text.addModifyListener(new ModifyListener() {
                     @Override
@@ -170,7 +168,7 @@ public class DataWidget implements Widget {
                 container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
                 TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.INSTANTIABLE);
-                inner = new DataWidget(flowgrid, typeSpinner.type());
+                inner = new DataMetaControl(flowgrid, typeSpinner.type());
                 inner.createControl(container);
                 inner.setOnValueChangedListener(new OnValueChangedListener() {
                     @Override
@@ -237,12 +235,12 @@ public class DataWidget implements Widget {
         }
     }
 
-    public DataWidget setLabel(String label) {
+    public DataMetaControl setLabel(String label) {
         this.name = label;
         return this;
     }
 
-    public DataWidget setEditable(boolean editable) {
+    public DataMetaControl setEditable(boolean editable) {
         this.editable = editable;
         return this;
     }
@@ -252,7 +250,7 @@ public class DataWidget implements Widget {
     }
 
     public void setValue(Object newValue) {
-        if (!newValue.equals(value)) {
+        if (!Objects.equals(newValue, value)) {
             value = newValue;
             if (text != null) {
                 text.setText(toString(value));

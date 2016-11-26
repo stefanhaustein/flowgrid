@@ -54,7 +54,7 @@ public class ArrayTypeDialog {
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public boolean onClick(DialogInterface dialog, int which) {
                 int len = -1;
                 if (lengthEditText.isEnabled()) {
                     String value = lengthEditText.getText().toString();
@@ -64,6 +64,7 @@ public class ArrayTypeDialog {
                 }
                 ArrayType arrayType = new ArrayType(elementTypeSpinner.type(), len);
                 callback.run(arrayType);
+                return true;
             }
         });
 

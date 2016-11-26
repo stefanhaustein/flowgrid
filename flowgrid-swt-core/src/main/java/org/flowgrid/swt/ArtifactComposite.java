@@ -30,9 +30,11 @@ public class ArtifactComposite extends Composite {
         ArtifactIcon.Kind kind;
         String text = null;
         if (artifact instanceof Module) {
-            kind = ArtifactIcon.Kind.MODULE;
             if (up) {
                 text = "<";
+                kind = ArtifactIcon.Kind.NO_ICON;
+            } else {
+                kind = ArtifactIcon.Kind.MODULE;
             }
         } else if (artifact instanceof Classifier) {
             kind = ArtifactIcon.Kind.CLASSIFIER;
@@ -55,7 +57,7 @@ public class ArtifactComposite extends Composite {
             icon = new ArtifactIcon(this, colors, kind, text);
         }
         label = new Label(this, SWT.NONE);
-        label.setText(artifact.name());
+        label.setText(artifact.name().isEmpty() ? "(home)" : artifact.name());
     }
 
     public void setListener(final Callback<Artifact> listener) {

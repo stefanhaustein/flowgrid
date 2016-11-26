@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.swt.ArtifactEditor;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Cell;
 import org.flowgrid.model.Classifier;
@@ -25,8 +26,8 @@ import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.UiTimerTask;
-import org.flowgrid.swt.data.DataWidget;
-import org.flowgrid.swt.data.PropertyWidget;
+import org.flowgrid.swt.data.DataMetaControl;
+import org.flowgrid.swt.data.PropertyMetaControl;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.port.PortManager;
@@ -34,13 +35,13 @@ import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
-import org.flowgrid.swt.widget.Widget;
+import org.flowgrid.swt.widget.MetaControl;
 
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class OperationEditor implements PortManager, MenuSelectionHandler {
+public class OperationEditor implements ArtifactEditor, PortManager, MenuSelectionHandler {
 
     static String portType(HutnObject peerJson) {
         String portType = peerJson.getString("portType", "");
@@ -132,7 +133,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
             controlLayout.addView(separator);
             */
             for (Property property: classifier.properties(null)) {
-                DataWidget input = new PropertyWidget(flowgrid, property, instance);
+                DataMetaControl input = new PropertyMetaControl(flowgrid, property, instance);
                 //Control control =
                 input.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
                 //                controlLayout.addView(view);
@@ -233,8 +234,9 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         });
         alert.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public boolean onClick(DialogInterface dialog, int which) {
                 resetTutorial();
+                return true;
             }
         });
         boolean success = true;
@@ -252,7 +254,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         if (success) {
             alert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public boolean onClick(DialogInterface dialog, int which) {
                     countedToRow = -1;
                     Iterator<Artifact> it = operation.module().iterator();
                     CustomOperation next = null;
@@ -273,6 +275,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
                     } else {
                         System.out.println("FIXME: navigateUp();");    // FIXME
                     }
+                    return true;
                 }
             });
             this.countedToRow = tutorialData.editableStartRow;
@@ -305,8 +308,9 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
                  ) {
                 alert.setNeutralButton("Help", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public boolean onClick(DialogInterface dialog, int which) {
                         OperationHelpDialog.show(OperationEditor.this);
+                        return true;
                     }
                 });
             }
@@ -443,7 +447,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
     }
 
     @Override
-    public void removeWidget(Widget widget) {
+    public void removeWidget(MetaControl widget) {
         System.out.println("TBD: OperationEditor.removeWidget()");
     }
 
@@ -494,7 +498,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         flowgrid.display().asyncExec(new Runnable() {
             @Override
             public void run() {
-                updateMenu();
+                updateMenu();  // Includes updateButtons();
             }
         });
     }
@@ -519,7 +523,7 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
         flowgrid.display().asyncExec(new Runnable() {
             @Override
             public void run() {
-                updateMenu();
+                updateMenu();  // includes updateButtons
                 operationCanvas.redraw();
             }
         });
@@ -570,23 +574,15 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
     }
 
 
-    void fillArtifactMenu(Menu menu) {
-        menuAdapter.addItem(menu, running ? Strings.MENU_ITEM_STOP : Strings.MENU_ITEM_START);
-    }
+    public void addArtifactMenu(Menu menuBar) {
 
-
-    protected void updateMenu() {
-        operationCanvas.updateButtons();
-
-        Menu menuBar = flowgrid.createMenuBar();
         MenuItem operationMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-        operationMenuItem.setText("Operation");
-        Menu operationMenu = new Menu(operationMenuItem);
-        fillArtifactMenu(operationMenu);
-        flowgrid.shell().setMenuBar(menuBar);
+         /*
 
-        /*
-        clearMenu();
+         operationMenuItem.setText("Operation");
+        Menu operationMenu = new Menu(operationMenuItem);
+
+
 
         SpannableString title = new SpannableString("\u2039 " + operation().name());
         if (operation().asyncInput()) {
@@ -668,6 +664,12 @@ public class OperationEditor implements PortManager, MenuSelectionHandler {
                 }
             });
         } */
+    }
+
+
+    protected void updateMenu() {
+        operationCanvas.updateButtons();
+        flowgrid.updateMenu();
     }
 
 

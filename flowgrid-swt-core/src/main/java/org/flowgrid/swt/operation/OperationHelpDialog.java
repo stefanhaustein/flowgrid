@@ -55,11 +55,12 @@ public class OperationHelpDialog {
 
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public boolean onClick(DialogInterface dialog, int which) {
                     fragment.operationCanvas.beforeChange();
                     fragment.operation.setDocumentation(documentation.getText().toString());
                     // fragment.tutorialHelpView.setText(fragment.operation.documentation());
                     fragment.operationCanvas.afterChange();
+                    return true;
                 }
             });
         }
