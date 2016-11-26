@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Classifier;
+import org.flowgrid.model.Container;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.Image;
 import org.flowgrid.model.Member;
@@ -251,12 +252,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         System.out.println("FIXME: log: " + message);
     }
 
-    void openArtifactDialog(String title, String moduleName) {
-        Module module = (Module) model.artifact(moduleName);
-        module.ensureLoaded();  // Move into to the iterator call?
-        new OpenArtifactDialog(this, module);
-    }
-
     @Override
     public Callback<Model> platformApiSetup() {
         return new SwtApiSetup(this);
@@ -355,12 +350,14 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     @Override
     public void menuItemSelected(MenuItem menuItem) {
         String label = menuItem.getText();
-        if ("Examples".equals(label)) {
-            openArtifactDialog("Open Example", "examples");
-        } else if ("Open".equals(label)) {
-            openArtifactDialog("Open", "myname");
-        } else if ("Tutorials".equals(label)) {
-            openArtifactDialog("Open Tutorial", "missions");
+        if ("Open".equals(label)) {
+            Module module = model.rootModule;
+            if (currentEditor != null) {
+                Container container = currentEditor.getArtifact().owner();
+                module = (Module) ((container instanceof Module) ? container : container.owner());
+            }
+            module.ensureLoaded();  // Move into to the iterator call?
+            new OpenArtifactDialog(this, module);
         } else if ("About".equals(label)) {
             AboutDialog.show(this);
         }

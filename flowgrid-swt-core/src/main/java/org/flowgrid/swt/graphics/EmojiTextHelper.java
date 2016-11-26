@@ -80,7 +80,7 @@ public class EmojiTextHelper {
     int end = text.length();
     while (pos < end) {
       int codepoint = Character.codePointAt(text, pos);
-      System.out.println(Integer.toHexString(codepoint));
+      // System.out.println(Integer.toHexString(codepoint));
       if (codepoint == 0xf888 || codepoint == 0xf889 ||
          codepoint > 0x1f300) {
       //    (fallback == Fallback.FULL && codepoint >= FALLBACK_START && codepoint < FALLBACK_END) ||

@@ -86,4 +86,9 @@ public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
         menuAdapter.addItem(classifierMenu, Strings.MENU_ITEM_ADD_METHOD);
 
     }
+
+    @Override
+    public Classifier getArtifact() {
+        return classifier;
+    }
 }

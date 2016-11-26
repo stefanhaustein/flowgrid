@@ -666,6 +666,11 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
         } */
     }
 
+    @Override
+    public CustomOperation getArtifact() {
+        return operation;
+    }
+
 
     protected void updateMenu() {
         operationCanvas.updateButtons();
