@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.flowgrid.swt.ArtifactEditor;
@@ -33,9 +34,11 @@ import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.port.PortManager;
 import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
+import org.flowgrid.swt.widget.ColumnLayout;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
 import org.flowgrid.swt.widget.MetaControl;
+import org.flowgrid.swt.widget.WrappingLabelCage;
 
 import java.util.Iterator;
 import java.util.Timer;
@@ -96,15 +99,12 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
 
         // UI Setup
 
-        final GridLayout shellLayout = new GridLayout(4, true);
-        shellLayout.marginWidth = 0;
-        shellLayout.marginHeight = 0;
-        flowgrid.shell().setLayout(shellLayout);
+        flowgrid.shell().setLayout(new ColumnLayout(25));
 
         scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.V_SCROLL);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+//        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         controlPanel = new Composite(scrolledComposite, SWT.NONE);
 
         final GridLayout controlLayout = new GridLayout(1, false);
@@ -133,9 +133,9 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
             controlLayout.addView(separator);
             */
             for (Property property: classifier.properties(null)) {
-                DataMetaControl input = new PropertyMetaControl(flowgrid, property, instance);
+                DataMetaControl input = new PropertyMetaControl(controlPanel, flowgrid, property, instance);
                 //Control control =
-                input.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+                input.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
                 //                controlLayout.addView(view);
               //  propertyWidgets.add(input);
             }
@@ -145,6 +145,13 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
 
         scrolledComposite.setContent(controlPanel);
 
+        if (operation.isTutorial() && operation.documentation() != null) {
+            Composite labelCage = new Composite(controlPanel, SWT.NONE);
+            labelCage.setLayout(new WrappingLabelCage());
+            labelCage.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+            Label tutorialHelp = new Label(labelCage, SWT.WRAP);
+            tutorialHelp.setText(operation.documentation());
+        }
 
         controller.setVisual(true);
         operationCanvas = new OperationCanvas(this, flowgrid.shell());

@@ -34,13 +34,12 @@ public class DataMetaControl implements MetaControl {
         return value == null ? "" : String.valueOf(value);
     }
 
-    boolean editable = true;
-    private Type type;
-    private String name;
+    private final boolean editable;
+    private final Type type;
+    private final String name;
     private OnValueChangedListener onValueChangedListener;
 
     private Text text;
-    private Label label;
     private Button button;
     private Scale scale;
 
@@ -53,9 +52,102 @@ public class DataMetaControl implements MetaControl {
     private DataMetaControl inner;
     private Module localModule;
 
-    public DataMetaControl(SwtFlowgrid flowgrid, Type type) {
+
+
+    protected DataMetaControl(final Composite parentComposite, final SwtFlowgrid flowgrid, final Type type,
+                              final String name, final String widget, final Module localModule, boolean editable) {
         this.flowgrid = flowgrid;
         this.type = type;
+        this.widget = widget;
+        this.name = name;
+        this.localModule = localModule;
+        this.editable = editable;
+        if (editable) {
+            if (type == PrimitiveType.BOOLEAN) {
+                button = new Button(parentComposite, SWT.CHECK);
+                button.setText(name);
+                button.setSelection(Boolean.TRUE.equals(value));
+                button.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        inputChangedTo(button.getSelection(), false);
+                    }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        widgetSelected(e);
+                    }
+                });
+                setControl(button);
+                return;
+            }
+            if (type == PrimitiveType.NUMBER && "slider".equals(widget)) {
+                setControl(scale = new Scale(maybeAddLabel(parentComposite), SWT.NONE));
+                scale.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Double newValue = (double) scale.getSelection();
+                        if (!newValue.equals(value)){
+                            inputChangedTo((double) scale.getSelection(), false);
+                        }
+                    }
+                });
+
+                return;
+            }
+
+            if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
+                System.out.println("*** MetaControl for " + name + ": " + widget);
+                setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
+                text.addModifyListener(new ModifyListener() {
+                    @Override
+                    public void modifyText(ModifyEvent eve) {
+                        try {
+                            String textValue = text.getText();
+                            final Object newValue = type == PrimitiveType.NUMBER ?
+                                    Double.parseDouble(textValue) : textValue;
+                            if (!newValue.equals(value)) {
+                                inputChangedTo(newValue, true);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
+                return;
+            }
+
+            if (type == Type.ANY) {
+                final Composite container = new Composite(parentComposite, SWT.NONE);
+                GridLayout gridLayout = new GridLayout(1, false);
+                gridLayout.marginWidth = 0;
+                gridLayout.marginHeight = 0;
+                container.setLayout(gridLayout);
+                if (name != null && !name.isEmpty()) {
+                    Label label = new Label(container, SWT.NONE);
+                    label.setText(name);
+                }
+                control = container;
+                container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+                TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.INSTANTIABLE);
+                TypeWidget.OnTypeChangedListener typeChangedListener = new TypeWidget.OnTypeChangedListener() {
+                    @Override
+                    public void onTypeChanged(Type type) {
+                        if (inner != null) {
+                            inner.dispose();
+                        }
+                        inner = new DataMetaControl.Builder(flowgrid).setType(type).build(container);
+                    }
+                };
+                typeChangedListener.onTypeChanged(typeSpinner.type());
+                typeSpinner.setOnTypeChangedListener(typeChangedListener);
+                return;
+            }
+        }
+
+        setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
+        text.setEditable(false);
+        return;
     }
 
     public Object value() {
@@ -96,105 +188,7 @@ public class DataMetaControl implements MetaControl {
     }
 
     @Override
-    public Control createControl(Composite parentComposite) {
-        if (control != null) {
-            throw new IllegalStateException("Control created already.");
-        }
-
-        if (editable) {
-            if (type == PrimitiveType.BOOLEAN) {
-                button = new Button(parentComposite, SWT.CHECK);
-                button.setText(name);
-                button.setSelection(Boolean.TRUE.equals(value));
-                button.addSelectionListener(new SelectionListener() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        inputChangedTo(button.getSelection(), false);
-                    }
-
-                    @Override
-                    public void widgetDefaultSelected(SelectionEvent e) {
-                        widgetSelected(e);
-                    }
-                });
-                return setControl(button);
-            }
-            if (type == PrimitiveType.NUMBER && "slider".equals(widget)) {
-                setControl(scale = new Scale(maybeAddLabel(parentComposite), SWT.NONE));
-                scale.addSelectionListener(new SelectionAdapter() {
-                    @Override
-                    public void widgetSelected(SelectionEvent e) {
-                        Double newValue = (double) scale.getSelection();
-                        if (!newValue.equals(value)){
-                            inputChangedTo((double) scale.getSelection(), false);
-                        }
-                    }
-                });
-
-                return control;
-            }
-
-            if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
-                System.out.println("*** MetaControl for " + name + ": " + widget);
-                setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
-                text.addModifyListener(new ModifyListener() {
-                    @Override
-                    public void modifyText(ModifyEvent eve) {
-                        try {
-                            String textValue = text.getText();
-                            final Object newValue = type == PrimitiveType.NUMBER ?
-                                    Double.parseDouble(textValue) : textValue;
-                            if (!newValue.equals(value)) {
-                                inputChangedTo(newValue, true);
-                            }
-                        } catch (Exception ex) {
-                        }
-                    }
-                });
-                return control;
-            }
-
-            if (type == Type.ANY) {
-                final Composite container = new Composite(parentComposite, SWT.NONE);
-                GridLayout gridLayout = new GridLayout(1, false);
-                gridLayout.marginWidth = 0;
-                gridLayout.marginHeight = 0;
-                container.setLayout(gridLayout);
-                if (name != null && !name.isEmpty()) {
-                    Label label = new Label(container, SWT.NONE);
-                    label.setText(name);
-                }
-                control = container;
-                container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-                TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.INSTANTIABLE);
-                inner = new DataMetaControl(flowgrid, typeSpinner.type());
-                inner.createControl(container);
-                inner.setOnValueChangedListener(new OnValueChangedListener() {
-                    @Override
-                    public void onValueChanged(Object newValue) {
-                        inputChangedTo(newValue, false);
-                    }
-                });
-                typeSpinner.setOnTypeChangedListener(new TypeWidget.OnTypeChangedListener() {
-                    @Override
-                    public void onTypeChanged(Type type) {
-                        inner.disposeControl();
-                        inner.type = type;
-                        inner.createControl(container);
-                    }
-                });
-
-                return container;
-            }
-        }
-
-        setControl(label = new Label(maybeAddLabel(parentComposite), SWT.NONE));
-        return control;
-    }
-
-    @Override
-    public void disposeControl() {
+    public void dispose() {
         if (control != null) {
             control.dispose();
             control = null;
@@ -235,16 +229,6 @@ public class DataMetaControl implements MetaControl {
         }
     }
 
-    public DataMetaControl setLabel(String label) {
-        this.name = label;
-        return this;
-    }
-
-    public DataMetaControl setEditable(boolean editable) {
-        this.editable = editable;
-        return this;
-    }
-
     public void setOnValueChangedListener(OnValueChangedListener onValueChangedListener) {
         this.onValueChangedListener = onValueChangedListener;
     }
@@ -256,8 +240,6 @@ public class DataMetaControl implements MetaControl {
                 text.setText(toString(value));
             } else if (button != null) {
                 button.setSelection(Boolean.TRUE.equals(value));
-            } else if (label != null) {
-                label.setText((toString(value)));
             } else if (scale != null) {
                 scale.setSelection(Math.round(((Number) value).floatValue()));
             }
@@ -271,6 +253,51 @@ public class DataMetaControl implements MetaControl {
     public void setWidget(String widget) {
         this.widget = widget;
     }
+
+
+    public static class Builder {
+        SwtFlowgrid flowgrid;
+        Type type = Type.ANY;
+        String name;
+        String widget;
+        Module localModule;
+        boolean editable;
+
+        public Builder(SwtFlowgrid flowgrid) {
+            this.flowgrid = flowgrid;
+        }
+
+        public Builder setEditable(boolean editable) {
+            this.editable = editable;
+            return this;
+        }
+
+        public Builder setLocalModule(Module localModule) {
+            this.localModule = localModule;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setType(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder setWidget(String widget) {
+            this.widget = widget;
+            return this;
+        }
+
+        public DataMetaControl build(Composite parent) {
+            return new DataMetaControl(parent, flowgrid, type, name, widget, localModule, editable);
+        }
+
+    }
+
 
 
 }

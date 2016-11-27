@@ -15,10 +15,10 @@ public class DataDialog {
     public static void show(SwtFlowgrid platform, String title, Type type, Module localModule, Object value, final Callback<Object> callback) {
         AlertDialog alert = new AlertDialog(platform.shell());
         alert.setTitle(title);
-        final DataMetaControl dataWidget = new DataMetaControl(platform, type);
-        dataWidget.setLocalModule(localModule);
-        dataWidget.setEditable(true);
-        dataWidget.createControl(alert.getContentContainer());
+        final DataMetaControl dataWidget = new DataMetaControl.Builder(platform).setType(type)
+                .setEditable(true)
+                .setLocalModule(localModule)
+                .build(alert.getContentContainer());
         if (value != null) {
             dataWidget.setValue(value);
         }

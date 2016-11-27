@@ -304,7 +304,9 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public void openClassifier(Classifier classifier) {
         clear();
+        settings.setLastUsed(classifier);
         currentEditor = new ClassifierEditor(this, classifier);
+        updateMenu();
     }
 
     private void openOperation(CustomOperation operation) {
@@ -313,14 +315,12 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public void openOperation(CustomOperation operation, boolean editable) {
         clear();
-
         if (!editable) {
             System.out.println("FIXME: SwtFlowgrid.openOperation for run mode");
         }
-
         settings.setLastUsed(operation);
-
         currentEditor = new OperationEditor(this, operation);
+        updateMenu();
     }
 
     public void openProperty(Property p) {

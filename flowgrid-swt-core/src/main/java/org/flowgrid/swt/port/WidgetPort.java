@@ -147,7 +147,7 @@ public class WidgetPort implements MetaControl, Port {
         return control;
     }
 
-    @Override
+
     public Control createControl(Composite parent) {
         String widget = port.peerJson().getString("widget", "").toLowerCase();
 
@@ -194,10 +194,11 @@ public class WidgetPort implements MetaControl, Port {
             });
 */
         } else {
-            dataWidget = new DataMetaControl(manager.flowgrid(), port.dataType());
-            dataWidget.setEditable(port.outputCount() != 0);
-            dataWidget.setWidget(widget);
-            dataWidget.setLabel(port.name());
+            dataWidget = new DataMetaControl.Builder(manager.flowgrid())
+                    .setType(port.dataType())
+                    .setEditable(port.outputCount() != 0)
+                    .setWidget(widget)
+                    .setName(port.name()).build(parent);
 //            view = dataWidget.view();
             if (port.input) {
                 if (type == PrimitiveType.BOOLEAN) {
@@ -220,7 +221,7 @@ public class WidgetPort implements MetaControl, Port {
                     }
                 }
             });
-            control = dataWidget.createControl(parent);
+            control = dataWidget.getControl();
         }
 
         /*
@@ -239,9 +240,9 @@ public class WidgetPort implements MetaControl, Port {
     }
 
     @Override
-    public void disposeControl() {
+    public void dispose() {
         if (dataWidget != null) {
-            dataWidget.disposeControl();
+            dataWidget.dispose();
         } else {
             control.dispose();
         }

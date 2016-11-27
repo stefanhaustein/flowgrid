@@ -2,12 +2,18 @@ package org.flowgrid.swt.classifier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.model.Operation;
+import org.flowgrid.model.Type;
 import org.flowgrid.swt.ArtifactEditor;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
@@ -19,6 +25,9 @@ import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
 
     Classifier classifier;
@@ -29,26 +38,47 @@ public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
 
     public ClassifierEditor(final SwtFlowgrid flowgrid, Classifier classifier) {
         this.classifier = classifier;
-        scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.NONE);
-        Composite contentPanel = new Composite(scrolledComposite, SWT.NONE);
 
         flowgrid.shell().setText(classifier.name() + " - FlowGrid");
-
         flowgrid.shell().setLayout(new FillLayout());
 
-        propertyPanel = new Composite(contentPanel, SWT.NONE);
-        GridLayout propertyLayout = new GridLayout(1, false);
-        propertyLayout.marginHeight = 0;
-        propertyLayout.marginWidth = 0;
-        propertyPanel.setLayout(propertyLayout);
-        propertyPanel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true));
+        scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.NONE);
+        scrolledComposite.setExpandHorizontal(true);
 
-        operationPanel = new Composite(contentPanel, SWT.NONE);
-        GridLayout operationLayout = new GridLayout(1, false);
+        Composite contentPanel = new Composite(scrolledComposite, SWT.NONE);
+        GridLayout contentLayout = new GridLayout(4, true);
+        contentLayout.marginHeight = 0;
+        contentLayout.marginWidth = 0;
+        contentPanel.setLayout(contentLayout);
+
+        scrolledComposite.setContent(contentPanel);
+
+        Composite propertyPanel = new Composite(contentPanel, SWT.NONE);
+        propertyPanel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+        GridLayout propertyLayout = new GridLayout(1, true);
+      //  propertyLayout.marginHeight = 0;
+      //  propertyLayout.marginWidth = 0;
+        propertyPanel.setLayout(propertyLayout);
+
+        for (final Property property: classifier.properties(null)) {
+            Label label = new Label(propertyPanel, SWT.NONE);
+            label.setText(property.name());
+            label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseUp(MouseEvent e) {
+                    flowgrid.openArtifact(property);
+                }
+            });
+        }
+
+        Composite operationPanel = new Composite(contentPanel, SWT.NONE);
+        operationPanel.setBackground(flowgrid.colors.white);
+        operationPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
+        GridLayout operationLayout = new GridLayout(2, true);
         operationLayout.marginHeight = 0;
         operationLayout.marginWidth = 0;
         operationPanel.setLayout(operationLayout);
-        operationPanel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
 
         Callback<Artifact> openCallback = new Callback<Artifact>() {
             @Override
@@ -57,18 +87,15 @@ public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
             }
         };
 
-        for (Artifact artifact: classifier) {
-            final boolean isProperty = artifact instanceof Property;
-            ArtifactComposite artifactComposite = new ArtifactComposite(isProperty ? propertyPanel : operationPanel, flowgrid.colors, artifact, false);
+        for (final Operation operation: classifier.operations(null)) {
+            ArtifactComposite artifactComposite = new ArtifactComposite(
+                    operationPanel, flowgrid.colors, operation, false);
+            artifactComposite.setBackground(flowgrid.colors.white);
             artifactComposite.setListener(openCallback);
+            artifactComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         }
 
-        GridLayout contentLayout = new GridLayout(2, false);
-        contentPanel.setLayout(contentLayout);
-
         contentPanel.layout(true, true);
-        scrolledComposite.setContent(contentPanel);
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         flowgrid.shell().layout(true, true);
     }
 

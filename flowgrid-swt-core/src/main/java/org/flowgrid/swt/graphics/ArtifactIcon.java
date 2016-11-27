@@ -52,6 +52,7 @@ public class ArtifactIcon extends Canvas {
     @Override
     public void drawBackground(GC gc, int clipX, int clipY, int clipW, int clipH) {
         Rectangle bounds = getBounds();
+        gc.setAntialias(SWT.ON);
         int cellSize = Math.min(bounds.height, bounds.width);
         int border = Math.max(1, Math.round(cellSize / 8));
         cellSize -= 2 * border;

@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -15,7 +16,8 @@ public class AboutDialog {
         final AlertDialog alert = new AlertDialog(platform.shell);
         alert.setTitle("About FlowGrid");
         Composite main = alert.getContentContainer();
-        Label content = new Label(main, SWT.MULTI);
+        Label content = new Label(main, SWT.WRAP);
+        content.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, true));
         int padding = platform.dpToPx(24);
         final boolean[] restart = new boolean[1];
         //content.setPadding(padding, padding, padding, padding);
