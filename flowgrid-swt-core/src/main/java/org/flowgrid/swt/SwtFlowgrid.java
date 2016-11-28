@@ -1,6 +1,9 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -46,7 +49,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     File storageRoot;
     File cacheRoot;
 
-    final MenuAdapter menuAdapter = new MenuAdapter(this);
     private HutnObject editBuffer;
     private Settings settings = new Settings();
     private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
@@ -100,12 +102,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public void updateMenu() {
         Menu menuBar = new Menu(shell);
-        MenuItem fileMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-        fileMenuItem.setText("File");
-        Menu fileMenu = new Menu(fileMenuItem);
 
-        menuAdapter.addItem(fileMenu, "About");
-        menuAdapter.addItem(fileMenu, "Open");
+        MenuAdapter menuAdapter = new MenuAdapter(menuBar, "File", this);
+        menuAdapter.addItem("About");
+        menuAdapter.addItem("Open");
 
         if (currentEditor != null) {
             currentEditor.addArtifactMenu(menuBar);

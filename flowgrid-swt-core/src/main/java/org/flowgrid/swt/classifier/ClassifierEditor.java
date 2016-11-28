@@ -34,7 +34,6 @@ public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
     ScrolledComposite scrolledComposite;
     Composite propertyPanel;
     Composite operationPanel;
-    MenuAdapter menuAdapter = new MenuAdapter(this);
 
     public ClassifierEditor(final SwtFlowgrid flowgrid, Classifier classifier) {
         this.classifier = classifier;
@@ -106,11 +105,9 @@ public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
 
     @Override
     public void addArtifactMenu(Menu menuBar) {
-        MenuItem classifierMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-        classifierMenuItem.setText(classifier.isInterface() ? "Interface" : "Class");
-        Menu classifierMenu = new Menu(classifierMenuItem);
-        menuAdapter.addItem(classifierMenu, Strings.MENU_ITEM_ADD_PROPERTY);
-        menuAdapter.addItem(classifierMenu, Strings.MENU_ITEM_ADD_METHOD);
+        MenuAdapter menuAdapter = new MenuAdapter(menuBar, classifier.isInterface() ? "Interface" : "Class", this);
+        menuAdapter.addItem(Strings.MENU_ITEM_ADD_PROPERTY);
+        menuAdapter.addItem(Strings.MENU_ITEM_ADD_METHOD);
 
     }
 

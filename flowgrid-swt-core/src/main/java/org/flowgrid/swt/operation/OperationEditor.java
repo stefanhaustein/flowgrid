@@ -78,7 +78,6 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
     boolean running;
     ScrolledComposite scrolledComposite;
     Timer timer;
-    MenuAdapter menuAdapter = new MenuAdapter(this);
     boolean landscapeMode = true;
 
 
@@ -583,14 +582,15 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
 
     public void addArtifactMenu(Menu menuBar) {
 
-        MenuItem operationMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-         /*
-
-         operationMenuItem.setText("Operation");
-        Menu operationMenu = new Menu(operationMenuItem);
-
+        MenuAdapter editMenu = new MenuAdapter(menuBar, "Edit", this);
+        editMenu.addItem(Strings.MENU_ITEM_UNDO).setEnabled(operationCanvas.undoHistory.size() > 1);
+        editMenu.addItem(Strings.MENU_ITEM_COPY);
+        editMenu.addItem(Strings.MENU_ITEM_CUT);
 
 
+        MenuAdapter operationMenu = new MenuAdapter(menuBar, "Operation", this);
+
+        /*
         SpannableString title = new SpannableString("\u2039 " + operation().name());
         if (operation().asyncInput()) {
             title.setSpan(new UnderlineSpan(), 2, title.length(), 0);
@@ -601,76 +601,40 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
 
         fakeActionBar.setText(title);
         setArtifact(operation());  // Updates the action bar.
+*/
+        operationMenu.addItem(operation().hasDocumentation() ?
+                Strings.MENU_ITEM_DOCUMENTATION : Strings.MENU_ITEM_ADD_DOCUMENTATION);
 
-        if (selectionMode) {
-            addMenuItem(MENU_ITEM_COPY);
-            addMenuItem(MENU_ITEM_CUT);
-            addMenuItem(MENU_ITEM_CANCEL);
-        } else {
-            addMenuItem(running ? MENU_ITEM_STOP : MENU_ITEM_PLAY);
-            addMenuItem(operation().hasDocumentation() ? MENU_ITEM_DOCUMENTATION : MENU_ITEM_ADD_DOCUMENTATION);
 
-            addMenuItem(MENU_ITEM_UNDO).setEnabled(undoHistory.size() > 1);
-
-            if (!operation.isTutorial()) {
-                addMenuItem(MENU_ITEM_RUN_MODE);
-                if (operation.name().equals("main")) {
-                    addMenuItem(MENU_ITEM_CREATE_SHORTCUT);
-                }
-                addMenuItem(MENU_ITEM_PUBLIC);
-                addMenuItem(MENU_ITEM_CONTINUOUS_INPUT).setCheckable(true).setChecked(operation.asyncInput());
-            } else if (!tutorialMode) {
-                addMenuItem(MENU_ITEM_TUTORIAL_SETTINGS);
+        if (!operation.isTutorial()) {
+            /*
+            operationMenu.addItem(Strings.MENU_ITEM_RUN_MODE);
+            if (operation.name().equals("main")) {
+                operationMenu.addItem(Strings.MENU_ITEM_CREATE_SHORTCUT);
             }
-
-            if (operation.isTutorial() && platform.settings().developerMode()) {
-                Item tmt = addMenuItem(MENU_ITEM_TUTORIAL_MODE);
-                tmt.setCheckable(true);
-                tmt.setChecked(tutorialMode);
-            }
-
-            if (operation.isTutorial()) {
-                addMenuItem(MENU_ITEM_RESET);
-            }
-
-            if (!tutorialMode) {
-                if (operation().classifier == null) {
-                    addMenuItem(MENU_ITEM_RENAME_MOVE);
-                } else {
-                    addMenuItem(MENU_ITEM_RENAME);
-                }
-                addMenuItem(MENU_ITEM_DELETE);
-            }
+            */
+            operationMenu.addItem(Strings.MENU_ITEM_PUBLIC);
+            operationMenu.addItem(Strings.MENU_ITEM_CONTINUOUS_INPUT, SWT.CHECK).setSelection(operation.asyncInput());
+        } else if (!tutorialMode) {
+            operationMenu.addItem(Strings.MENU_ITEM_TUTORIAL_SETTINGS);
         }
-        topRightButtons.removeAllViews();
-        int padding = Views.px(platform, 12);
-        for (Object action: actions.items()) {
-            final ContextMenu.Item item = (ContextMenu.Item) action;
-            ImageButton button = new ImageButton(platform);
-            button.setImageResource(item.getIcon());
-            button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            button.setPadding(padding, padding, padding, padding);
-            topRightButtons.addView(button);
-            button.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onContextMenuItemClick(item);
-                }
-            });
+
+        if (operation.isTutorial() && flowgrid.settings().developerMode()) {
+            operationMenu.addItem(Strings.MENU_ITEM_TUTORIAL_MODE, SWT.CHECK).setSelection(tutorialMode);
         }
-        if (!selectionMode) {
-            ImageButton menuButton = new ImageButton(platform);
-            menuButton.setImageResource(R.drawable.ic_more_vert_white_24dp);
-            menuButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            menuButton.setPadding(padding, padding, padding, padding);
-            topRightButtons.addView(menuButton);
-            menuButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showMenu();
-                }
-            });
-        } */
+
+        if (operation.isTutorial()) {
+            operationMenu.addItem(Strings.MENU_ITEM_RESET);
+        }
+
+        if (!tutorialMode) {
+           if (operation().classifier == null) {
+              operationMenu.addItem(Strings.MENU_ITEM_RENAME_MOVE);
+            } else {
+              operationMenu.addItem(Strings.MENU_ITEM_RENAME);
+            }
+            operationMenu.addItem(Strings.MENU_ITEM_DELETE);
+        }
     }
 
     @Override
