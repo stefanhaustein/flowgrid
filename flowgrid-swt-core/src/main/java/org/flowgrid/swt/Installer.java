@@ -139,7 +139,7 @@ public class Installer {
                 flowgrid.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressDialog.dispose();
+                        progressDialog.dismiss();
                         flowgrid.start();
                     }
                 });

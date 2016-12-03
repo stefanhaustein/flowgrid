@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class OperationEditor implements ArtifactEditor, PortManager, MenuSelectionHandler {
+public class OperationEditor extends ArtifactEditor implements PortManager {
 
     static String portType(HutnObject peerJson) {
         String portType = peerJson.getString("portType", "");
@@ -582,7 +582,7 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
 
     public void addArtifactMenu(Menu menuBar) {
 
-        MenuAdapter editMenu = new MenuAdapter(menuBar, "Edit", this);
+        MenuAdapter editMenu = new MenuAdapter(menuBar, "Edit", operationCanvas);
         editMenu.addItem(Strings.MENU_ITEM_UNDO).setEnabled(operationCanvas.undoHistory.size() > 1);
         editMenu.addItem(Strings.MENU_ITEM_COPY);
         editMenu.addItem(Strings.MENU_ITEM_CUT);
@@ -652,10 +652,40 @@ public class OperationEditor implements ArtifactEditor, PortManager, MenuSelecti
     @Override
     public void menuItemSelected(MenuItem menuItem) {
         String label = menuItem.getText();
-        if (Strings.MENU_ITEM_STOP.equals(label)) {
-            stop();
-        } else if (Strings.MENU_ITEM_START.equals(label)) {
-            start();
+        if (Strings.MENU_ITEM_DOCUMENTATION.equals(label)) {
+            OperationHelpDialog.show(this);
+        } else if (label.equals(Strings.MENU_ITEM_TUTORIAL_MODE)) {
+            tutorialMode = !menuItem.getSelection();
+            updateMenu();
+        } else  if (label.equals(Strings.MENU_ITEM_RESET)) {
+            if (operation.isTutorial()) {
+                TutorialData tutorialData = operation.tutorialData;
+                operationCanvas.beforeChange();
+                operation.clear(tutorialData.editableStartRow, 0, tutorialData.editableEndRow - tutorialData.editableStartRow, Integer.MAX_VALUE / 2);
+                if (flowgrid.settings().developerMode()) {
+                    tutorialData.passedWithStars = 0;
+                }
+                operationCanvas.afterChange();
+            }
+        } else if (label.equals(Strings.MENU_ITEM_TUTORIAL_SETTINGS)) {
+            TutorialSettingsDialog.show(this);
+        } else if (label.equals(Strings.MENU_ITEM_RUN_MODE)) {
+            flowgrid.openOperation(operation, false);
+        } else if (label.equals(Strings.MENU_ITEM_CONTINUOUS_INPUT)) {
+            operationCanvas.beforeChange();
+            operation.setAsyncInput(!operation.asyncInput());
+            operationCanvas.afterChange();
+            operationCanvas.updateButtons();
+        } else if (Strings.MENU_ITEM_PUBLIC.equals(label)) {
+            operationCanvas.beforeChange();
+            operation.setPublic(!operation.isPublic());
+            operationCanvas.afterChange();
+            operationCanvas.updateButtons();
+        } else if (label.equals(Strings.MENU_ITEM_CREATE_SHORTCUT)) {
+            System.out.println("FIXME: createShortcut();");                               // FIXME
+        } else {
+            super.menuItemSelected(menuItem);
         }
+
     }
 }

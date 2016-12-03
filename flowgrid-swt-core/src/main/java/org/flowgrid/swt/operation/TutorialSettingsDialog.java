@@ -12,7 +12,7 @@ import org.flowgrid.swt.dialog.DialogInterface;
 
 public class TutorialSettingsDialog {
 
-    public static void show(final OperationCanvas fragment) {
+    public static void show(final OperationEditor fragment) {
             final SwtFlowgrid context = fragment.flowgrid;
             final CustomOperation operation = fragment.operation;
             final TutorialData tutorialData = operation.tutorialData;
@@ -58,13 +58,13 @@ public class TutorialSettingsDialog {
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public boolean onClick(DialogInterface dialog, int which) {
-                    fragment.beforeChange();
+                    fragment.operationCanvas.beforeChange();
                     tutorialData.editableStartRow = Integer.parseInt(editableRowsStartField.getText().toString());
                     tutorialData.editableEndRow = Integer.parseInt(editableRowsEndField.getText().toString());
                     tutorialData.optimalCellCount = Integer.parseInt(optimalCellCountField.getText().toString());
                     tutorialData.order = Double.parseDouble(orderField.getText().toString());
                     tutorialData.speed = Integer.parseInt(speedField.getText().toString());
-                    fragment.afterChange();
+                    fragment.operationCanvas.afterChange();
                     return true;
                 }
             });

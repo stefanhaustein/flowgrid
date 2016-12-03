@@ -28,12 +28,11 @@ import org.flowgrid.swt.widget.MenuSelectionHandler;
 import java.util.Collections;
 import java.util.Iterator;
 
-public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
+public class ClassifierEditor extends ArtifactEditor {
 
+    SwtFlowgrid flowgrid;
     Classifier classifier;
     ScrolledComposite scrolledComposite;
-    Composite propertyPanel;
-    Composite operationPanel;
 
     public ClassifierEditor(final SwtFlowgrid flowgrid, Classifier classifier) {
         this.classifier = classifier;
@@ -114,5 +113,10 @@ public class ClassifierEditor implements ArtifactEditor, MenuSelectionHandler {
     @Override
     public Classifier getArtifact() {
         return classifier;
+    }
+
+    @Override
+    public SwtFlowgrid flowgrid() {
+        return flowgrid;
     }
 }

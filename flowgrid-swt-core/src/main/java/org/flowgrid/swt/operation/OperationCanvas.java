@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
@@ -49,6 +50,7 @@ import org.flowgrid.swt.port.TestPortDialog;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.port.WidgetPortDialog;
 import org.flowgrid.swt.widget.ContextMenu;
+import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener {
+public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener, MenuSelectionHandler {
     static final float ZOOM_STEP = 1.1f;
     static final int PIXEL_SNAP = 16;
     static final int ZOOM_TIME_MS = 1000;
@@ -1031,82 +1033,21 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
     @Override
-    public boolean onContextMenuItemClick(ContextMenu.Item item) {
-
-        System.out.println("onContextMenuItemClick: " + item.getTitle());
-
-        final String label = item.getTitle().toString();
-
-        if (Strings.MENU_ITEM_STOP.equals(label)) {
-            operationEditor.stop();
-            return true;
-        }
-        if (Strings.MENU_ITEM_PLAY.equals(label)) {
-            StringBuilder missing = new StringBuilder();
-            if (!operation.asyncInput() && !operationEditor.isInputComplete(missing)) {
-                System.out.println("Toast.makeText(platform, \"Missing input: \" + missing, Toast.LENGTH_LONG).show();");  //FIXME
-            } else {
-                operationEditor.start();
-            }
-            return true;
-        }
-        if (Strings.MENU_ITEM_DOCUMENTATION.equals(label)) {
-            OperationHelpDialog.show(operationEditor);
-            return true;
-        }
+    public void menuItemSelected(MenuItem menuItem) {
+        String label = menuItem.getText();
         if (Strings.MENU_ITEM_COPY.equals(label)) {
-            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
-            setSelectionMode(false);
-            return true;
-        }
-        if (Strings.MENU_ITEM_CUT.equals(label)) {
-            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col, selection.height, selection.width));
+            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col,
+                    selection.height, selection.width));
+
+        } else if (Strings.MENU_ITEM_CUT.equals(label)) {
+            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col,
+                    selection.height, selection.width));
             beforeBulkChange();
             operation.clear(selection.row, selection.col, selection.height, selection.width);
             afterBulkChange();
             setSelectionMode(false);
-            return true;
-        }
-        if (Strings.MENU_ITEM_CANCEL.equals(label)) {
-            setSelectionMode(false);
-            return true;
-        }
-        if (label.equals(Strings.MENU_ITEM_CONTINUOUS_INPUT)) {
-            beforeChange();
-            operation.setAsyncInput(!operation.asyncInput());
-            afterChange();
-            updateButtons();
-            return true;
-        }
-        if (Strings.MENU_ITEM_PUBLIC.equals(label)) {
-            beforeChange();
-            operation.setPublic(!operation.isPublic());
-            afterChange();
-            updateButtons();
-            return true;
-        }
 
-        /*
-        if (label.equals(Strings.MENU_ITEM_RESET)) {
-            if (operation.isTutorial()) {
-                TutorialData tutorialData = operation.tutorialData;
-                beforeChange();
-                operation.clear(tutorialData.editableStartRow, 0, tutorialData.editableEndRow - tutorialData.editableStartRow, Integer.MAX_VALUE / 2);
-                if (platform.settings().developerMode()) {
-                    tutorialData.passedWithStars = 0;
-                }
-                afterChange();
-            }
-            return true;
-        }
-*/
-        if (label.equals(Strings.MENU_ITEM_TUTORIAL_MODE)) {
-            operationEditor.tutorialMode = !item.isChecked();
-            updateButtons();
-            return true;
-        }
-
-        if (label.equals(Strings.MENU_ITEM_UNDO)) {
+        } else if (label.equals(Strings.MENU_ITEM_UNDO)) {
             HutnObject json = (HutnObject) Hutn.parse(undoHistory.get(undoHistory.size() - 2));
             flowgrid.log("undo to: " + json.toString());
             beforeBulkChange();
@@ -1122,10 +1063,33 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
         }
 
-        if (label.equals(Strings.MENU_ITEM_TUTORIAL_SETTINGS)) {
-            TutorialSettingsDialog.show(this);
+    }
+
+    @Override
+    public boolean onContextMenuItemClick(ContextMenu.Item item) {
+
+        System.out.println("onContextMenuItemClick: " + item.getTitle());
+
+        final String label = item.getTitle().toString();
+
+        /*
+        if (Strings.MENU_ITEM_STOP.equals(label)) {
+            operationEditor.stop();
             return true;
         }
+        if (Strings.MENU_ITEM_PLAY.equals(label)) {
+            StringBuilder missing = new StringBuilder();
+            if (!operation.asyncInput() && !operationEditor.isInputComplete(missing)) {
+                System.out.println("Toast.makeText(platform, \"Missing input: \" + missing, Toast.LENGTH_LONG).show();");  //FIXME
+            } else {
+                operationEditor.start();
+            }
+            return true;
+        }
+        if (Strings.MENU_ITEM_CANCEL.equals(label)) {
+            setSelectionMode(false);
+            return true;
+        }*/
 
         if (currentTypeFilter.size() > 0 && currentTypeFilter.get(0) instanceof Classifier &&
                 label.equals(currentTypeFilter.get(0).name() + "\u2026")) {
@@ -1199,10 +1163,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             beforeChange();
             below.setBuffered(index, label.equals(Strings.MENU_ITEM_ADD_BUFFER));
             afterChange();
-        } else if (label.equals(Strings.MENU_ITEM_RUN_MODE)) {
-            flowgrid.openOperation(operation, false);
-        } else if (label.equals(Strings.MENU_ITEM_CREATE_SHORTCUT)) {
-            System.out.println("FIXME: createShortcut();");                               // FIXME
         } else if (label.equals(Strings.MENU_ITEM_DELETE_PATH)) {
             beforeChange();
             operation.removePath(row, col, operationEditor.tutorialMode);

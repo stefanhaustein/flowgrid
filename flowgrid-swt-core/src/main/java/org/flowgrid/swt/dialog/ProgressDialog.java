@@ -3,17 +3,21 @@ package org.flowgrid.swt.dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
 public class ProgressDialog {
 
-    Shell shell;
-    Label label;
+    private String message;
+    private AlertDialog alert;
+    private Label label;
+    private boolean indeterminate;
+    private boolean cancelable;
+    private ProgressBar progressBar;
 
     public ProgressDialog(Shell parent) {
-        shell = new Shell(parent);
-        shell.setLayout(new FillLayout());
-        label = new Label(shell, SWT.SINGLE);
+        alert = new AlertDialog(parent);
+        label = new Label(alert.getContentContainer(), SWT.NONE);
     }
 
     public void setMessage(String message) {
@@ -21,15 +25,21 @@ public class ProgressDialog {
     }
 
     public void setTitle(String s) {
-        shell.setText(s);
+        alert.setTitle(s);
     }
+
+    
 
     public void show() {
-        shell.pack();
-        shell.open();
+        progressBar = new ProgressBar(alert.getContentContainer(), indeterminate ? SWT.INDETERMINATE : SWT.NONE);
+        alert.show();
     }
 
-    public void dispose() {
-        shell.dispose();
+    public void dismiss() {
+        alert.dismiss();
+    }
+
+    public void setIndeterminate(boolean b) {
+        this.indeterminate = b;
     }
 }
