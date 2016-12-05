@@ -4,6 +4,7 @@ package org.flowgrid.swt;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -26,7 +27,7 @@ public class MoveDialog {
 
         final boolean canMove = artifact.owner() instanceof Module;
         if (canMove) {
-            new Label(alert.getContentContainer(), SWT.NONE).setText("To module");
+            new Label(alert.getContentContainer(), SWT.NONE).setText("Move to module");
         }
         final Button moduleButton = canMove ? new Button(alert.getContentContainer(), SWT.NONE) : null;
         final Container[] selectedContainer = new Container[] {artifact.owner()};
@@ -38,6 +39,7 @@ public class MoveDialog {
                         @Override
                         public void run(Module value) {
                             selectedContainer[0] = value;
+                            moduleButton.setText(value.name());
                         }
                     }).show();
                 }
@@ -53,6 +55,7 @@ public class MoveDialog {
 
         final Text nameEditText = new Text(alert.getContentContainer(), SWT.NONE);
         nameEditText.setText(artifact.name());
+        nameEditText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

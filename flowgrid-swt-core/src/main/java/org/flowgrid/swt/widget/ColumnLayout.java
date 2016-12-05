@@ -29,7 +29,7 @@ public class ColumnLayout extends Layout {
             }
             Point childSize = children[i].computeSize(wHint == -1 ? -1 : wHint * percent / 100, hHint);
             if (wHint == -1) {
-                width = Math.max(width, childSize.x * (100 - percent) / 100);
+                width = Math.max(width, childSize.x * 100 / percent);
             }
             if (hHint == -1) {
                 height = Math.max(height, childSize.y);

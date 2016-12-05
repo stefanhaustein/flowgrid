@@ -1,14 +1,18 @@
 package org.flowgrid.swt.operation;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.TutorialData;
+import org.flowgrid.model.container.Grid;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
+import org.flowgrid.swt.widget.InputMode;
 
 public class TutorialSettingsDialog {
 
@@ -17,34 +21,49 @@ public class TutorialSettingsDialog {
             final CustomOperation operation = fragment.operation;
             final TutorialData tutorialData = operation.tutorialData;
             AlertDialog alert = new AlertDialog(context.shell());
+            alert.setTitle("Tutorial Settings");
 
             Composite layout = alert.getContentContainer();
-            new Label(layout, SWT.SINGLE).setText("Order");
-//            layout.setColumnCount(2, 2);
+            layout.setLayout(new GridLayout(2, true));
+
+            Label orderLabel = new Label(layout, SWT.NONE);
+            orderLabel.setText("Order");
+            orderLabel.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+
+            new Label(layout, SWT.NONE);
+
             final Text orderField = new Text(layout, SWT.SINGLE);
-            //orderField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            InputMode.set(orderField, InputMode.Type.NUMBER, InputMode.NUMBER_FLAG_DECIMAL);
             orderField.setText("" + tutorialData.order);
-            //layout.addView(Views.addLabel("Order", orderField), 0, 1);
+            orderField.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+
+            new Label(layout, SWT.NONE);
 
             new Label(layout, SWT.SINGLE).setText("Rows editable from");
-            final Text editableRowsStartField = new Text(layout, SWT.SINGLE);
-            //editableRowsStartField.setInputType(InputType.TYPE_CLASS_NUMBER);
-            editableRowsStartField.setText("" + tutorialData.editableStartRow);
-
             new Label(layout, SWT.SINGLE).setText("to");
-            final Text editableRowsEndField = new Text(layout, SWT.SINGLE);
-            //editableRowsEndField.setInputType(InputType.TYPE_CLASS_NUMBER);
-            editableRowsEndField.setText("" + tutorialData.editableEndRow);
 
-            new Label(layout, SWT.SINGLE).setText("Optimal cell count");
+            final Text editableRowsStartField = new Text(layout, SWT.SINGLE);
+            InputMode.set(editableRowsStartField, InputMode.Type.NUMBER, 0);
+            editableRowsStartField.setText("" + tutorialData.editableStartRow);
+            editableRowsStartField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+            final Text editableRowsEndField = new Text(layout, SWT.SINGLE);
+            InputMode.set(editableRowsEndField, InputMode.Type.NUMBER, 0);
+            editableRowsEndField.setText("" + tutorialData.editableEndRow);
+            editableRowsEndField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+            new Label(layout, SWT.NONE).setText("Optimal cell count");
+            new Label(layout, SWT.NONE).setText("Speed");
+
             final Text optimalCellCountField = new Text(layout, SWT.SINGLE);
-//            optimalCellCountField.setInputType(InputType.TYPE_CLASS_NUMBER);
+            InputMode.set(optimalCellCountField, InputMode.Type.NUMBER, 0);
+            optimalCellCountField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
             optimalCellCountField.setText("" + tutorialData.optimalCellCount);
 
-            new Label(layout, SWT.SINGLE).setText("Speed");
             final Text speedField = new Text(layout, SWT.SINGLE);
- //           speedField.setInputType(InputType.TYPE_CLASS_NUMBER);
+            InputMode.set(speedField, InputMode.Type.NUMBER, 0);
             speedField.setText("" + tutorialData.speed);
+            speedField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
    /*
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     context, android.R.layout.simple_list_item_multiple_choice,

@@ -79,11 +79,14 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     ScrolledComposite scrolledComposite;
     Timer timer;
     boolean landscapeMode = true;
+    Label tutorialHelp;
 
 
     public OperationEditor(final SwtFlowgrid flowgrid, CustomOperation operation) {
         this.flowgrid = flowgrid;
         this.operation = operation;
+
+        tutorialMode = operation.isTutorial();
 
         flowgrid.shell().setText(operation.name() + " - FlowGrid");
 
@@ -140,16 +143,16 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
             }
         }
 
-
-
         scrolledComposite.setContent(controlPanel);
 
-        if (operation.isTutorial() && operation.documentation() != null) {
+        if (operation.isTutorial()) {
             Composite labelCage = new Composite(controlPanel, SWT.NONE);
             labelCage.setLayout(new WrappingLabelCage());
             labelCage.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
             Label tutorialHelp = new Label(labelCage, SWT.WRAP);
-            tutorialHelp.setText(operation.documentation());
+            if (operation.documentation() != null) {
+                tutorialHelp.setText(operation.documentation());
+            }
         }
 
         controller.setVisual(true);

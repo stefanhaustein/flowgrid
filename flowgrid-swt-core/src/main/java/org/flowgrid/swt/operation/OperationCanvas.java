@@ -127,7 +127,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         operation.ensureLoaded();  // FIXME
 
-        if (!operationEditor.tutorialMode) {
+        if (!operation.isTutorial()) {
             slowerButton = new Button(this, SWT.PUSH);
             slowerButton.setText("\u2212");
             slowerButton.addSelectionListener(new SelectionAdapter() {

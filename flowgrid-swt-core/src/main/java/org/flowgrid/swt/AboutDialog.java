@@ -17,7 +17,7 @@ public class AboutDialog {
         alert.setTitle("About FlowGrid");
         Composite main = alert.getContentContainer();
         Label content = new Label(main, SWT.WRAP);
-        content.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, true));
+        content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
         int padding = platform.dpToPx(24);
         final boolean[] restart = new boolean[1];
         //content.setPadding(padding, padding, padding, padding);
