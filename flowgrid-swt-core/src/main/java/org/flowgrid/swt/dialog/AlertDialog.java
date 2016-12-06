@@ -40,7 +40,7 @@ public class AlertDialog implements DialogInterface {
         shell.setLayout(gridLayout);
         contentContainer = new Composite(shell, 0);
         contentContainer.setLayout(new GridLayout());
-        contentContainer.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+        contentContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         buttonRow = new Composite(shell, 0);
         buttonRow.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
         buttonRow.setLayout(new RowLayout());

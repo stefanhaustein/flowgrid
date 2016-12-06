@@ -313,16 +313,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                 }
             }.schedule(100, 100);
         } else {
-            if (operation.hasDocumentation() // && !landscapeMode                     FIXME
-                 ) {
-                alert.setNeutralButton("Help", new DialogInterface.OnClickListener() {
-                    @Override
-                    public boolean onClick(DialogInterface dialog, int which) {
-                        OperationHelpDialog.show(OperationEditor.this);
-                        return true;
-                    }
-                });
-            }
             alert.show();
         }
     }
@@ -605,10 +595,10 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         fakeActionBar.setText(title);
         setArtifact(operation());  // Updates the action bar.
 */
-        operationMenu.addItem(operation().hasDocumentation() ?
-                Strings.MENU_ITEM_DOCUMENTATION : Strings.MENU_ITEM_ADD_DOCUMENTATION);
-
-
+        if (!tutorialMode) {
+            operationMenu.addItem(Strings.MENU_ITEM_DOCUMENTATION);
+        }
+        
         if (!operation.isTutorial()) {
             /*
             operationMenu.addItem(Strings.MENU_ITEM_RUN_MODE);
@@ -655,9 +645,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     @Override
     public void menuItemSelected(MenuItem menuItem) {
         String label = menuItem.getText();
-        if (Strings.MENU_ITEM_DOCUMENTATION.equals(label)) {
-            OperationHelpDialog.show(this);
-        } else if (label.equals(Strings.MENU_ITEM_TUTORIAL_MODE)) {
+        if (label.equals(Strings.MENU_ITEM_TUTORIAL_MODE)) {
             tutorialMode = !menuItem.getSelection();
             updateMenu();
         } else  if (label.equals(Strings.MENU_ITEM_RESET)) {
@@ -689,6 +677,5 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         } else {
             super.menuItemSelected(menuItem);
         }
-
     }
 }

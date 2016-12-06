@@ -108,7 +108,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     Label menuAnchor;
     Button resetButton;
     Button startPauseButton;
-    Button helpButton;
     Button fasterButton;
     Button slowerButton;
     boolean changing;
@@ -187,15 +186,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             public void widgetSelected(SelectionEvent e) {
                 operationEditor.stop();
                 unpause();
-            }
-        });
-
-        helpButton = new Button(this, SWT.PUSH);
-        helpButton.setText("?");
-        helpButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                OperationHelpDialog.show(operationEditor);
             }
         });
 
@@ -412,7 +402,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
                 int spacing = 5;
 
-                Button[] topButtons = new Button[]{startPauseButton, resetButton, helpButton};
+                Button[] topButtons = new Button[]{startPauseButton, resetButton};
 
                 int buttonW = 0;
                 int buttonH = 0;

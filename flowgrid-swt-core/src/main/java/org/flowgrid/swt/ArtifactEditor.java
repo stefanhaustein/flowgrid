@@ -21,18 +21,20 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
         String title = item.getText();
         SwtFlowgrid flowgrid = flowgrid();
         final Artifact artifact = getArtifact();
-        /*if (Strings.MENU_ITEM_DELETE.equals(title)) {
-            Dialogs.confirm(flowgrid, "Confirmation", "Delete '" + artifact.qualifiedName() +
+        if (Strings.MENU_ITEM_DELETE.equals(title)) {
+            Dialogs.confirm(flowgrid.shell, "Confirmation", "Delete '" + artifact.qualifiedName() +
                 "' and all contained content? This cannot be undone.", new Runnable() {
                 @Override
                 public void run() {
-                    artifact.rename(null, null, null);
+                    System.out.println("FIXME: Delete");
+        /*            artifact.rename(null, null, null);
                     platform.finishFragment(ArtifactFragment.this);
+                    */
                 }
             });
-        } else */if (Strings.MENU_ITEM_DOCUMENTATION.equals(title)
+        } else if (Strings.MENU_ITEM_DOCUMENTATION.equals(title)
                 || Strings.MENU_ITEM_ADD_DOCUMENTATION.equals(title)) {
-            HelpDialog.show(flowgrid.shell, artifact == artifact.model().rootModule ? "Flowgrid" : artifact.toString(DisplayType.TITLE), artifact.documentation(), new Callback<String>() {
+            Dialogs.promptMultiline(flowgrid.shell, artifact == artifact.model().rootModule ? "Flowgrid" : artifact.toString(DisplayType.TITLE), null, artifact.documentation(), new Callback<String>() {
                 @Override
                 public void run(String value) {
                     if (artifact.setDocumentation(value)) {

@@ -1,6 +1,7 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -8,6 +9,7 @@ import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
+import org.flowgrid.swt.widget.InputMode;
 
 public class Dialogs {
 
@@ -35,7 +37,7 @@ public class Dialogs {
     }
 
     public static void promptIdentifier(final Shell context, final String title, final String label, String value, final Callback<String> callback) {
-        prompt(context, title, label, -1, value, new Callback<String>() {
+        prompt(context, title, label, InputMode.Type.TEXT, -1, value, new Callback<String>() {
             @Override
             public void run(final String newValue) {
                 if (Artifact.isIdentifier(newValue)) {
@@ -53,7 +55,7 @@ public class Dialogs {
         });
     }
 
-    public static void prompt(Shell context, String title, String label, int constraints, String value, final Callback<String> callback) {
+    public static void prompt(Shell context, String title, String label, InputMode.Type type, int flags, String value, final Callback<String> callback) {
         AlertDialog alert = new AlertDialog(context);
         alert.setTitle(title);
 
@@ -87,6 +89,36 @@ public class Dialogs {
       ((ColumnLayout.LayoutParams) input.getLayoutParams()).
     }
     */
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public boolean onClick(DialogInterface dialog, int whichButton) {
+                callback.run(input.getText().toString());
+                return true;
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public boolean onClick(DialogInterface dialog, int whichButton) {
+                callback.cancel();
+                return true;
+            }
+        });
+        alert.show();
+    }
+
+    public static void promptMultiline(Shell context, String title, String label, String value, final Callback<String> callback) {
+        AlertDialog alert = new AlertDialog(context);
+        alert.setTitle(title);
+
+        if (label != null) {
+            new Label(alert.getContentContainer(), SWT.NONE).setText(label);
+        }
+
+        final Text input = new Text(alert.getContentContainer(), SWT.MULTI);
+        input.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        if (value != null) {
+            input.setText(value);
+        }
+
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public boolean onClick(DialogInterface dialog, int whichButton) {
                 callback.run(input.getText().toString());
