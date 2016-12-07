@@ -8,11 +8,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.TutorialData;
-import org.flowgrid.model.container.Grid;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
-import org.flowgrid.swt.widget.InputMode;
+import org.kobjects.swt.Validator;
 
 public class TutorialSettingsDialog {
 
@@ -33,7 +32,7 @@ public class TutorialSettingsDialog {
             new Label(layout, SWT.NONE);
 
             final Text orderField = new Text(layout, SWT.SINGLE);
-            InputMode.set(orderField, InputMode.Type.NUMBER, InputMode.NUMBER_FLAG_DECIMAL);
+            Validator.add(orderField, Validator.TYPE_CLASS_NUMBER | Validator.TYPE_NUMBER_FLAG_DECIMAL);
             orderField.setText("" + tutorialData.order);
             orderField.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 
@@ -43,12 +42,12 @@ public class TutorialSettingsDialog {
             new Label(layout, SWT.SINGLE).setText("to");
 
             final Text editableRowsStartField = new Text(layout, SWT.SINGLE);
-            InputMode.set(editableRowsStartField, InputMode.Type.NUMBER, 0);
+            Validator.add(editableRowsStartField, Validator.TYPE_CLASS_NUMBER);
             editableRowsStartField.setText("" + tutorialData.editableStartRow);
             editableRowsStartField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
             final Text editableRowsEndField = new Text(layout, SWT.SINGLE);
-            InputMode.set(editableRowsEndField, InputMode.Type.NUMBER, 0);
+            Validator.add(editableRowsEndField, Validator.TYPE_CLASS_NUMBER);
             editableRowsEndField.setText("" + tutorialData.editableEndRow);
             editableRowsEndField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -56,12 +55,12 @@ public class TutorialSettingsDialog {
             new Label(layout, SWT.NONE).setText("Speed");
 
             final Text optimalCellCountField = new Text(layout, SWT.SINGLE);
-            InputMode.set(optimalCellCountField, InputMode.Type.NUMBER, 0);
+            Validator.add(optimalCellCountField, Validator.TYPE_CLASS_NUMBER);
             optimalCellCountField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
             optimalCellCountField.setText("" + tutorialData.optimalCellCount);
 
             final Text speedField = new Text(layout, SWT.SINGLE);
-            InputMode.set(speedField, InputMode.Type.NUMBER, 0);
+            Validator.add(speedField, Validator.TYPE_CLASS_NUMBER);
             speedField.setText("" + tutorialData.speed);
             speedField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
    /*

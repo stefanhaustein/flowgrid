@@ -9,7 +9,7 @@ import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
-import org.flowgrid.swt.widget.InputMode;
+import org.kobjects.swt.Validator;
 
 public class Dialogs {
 
@@ -37,7 +37,7 @@ public class Dialogs {
     }
 
     public static void promptIdentifier(final Shell context, final String title, final String label, String value, final Callback<String> callback) {
-        prompt(context, title, label, InputMode.Type.TEXT, -1, value, new Callback<String>() {
+        prompt(context, title, label, -1, value, new Callback<String>() {
             @Override
             public void run(final String newValue) {
                 if (Artifact.isIdentifier(newValue)) {
@@ -55,7 +55,7 @@ public class Dialogs {
         });
     }
 
-    public static void prompt(Shell context, String title, String label, InputMode.Type type, int flags, String value, final Callback<String> callback) {
+    public static void prompt(Shell context, String title, String label, int inputType, String value, final Callback<String> callback) {
         AlertDialog alert = new AlertDialog(context);
         alert.setTitle(title);
 
@@ -67,6 +67,8 @@ public class Dialogs {
         if (value != null) {
             input.setText(value);
         }
+
+        Validator.add(input, inputType);
 
         System.out.println("FIXME: Dialogs.prompt(): constraints, multiline");
         /*

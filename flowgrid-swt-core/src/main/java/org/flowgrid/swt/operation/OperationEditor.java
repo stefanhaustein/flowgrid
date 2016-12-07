@@ -598,7 +598,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         if (!tutorialMode) {
             operationMenu.addItem(Strings.MENU_ITEM_DOCUMENTATION);
         }
-        
+
         if (!operation.isTutorial()) {
             /*
             operationMenu.addItem(Strings.MENU_ITEM_RUN_MODE);
