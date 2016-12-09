@@ -606,7 +606,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                 operationMenu.addItem(Strings.MENU_ITEM_CREATE_SHORTCUT);
             }
             */
-            operationMenu.addItem(Strings.MENU_ITEM_PUBLIC);
+            operationMenu.addItem(Strings.MENU_ITEM_PUBLIC, SWT.CHECK).setSelection(operation.isPublic());
             operationMenu.addItem(Strings.MENU_ITEM_CONTINUOUS_INPUT, SWT.CHECK).setSelection(operation.asyncInput());
         } else if (!tutorialMode) {
             operationMenu.addItem(Strings.MENU_ITEM_TUTORIAL_SETTINGS);
