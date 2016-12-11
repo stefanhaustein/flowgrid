@@ -1,6 +1,7 @@
 package org.flowgrid.swt.classifier;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -20,13 +21,17 @@ public class PropertyDialog {
     public static void show(SwtFlowgrid flowgrid, final Property property) {
         AlertDialog alert = new AlertDialog(flowgrid.shell());
 
+        alert.setTitle("Edit Property");
+
         Composite content = alert.getContentContainer();
         GridLayout contentLayout = new GridLayout(2, false);
         contentLayout.marginWidth = contentLayout.marginHeight = 0;
         content.setLayout(contentLayout);
         new Label(content, SWT.SINGLE).setText("Name");
-        final Label text = new Label(content, SWT.SINGLE);
-        text.setText(property.name());
+        new Label(content, SWT.SINGLE).setText(property.name());
+//        final Label text = new Label(content, SWT.SINGLE);
+  //      text.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+    //    text.setText(property.name());
 
         new Label(content, SWT.SINGLE).setText("Type");
         final TypeSpinner typeSpinner = new TypeSpinner(content, flowgrid, property.owner(), Type.ANY, property.classifier == null ? TypeFilter.INSTANTIABLE : TypeFilter.ALL);

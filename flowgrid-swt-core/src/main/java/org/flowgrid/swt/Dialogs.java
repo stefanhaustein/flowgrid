@@ -16,7 +16,7 @@ public class Dialogs {
     public static void confirm(Shell context, String title, String message, final Runnable callback) {
         AlertDialog alert = new AlertDialog(context);
         alert.setTitle(title);
-        alert.setMessage(message);
+        new Label(alert.getContentContainer(), SWT.NONE).setText(message);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public boolean onClick(DialogInterface dialog, int which) {
@@ -31,7 +31,7 @@ public class Dialogs {
     public static void info(Shell context, String title, String text) {
         AlertDialog alert = new AlertDialog(context);
         alert.setTitle(title);
-        alert.setMessage(text);
+        new Label(alert.getContentContainer(), SWT.NONE).setText(text);
         alert.setPositiveButton("Ok", null);
         alert.show();
     }
@@ -64,6 +64,7 @@ public class Dialogs {
         }
 
         final Text input = new Text(alert.getContentContainer(), SWT.NONE);
+        input.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         if (value != null) {
             input.setText(value);
         }

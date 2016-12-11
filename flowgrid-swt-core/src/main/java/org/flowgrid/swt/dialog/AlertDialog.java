@@ -80,11 +80,6 @@ public class AlertDialog implements DialogInterface {
         shell.setText(title);
     }
 
-    public void setMessage(String s) {
-        Label label = new Label(contentContainer, 0);
-        label.setText(s);
-    }
-
     public Composite getContentContainer() {
         return contentContainer;
     }

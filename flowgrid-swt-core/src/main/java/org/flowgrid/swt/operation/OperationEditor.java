@@ -36,7 +36,6 @@ import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.widget.ColumnLayout;
 import org.flowgrid.swt.widget.MenuAdapter;
-import org.flowgrid.swt.widget.MenuSelectionHandler;
 import org.flowgrid.swt.widget.MetaControl;
 import org.flowgrid.swt.widget.WrappingLabelCage;
 
@@ -255,7 +254,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                 if (!test.passes()) {
                     alert.setTitle("Bummer!");
                     success = false;
-                    alert.setMessage("The program did not generate the expected output. Consider the help text and try again!");
+                    new Label(alert.getContentContainer(), SWT.NONE).setText("The program did not generate the expected output. Consider the help text and try again!");
                     break;
                 }
             }
@@ -306,8 +305,8 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                                 : counted <= tutorialData.optimalCellCount * 4 / 3 ? 2 : 1;
                         operationCanvas.afterChange();
                         alert.setTitle((tutorialData.passedWithStars == 3 ? "Perfect " : "Success ") + "\u2b50\u2b50\u2b50".substring(0, tutorialData.passedWithStars));
-                        alert.setMessage("Used cell units: " + counted + "\n" +
-                                "Optimal cell units: " + tutorialData.optimalCellCount);
+                        new Label(alert.getContentContainer(), SWT.NONE).setText("Used cell units: " + counted + "\n" +
+                                                "Optimal cell units: " + tutorialData.optimalCellCount);
                         alert.show();
                     }
                 }

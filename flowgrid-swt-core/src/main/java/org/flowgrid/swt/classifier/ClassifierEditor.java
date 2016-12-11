@@ -12,29 +12,40 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.model.CustomOperation;
+import org.flowgrid.model.DisplayType;
 import org.flowgrid.model.Operation;
+import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
+import org.flowgrid.model.VirtualOperation;
 import org.flowgrid.swt.ArtifactEditor;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Property;
 import org.flowgrid.swt.ArtifactComposite;
+import org.flowgrid.swt.Dialogs;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
+import org.flowgrid.swt.type.TypeFilter;
+import org.flowgrid.swt.type.TypeMenu;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class ClassifierEditor extends ArtifactEditor {
 
-    SwtFlowgrid flowgrid;
-    Classifier classifier;
-    ScrolledComposite scrolledComposite;
+    final SwtFlowgrid flowgrid;
+    final Classifier classifier;
+    final ScrolledComposite scrolledComposite;
+    final Composite propertyPanel;
+    final Composite operationPanel;
 
     public ClassifierEditor(final SwtFlowgrid flowgrid, Classifier classifier) {
+        this.flowgrid = flowgrid;
         this.classifier = classifier;
 
         flowgrid.shell().setText(classifier.name() + " - FlowGrid");
@@ -51,12 +62,35 @@ public class ClassifierEditor extends ArtifactEditor {
 
         scrolledComposite.setContent(contentPanel);
 
-        Composite propertyPanel = new Composite(contentPanel, SWT.NONE);
+        propertyPanel = new Composite(contentPanel, SWT.NONE);
         propertyPanel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
         GridLayout propertyLayout = new GridLayout(1, true);
       //  propertyLayout.marginHeight = 0;
       //  propertyLayout.marginWidth = 0;
         propertyPanel.setLayout(propertyLayout);
+
+        operationPanel = new Composite(contentPanel, SWT.NONE);
+        operationPanel.setBackground(flowgrid.colors.white);
+        operationPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
+        GridLayout operationLayout = new GridLayout(2, true);
+        operationLayout.marginHeight = 0;
+        operationLayout.marginWidth = 0;
+        operationPanel.setLayout(operationLayout);
+
+        refresh();
+
+        contentPanel.layout(true, true);
+        flowgrid.shell().layout(true, true);
+    }
+
+
+    void refresh() {
+        for (Control control: propertyPanel.getChildren()) {
+            control.dispose();
+        }
+        for (Control control: operationPanel.getChildren()) {
+            control.dispose();
+        }
 
         for (final Property property: classifier.properties(null)) {
             Label label = new Label(propertyPanel, SWT.NONE);
@@ -69,22 +103,12 @@ public class ClassifierEditor extends ArtifactEditor {
                 }
             });
         }
-
-        Composite operationPanel = new Composite(contentPanel, SWT.NONE);
-        operationPanel.setBackground(flowgrid.colors.white);
-        operationPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
-        GridLayout operationLayout = new GridLayout(2, true);
-        operationLayout.marginHeight = 0;
-        operationLayout.marginWidth = 0;
-        operationPanel.setLayout(operationLayout);
-
         Callback<Artifact> openCallback = new Callback<Artifact>() {
             @Override
             public void run(Artifact value) {
                 flowgrid.openArtifact(value);
             }
         };
-
         for (final Operation operation: classifier.operations(null)) {
             ArtifactComposite artifactComposite = new ArtifactComposite(
                     operationPanel, flowgrid.colors, operation, false);
@@ -93,21 +117,74 @@ public class ClassifierEditor extends ArtifactEditor {
             artifactComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         }
 
-        contentPanel.layout(true, true);
-        flowgrid.shell().layout(true, true);
     }
 
     @Override
     public void menuItemSelected(MenuItem menuItem) {
+        final String title = menuItem.getText();
+        if (Strings.MENU_ITEM_ADD_PROPERTY.equals(title)) {
+            Dialogs.promptIdentifier(flowgrid.shell(), "Add property", "Name", "", new Callback<String>() {
+                @Override
+                public void run(String propertyName) {
+                    Property property = new Property(classifier, propertyName, PrimitiveType.NUMBER, 0);
+                    classifier.addProperty(property);
+                    classifier.save();
+                    refresh();
+                    flowgrid.openProperty(property);
+                }
+            });
+        } else if (Strings.MENU_ITEM_ADD_METHOD.equals(title)) {
+            Dialogs.promptIdentifier(flowgrid.shell(), title, "Name", "", new Callback<String>() {
+                @Override
+                public void run(String value) {
+                    Operation operation = classifier.isInterface()
+                            ? new VirtualOperation(value, classifier) :
+                            new CustomOperation(classifier, value, true);
+                    classifier.addOperation(operation);
+                    classifier.save();
+                    refresh();
+                    flowgrid().openOperation(operation);
+                }
+            });
+        } else if ("Implement Interface...".equals(title)) {
+            new TypeMenu(flowgrid(), operationPanel, classifier.module(), Type.ANY, TypeFilter.INTERFACE, new Callback<Type>() {
+                @Override
+                public void run(Type value) {
+                    Classifier implement = (Classifier) value;
+                    List<String> problems = classifier.implementInterface(implement);
+                    if (problems.size() > 0) {
+                        StringBuilder sb = new StringBuilder("The following members have incompatible signatures:");
 
+                        for (String problem: problems) {
+                            sb.append("\n\n" + problem + "\n");
+                            sb.append("  Expected: ").append(implement.artifact(problem).toString(DisplayType.DETAILED)).append("\n");
+                            sb.append("  Found: ").append(classifier.artifact(problem).toString(DisplayType.DETAILED)).append("\n");
+                        }
+
+                        Dialogs.info(flowgrid.shell(), "Cannot implement " + ((Classifier) value).name(),
+                                sb.toString());
+                    } else {
+                        classifier.save();
+                        refresh();
+                    }
+                }
+            }).show();
+        } else {
+            super.menuItemSelected(menuItem);
+        }
     }
 
     @Override
     public void addArtifactMenu(Menu menuBar) {
         MenuAdapter menuAdapter = new MenuAdapter(menuBar, classifier.isInterface() ? "Interface" : "Class", this);
+
+        menuAdapter.addItem(Strings.MENU_ITEM_PUBLIC, SWT.CHECK).setSelection(classifier.isPublic());
+
         menuAdapter.addItem(Strings.MENU_ITEM_ADD_PROPERTY);
         menuAdapter.addItem(Strings.MENU_ITEM_ADD_METHOD);
 
+        menuAdapter.addItem(Strings.MENU_ITEM_RENAME_MOVE);
+        menuAdapter.addItem(Strings.MENU_ITEM_DELETE);
     }
 
     @Override

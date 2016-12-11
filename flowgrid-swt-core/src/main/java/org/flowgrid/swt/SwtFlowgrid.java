@@ -18,11 +18,13 @@ import org.flowgrid.model.Image;
 import org.flowgrid.model.Member;
 import org.flowgrid.model.Model;
 import org.flowgrid.model.Module;
+import org.flowgrid.model.Operation;
 import org.flowgrid.model.Platform;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.Sound;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.TypeAndValue;
+import org.flowgrid.model.VirtualOperation;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.io.IOCallback;
 import org.flowgrid.swt.api.ImageImpl;
@@ -30,6 +32,7 @@ import org.flowgrid.swt.api.SwtApiSetup;
 import org.flowgrid.swt.classifier.ClassifierEditor;
 import org.flowgrid.swt.classifier.PropertyDialog;
 import org.flowgrid.swt.operation.OperationEditor;
+import org.flowgrid.swt.operation.VirtualOperationDialog;
 import org.flowgrid.swt.widget.MenuAdapter;
 import org.flowgrid.swt.widget.MenuSelectionHandler;
 
@@ -293,8 +296,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     public void openArtifact(Artifact artifact) {
-        if (artifact instanceof CustomOperation) {
-            openOperation((CustomOperation) artifact);
+        if (artifact instanceof Operation) {
+            openOperation((Operation) artifact);
         } else if (artifact instanceof Classifier) {
             openClassifier((Classifier) artifact);
         } else if (artifact instanceof Property) {
@@ -309,8 +312,12 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         updateMenu();
     }
 
-    private void openOperation(CustomOperation operation) {
-        openOperation(operation, true);
+    public void openOperation(Operation operation) {
+        if (operation instanceof CustomOperation) {
+            openOperation((CustomOperation) operation, true);
+        } else {
+            new VirtualOperationDialog(this, (VirtualOperation) operation).show();
+        }
     }
 
     public void openOperation(CustomOperation operation, boolean editable) {
