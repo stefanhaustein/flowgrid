@@ -302,6 +302,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             openClassifier((Classifier) artifact);
         } else if (artifact instanceof Property) {
             openProperty((Property) artifact);
+        } else if (artifact instanceof Module) {
+            new OpenArtifactDialog(this, (Module) artifact).show();
         }
     }
 
@@ -364,7 +366,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
                 module = (Module) ((container instanceof Module) ? container : container.owner());
             }
             module.ensureLoaded();  // Move into to the iterator call?
-            new OpenArtifactDialog(this, module);
+            new OpenArtifactDialog(this, module).show();
         } else if ("About".equals(label)) {
             AboutDialog.show(this);
         }

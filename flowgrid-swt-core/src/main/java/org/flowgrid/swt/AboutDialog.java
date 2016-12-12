@@ -42,20 +42,18 @@ public class AboutDialog {
         });
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 if (restart[0]) {
                     platform.reboot(Settings.BootCommand.NONE, null);
                 }
-                return true;
             }
         });
         if (platform.settings().developerMode()) {
             alert.setNeutralButton("Developer off", new DialogInterface.OnClickListener() {
                 @Override
-                public boolean onClick(DialogInterface dialog, int which) {
+                public void onClick(DialogInterface dialog, int which) {
                     platform.settings().setDeveloperMode(false);
                     platform.reboot(Settings.BootCommand.NONE, null);
-                    return true;
                 }
             });
         }

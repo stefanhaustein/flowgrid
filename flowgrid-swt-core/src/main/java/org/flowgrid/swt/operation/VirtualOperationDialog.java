@@ -50,12 +50,7 @@ public class VirtualOperationDialog {
             addParameter("out", operation.inputParameter(i));
         }
 
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public boolean onClick(DialogInterface dialog, int which) {
-                return true;
-            }
-        });
+        alert.setPositiveButton("Ok", null);
     }
 
     public void show() {

@@ -56,6 +56,10 @@ public abstract class Artifact implements Comparable<Artifact> {
     }
   }
 
+  public void delete() {
+    rename(null, null, null);
+  }
+
   public void fromJson(HutnObject json, SerializationType serializationType, Map<Artifact, HutnObject> deferred) {
     name = json.getString("name", name);
     documentation = json.getString("documentation",

@@ -56,9 +56,10 @@ public class AlertDialog implements DialogInterface {
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (onClickListener == null || onClickListener.onClick(AlertDialog.this, code)) {
-                    dismiss();
+                if (onClickListener != null) {
+                    onClickListener.onClick(AlertDialog.this, code);
                 }
+                dismiss();
             }
         });
     }

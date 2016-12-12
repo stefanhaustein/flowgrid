@@ -60,20 +60,18 @@ public class TestPortDialog {
         alert.setTitle(title);
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public boolean onClick(DialogInterface dialog, final int whichButton) {
+            public void onClick(DialogInterface dialog, final int whichButton) {
                 portCommand.setDataType(inputTypeSpinner.type());
                 peerJson.put("icon", iconSpinner.getText());
                 peerJson.put("testData", testData.getText().toString());
                 callback.run(null);
-                return true;
             }
         };
 
         alert.setPositiveButton("Ok", listener);
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public boolean onClick(DialogInterface dialog, int whichButton) {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 callback.cancel();
-                return true;
             }
         });
 

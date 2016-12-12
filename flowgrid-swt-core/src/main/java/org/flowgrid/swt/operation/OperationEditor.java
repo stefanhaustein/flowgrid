@@ -242,9 +242,8 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         });
         alert.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 resetTutorial();
-                return true;
             }
         });
         boolean success = true;
@@ -262,7 +261,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         if (success) {
             alert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
                 @Override
-                public boolean onClick(DialogInterface dialog, int which) {
+                public void onClick(DialogInterface dialog, int which) {
                     countedToRow = -1;
                     Iterator<Artifact> it = operation.module().iterator();
                     CustomOperation next = null;
@@ -283,7 +282,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                     } else {
                         System.out.println("FIXME: navigateUp();");    // FIXME
                     }
-                    return true;
                 }
             });
             this.countedToRow = tutorialData.editableStartRow;

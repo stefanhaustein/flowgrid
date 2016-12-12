@@ -19,9 +19,8 @@ public class Dialogs {
         new Label(alert.getContentContainer(), SWT.NONE).setText(message);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 callback.run();
-                return true;
             }
         });
         alert.setNegativeButton("Cancel", null);
@@ -93,16 +92,14 @@ public class Dialogs {
     }
     */
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public boolean onClick(DialogInterface dialog, int whichButton) {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 callback.run(input.getText().toString());
-                return true;
             }
         });
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public boolean onClick(DialogInterface dialog, int whichButton) {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 callback.cancel();
-                return true;
             }
         });
         alert.show();
@@ -123,16 +120,14 @@ public class Dialogs {
         }
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public boolean onClick(DialogInterface dialog, int whichButton) {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 callback.run(input.getText().toString());
-                return true;
             }
         });
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public boolean onClick(DialogInterface dialog, int whichButton) {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 callback.cancel();
-                return true;
             }
         });
         alert.show();

@@ -19,9 +19,11 @@ public class OpenArtifactDialog {
     final ScrolledComposite scrolledComposite;
     final Composite list;
     AlertDialog alertDialog;
+    Module module;
 
-    OpenArtifactDialog(final SwtFlowgrid flowgrid, final Module module) {
+    OpenArtifactDialog(final SwtFlowgrid flowgrid, Module initialModule) {
         this.flowgrid = flowgrid;
+        this.module = initialModule;
         alertDialog = new AlertDialog(flowgrid.shell);
 
         scrolledComposite = new ScrolledComposite(alertDialog.getContentContainer(), 0);
@@ -35,19 +37,37 @@ public class OpenArtifactDialog {
         setModule(module);
         scrolledComposite.setContent(list);
 
-        alertDialog.setNeutralButton("Home", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
-                setModule(flowgrid.model.rootModule);
-                return false;
+            public void onClick(DialogInterface dialog, int which) {
+                Dialogs.confirm(flowgrid.shell, "Confirm Deletion", "Delete module " + OpenArtifactDialog.this.module.qualifiedName(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Module parent = OpenArtifactDialog.this.module.parent();
+                                OpenArtifactDialog.this.module.delete();
+                                flowgrid.openArtifact(parent);
+                            }
+                        });
+            }
+        });
+
+        alertDialog.setNeutralButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new CreateArtifactDialog(flowgrid, OpenArtifactDialog.this.module).show();
             }
         });
         alertDialog.setNegativeButton("Cancel", null);
 
+    }
+
+    void show() {
         alertDialog.show();
     }
 
     void setModule(Module module) {
+        this.module = module;
         alertDialog.setTitle(module == flowgrid.model.rootModule ? "Open" : ("Open - " + module.name()));
 
         for(Control control: list.getChildren()) {

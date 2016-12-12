@@ -45,7 +45,7 @@ public class PropertyDialog {
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 if (!Objects.equals(valueWidget.value(), property.value())) {
                     property.setValue(valueWidget.value());
                 }
@@ -57,7 +57,7 @@ public class PropertyDialog {
                     System.out.println("TBD: Rename");
                 }*/
                 property.save();
-                return true;
+
             }
         });
 

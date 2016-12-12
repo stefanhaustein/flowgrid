@@ -25,9 +25,8 @@ public class DataDialog {
         dataWidget.getControl().setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         alert.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 callback.run(dataWidget.value());
-                return true;
             }
         });
         alert.setNegativeButton("Cancel", null);

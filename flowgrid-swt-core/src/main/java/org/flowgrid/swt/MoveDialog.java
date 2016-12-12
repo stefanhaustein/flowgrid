@@ -60,7 +60,7 @@ public class MoveDialog {
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public boolean onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 final String newName = nameEditText.getText().toString();
 
                 if (!Artifact.isIdentifier(newName)) {
@@ -75,7 +75,6 @@ public class MoveDialog {
                             }
                     );
                 }
-                return true;
             }
         });
         alert.show();
