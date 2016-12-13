@@ -30,6 +30,7 @@ public class CreateArtifactDialog {
         typeField.add("Operation");
         typeField.add("Class");
         typeField.add("Interface");
+        typeField.select(0);
 
         new Label(alert.getContentContainer(), SWT.NONE).setText("Name");
         nameField = new Text(alert.getContentContainer(), SWT.NONE);
@@ -53,6 +54,9 @@ public class CreateArtifactDialog {
                             break;
                         case 2:
                             artifact = new Classifier(module, name, Classifier.Kind.CLASS);
+                            break;
+                        case 3:
+                            artifact = new Classifier(module, name, Classifier.Kind.INTERFACE);
                             break;
                         default:
                             return;

@@ -76,6 +76,7 @@ public class VirtualOperation extends Operation {
       writer.writeString("type", p.type.moduleLocalName(module));
       writer.endObject();
     }
+    writer.endArray();
   }
   
   void paramsFromJson(HutnArray arr, ArrayList<Parameter> params) {
