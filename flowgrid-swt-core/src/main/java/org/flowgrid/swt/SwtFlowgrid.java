@@ -296,7 +296,12 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     public void openArtifact(Artifact artifact) {
-        if (artifact instanceof Operation) {
+        if (artifact == null) {
+            clear();
+            currentEditor = null;
+            updateMenu();
+            shell.redraw();
+        } else if (artifact instanceof Operation) {
             openOperation((Operation) artifact);
         } else if (artifact instanceof Classifier) {
             openClassifier((Classifier) artifact);

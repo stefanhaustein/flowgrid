@@ -7,8 +7,10 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.flowgrid.model.Classifier;
+import org.flowgrid.model.Container;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.Type;
+import org.flowgrid.swt.Dialogs;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.data.DataMetaControl;
 import org.flowgrid.swt.dialog.AlertDialog;
@@ -29,7 +31,7 @@ public class PropertyDialog {
     DataMetaControl valueWidget;
     Combo visibilityCombo;
 
-    public PropertyDialog(SwtFlowgrid flowgrid, final Property property) {
+    public PropertyDialog(final SwtFlowgrid flowgrid, final Property property) {
         alert = new AlertDialog(flowgrid.shell());
         alert.setTitle("Edit Property");
         this.flowgrid = flowgrid;
@@ -66,6 +68,20 @@ public class PropertyDialog {
         setType();
 
         alert.setNegativeButton("Cancel", null);
+        alert.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Dialogs.confirm(flowgrid.shell(), "Delete Property?",
+                        "Delete property '" + property.name() + "'?", new Runnable() {
+                            @Override
+                            public void run() {
+                                Container owner = property.owner();
+                                property.delete();
+                                owner.save();
+                            }
+                        });
+            }
+        });
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

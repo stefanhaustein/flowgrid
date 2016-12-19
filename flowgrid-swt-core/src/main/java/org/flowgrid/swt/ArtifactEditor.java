@@ -19,7 +19,7 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
     public void menuItemSelected(MenuItem item) {
 
         String title = item.getText();
-        SwtFlowgrid flowgrid = flowgrid();
+        final SwtFlowgrid flowgrid = flowgrid();
         final Artifact artifact = getArtifact();
         if (Strings.MENU_ITEM_DELETE.equals(title)) {
             Dialogs.confirm(flowgrid.shell, "Confirmation", "Delete '" + artifact.qualifiedName() +
@@ -27,9 +27,8 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
                 @Override
                 public void run() {
                     System.out.println("FIXME: Delete");
-        /*            artifact.rename(null, null, null);
-                    platform.finishFragment(ArtifactFragment.this);
-                    */
+                    artifact.rename(null, null, null);
+                    flowgrid.openArtifact(null);
                 }
             });
         } else if (Strings.MENU_ITEM_DOCUMENTATION.equals(title)
