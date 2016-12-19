@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.flowgrid">
+          package="org.flowgrid.android.swt.flowgrid">
 
-    <application android:theme="@style/Theme.AppCompat.NoActionBar">
+    <application android:theme="@style/Theme.AppCompat.NoActionBar"
+                 android:label="FlowGrid (SWT)">
         <activity android:name="org.flowgrid.android.swt.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

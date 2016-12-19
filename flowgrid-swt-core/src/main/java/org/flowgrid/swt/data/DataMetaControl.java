@@ -23,6 +23,7 @@ import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeSpinner;
 import org.flowgrid.swt.type.TypeWidget;
 import org.flowgrid.swt.widget.MetaControl;
+import org.kobjects.swt.Validator;
 
 public class DataMetaControl implements MetaControl {
 
@@ -99,6 +100,8 @@ public class DataMetaControl implements MetaControl {
             if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
                 System.out.println("*** MetaControl for " + name + ": " + widget);
                 setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
+                Validator.add(text, Validator.TYPE_CLASS_NUMBER | Validator.TYPE_NUMBER_FLAG_DECIMAL | Validator.TYPE_NUMBER_FLAG_SIGNED);
+
                 text.addModifyListener(new ModifyListener() {
                     @Override
                     public void modifyText(ModifyEvent eve) {

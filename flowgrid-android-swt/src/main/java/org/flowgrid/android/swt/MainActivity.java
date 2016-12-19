@@ -14,7 +14,6 @@ public class MainActivity extends SwtActivity {
         super.onCreate(savedInstanceState);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        new SwtFlowgrid(getDisplay(),
-                getExternalFilesDir(null)).start();
+        new SwtFlowgrid(getDisplay(), getExternalFilesDir(null), true).start();
     }
 }

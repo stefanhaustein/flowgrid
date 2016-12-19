@@ -567,13 +567,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         }
     }
 
-    public float autoZoom(CustomOperation op, int availableWidth, int availableHeight) {
+    public float calculateCellSize(CustomOperation op) {
         int[] size = new int[4];
         op.size(size);
+        Point available = getSize();
 
         if (size[0] >= 0 && size [1] >= 0) {
-            float newCellSize = Math.min(availableHeight / Math.max(8f, size[2] + 1),
-                    availableWidth / Math.max(8f, size[3] + 1));  // operator width, scrollbar
+            float newCellSize = Math.min(available.y / Math.max(8f, size[2] + 1),
+                    available.x / Math.max(8f, size[3] + 1));  // operator width, scrollbar
 
             float newScale = newCellSize / initialCellSize;
             double quantumScale = Math.pow(ZOOM_STEP, Math.floor(Math.log(newScale) / Math.log(ZOOM_STEP)));
@@ -1275,6 +1276,12 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         System.out.println("TBD: updateLayout()");  // FIXME
     }
 
+    void autoZoom() {
+        cellSize = calculateCellSize(operation);
+        sge.setState(originX, originY, cellSize);
+        redraw();
+    }
+
 
     protected void zoomOpen(Cell cell) {
         int[] size = new int[4];
@@ -1285,9 +1292,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         zoomData.cell = cell;
         zoomData.operation = operation;
         zoomData.rows = size[2] + 2;
-        Point canvasSize = getSize();
 
-        zoomData.targetCellSize = size[2] * autoZoom(zoomData.operation, canvasSize.x, canvasSize.y);
+        zoomData.targetCellSize = size[2] * calculateCellSize(zoomData.operation);
         zoomData.endTime = System.currentTimeMillis() + ZOOM_TIME_MS;
 
         zoomData.originalOriginX = originX;

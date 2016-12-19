@@ -59,14 +59,14 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public final Colors colors;
 
-    public SwtFlowgrid(Display display, File flowgridRootDir) {
+    public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark) {
         this.display = display;
 
         flowgridRoot = flowgridRootDir;
         storageRoot = new File(flowgridRoot, "files");
         cacheRoot = new File(flowgridRoot, "cache");
 
-        colors = new Colors(display, false);
+        colors = new Colors(display, dark);
         shell = new Shell(display);
         shell.setText("FlowGrid");
     }
@@ -329,11 +329,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         }
         settings.setLastUsed(operation);
         currentEditor = new OperationEditor(this, operation);
-        updateMenu();
     }
 
     public void openProperty(Property p) {
-        PropertyDialog.show(this, p);
+        new PropertyDialog(this, p).show();
     }
 
     public Shell shell() {

@@ -81,7 +81,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     Label tutorialHelp;
 
 
-    public OperationEditor(final SwtFlowgrid flowgrid, CustomOperation operation) {
+    public OperationEditor(final SwtFlowgrid flowgrid, final CustomOperation operation) {
         this.flowgrid = flowgrid;
         this.operation = operation;
 
@@ -167,10 +167,13 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
             System.out.println("");
         }
 
-       // flowgrid.shell().layout(true, true);  // FIXME
-
-
         updateMenu();
+
+        new UiTimerTask(flowgrid.display()) {
+            public void runOnUiThread() {
+                 operationCanvas.autoZoom();
+            }
+        }.schedule(100);
     }
 
 
