@@ -3,18 +3,31 @@ package org.flowgrid.swt;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
+import org.flowgrid.swt.port.Sprite;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Colors {
 
+    private final float pixelPerDp;
+
+    public enum Icon {FAST_FORWARD, PAUSE, PLAY_ARROW, STOP, SLOW_MOTION_VIDEO};
+
     public enum Brightness {DARKEST, DARKER, REGULAR, BRIGHTER, BRIGHTEST};
+
+    public String FAST_FORWARD = "fast_forward";
+
+
 
     public static int brightenChannel(int value, boolean brighten) {
         return brighten ? Math.min(255, (255 - value) / 2 + value) : value;
@@ -41,14 +54,16 @@ public class Colors {
     private final Display display;
     public final boolean dark;
     private Map<Integer,Color> colors = new HashMap<>();
+    private Map<Icon,Image> icons = new HashMap<>();
 
     private Color c(int argb) {
         return new Color(display, (argb >> 16) & 255, (argb >> 8) & 255, argb & 255);
     }
 
-    Colors(Display display, boolean dark) {
+    Colors(Display display, boolean dark, float pixelPerDp) {
         this.display = display;
         this.dark = dark;
+        this.pixelPerDp = pixelPerDp;
 
         black = display.getSystemColor(SWT.COLOR_BLACK);
         white = display.getSystemColor(SWT.COLOR_WHITE);
@@ -118,6 +133,33 @@ public class Colors {
     public void releaseColor(Color color) {
 
     }
+
+    public Image getIcon(Icon id) {
+        Image image = icons.get(id);
+        if (image == null) {
+            String resourceName = "/icons/ic_" + id.name().toLowerCase() + (dark ? "_white_24dp.png" : "_black_24dp.png");
+            InputStream is = getClass().getResourceAsStream(resourceName);
+            if (is == null) {
+                throw new RuntimeException("Resource not found: " + resourceName);
+            }
+            image = new Image(display, is);
+
+            int expectedSize = Math.round(24 * pixelPerDp);
+            Rectangle bounds = image.getBounds();
+
+            if (bounds.width != expectedSize || bounds.height != expectedSize) {
+                Image scaledImage = new Image(display, expectedSize, expectedSize);
+                GC gc = new GC(scaledImage);
+                gc.setAntialias(SWT.ON);
+                gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, expectedSize, expectedSize);
+                image = scaledImage;
+            }
+
+            icons.put(id, image);
+        }
+        return image;
+    }
+
 
     public void dispose() {
         for (Font font : fontMap.values()) {

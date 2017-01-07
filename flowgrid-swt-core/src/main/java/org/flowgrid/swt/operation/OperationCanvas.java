@@ -7,8 +7,10 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
@@ -19,6 +21,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Cell;
@@ -106,8 +110,13 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     ArrayList<Type> currentTypeFilter = new ArrayList<>();
     ArrayList<Integer> currentAutoConnectStartRow = new ArrayList<>();
     Label menuAnchor;
+
+    ToolItem resetItem;
+    ToolItem startPauseItem;
+
     Button resetButton;
     Button startPauseButton;
+
     Button fasterButton;
     Button slowerButton;
     boolean changing;
@@ -128,7 +137,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         if (!operation.isTutorial()) {
             slowerButton = new Button(this, SWT.PUSH);
-            slowerButton.setText("\u2212");
+            slowerButton.setImage(flowgrid.colors.getIcon(Colors.Icon.SLOW_MOTION_VIDEO));
             slowerButton.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -150,7 +159,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             });
 
             fasterButton = new Button(this, SWT.PUSH);
-            fasterButton.setText("+");
+            fasterButton.setImage(flowgrid.colors.getIcon(Colors.Icon.FAST_FORWARD));
             fasterButton.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -160,9 +169,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             });
        }
 
-        startPauseButton = new Button(this, SWT.PUSH);
-        startPauseButton.setText("\u25b6");
-        startPauseButton.addSelectionListener(new SelectionAdapter() {
+       ToolBar toolBar = flowgrid.shell().getToolBar();
+
+        SelectionListener startPauseListener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (operationEditor.running) {
@@ -176,18 +185,34 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     operationEditor.start();
                 }
             }
-        });
+        };
 
-
-        resetButton = new Button(this, SWT.PUSH);
-        resetButton.setText("\u23f9");
-        resetButton.addSelectionListener(new SelectionAdapter() {
+        SelectionListener resetListener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 operationEditor.stop();
                 unpause();
             }
-        });
+        };
+
+
+        if (toolBar != null) {
+            resetItem = new ToolItem(toolBar, SWT.PUSH);
+            resetItem.setImage(flowgrid.colors.getIcon(Colors.Icon.STOP));
+            resetItem.addSelectionListener(resetListener);
+
+            startPauseItem = new ToolItem(toolBar, SWT.PUSH);
+            startPauseItem.setImage(flowgrid.colors.getIcon(Colors.Icon.PLAY_ARROW));
+            startPauseItem.addSelectionListener(startPauseListener);
+        } else {
+            startPauseButton = new Button(this, SWT.PUSH);
+            startPauseButton.setImage(flowgrid.colors.getIcon(Colors.Icon.PLAY_ARROW));
+            startPauseButton.addSelectionListener(startPauseListener);
+
+            resetButton = new Button(this, SWT.PUSH);
+            resetButton.setImage(flowgrid.colors.getIcon(Colors.Icon.STOP));
+            resetButton.addSelectionListener(resetListener);
+        }
 
         menuAnchor = new Label(this, SWT.NONE);
 
@@ -269,8 +294,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
             @Override
             public void mouseDown(MouseEvent e) {
-                System.out.println(startPauseButton.toString());
-
                 armed = true;
                 autoZoom = false;
                 changed = false;
@@ -402,37 +425,53 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
                 int spacing = 5;
 
-                Button[] topButtons = new Button[]{startPauseButton, resetButton};
+                if (startPauseButton != null) {
+                    Button[] topButtons = new Button[]{startPauseButton, resetButton};
 
-                int buttonW = 0;
-                int buttonH = 0;
-                for (Button button: topButtons) {
-                    Point size = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                    if (size.x > buttonW) {
-                        buttonW = size.x;
+                    int buttonW = 0;
+                    int buttonH = 0;
+                    for (Button button : topButtons) {
+                        Point size = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                        if (size.x > buttonW) {
+                            buttonW = size.x;
+                        }
+                        if (size.y > buttonH) {
+                            buttonH = size.y;
+                        }
                     }
-                    if (size.y > buttonH) {
-                        buttonH = size.y;
+
+                    if (buttonW < buttonH) {
+                        buttonW = buttonH;
                     }
-                }
 
-                if (buttonW < buttonH) {
-                    buttonW = buttonH;
-                }
-
-             /*   if (buttonW > 3 * buttonH / 2) {
-                    buttonW = 3 * buttonH / 2;
-                }*/
-                for (int i = 0; i < topButtons.length; i++) {
-                    topButtons[i].setBounds(
-                            bounds.width - (buttonW + spacing) * (topButtons.length - i),
-                            spacing,
-                            buttonW, buttonH);
+                    for (int i = 0; i < topButtons.length; i++) {
+                        topButtons[i].setBounds(
+                                bounds.width - (buttonW + spacing) * (topButtons.length - i),
+                                spacing,
+                                buttonW, buttonH);
+                    }
                 }
 
                 if (!operationEditor.tutorialMode) {
                     Control[] bottomControls = new Control[]{slowerButton, speedBar, fasterButton};
                     for (int i = 0; i < bottomControls.length; i++) {
+                        int buttonW = 0;
+                        int buttonH = 0;
+                        for (Control control : bottomControls) {
+                            if (control instanceof Button) {
+                                Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                                if (size.x > buttonW) {
+                                    buttonW = size.x;
+                                }
+                                if (size.y > buttonH) {
+                                    buttonH = size.y;
+                                }
+                            }
+                        }
+
+                        if (buttonW < buttonH) {
+                            buttonW = buttonH;
+                        }
                         int x = bounds.width - (buttonW + spacing) * (bottomControls.length - i);
                         int y = bounds.height - spacing - buttonH;
                         int h = buttonH;
@@ -1264,12 +1303,19 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
      * Called from OperationEditor.updataMenu();
      */
     void updateButtons() {
-        startPauseButton.setText(operationEditor.running && currentSpeed > 0 ? "\u23f8" : "\u25b6"); //: */"\u25FC" );
+        Image startPauseImage = flowgrid.colors.getIcon(operationEditor.running && currentSpeed > 0
+                ? Colors.Icon.PAUSE : Colors.Icon.PLAY_ARROW);
+        if (startPauseButton != null) {
+            startPauseButton.setImage(startPauseImage); //: */"\u25FC" );
+            resetButton.setEnabled(operationEditor.running);
+        } else {
+            startPauseItem.setImage(startPauseImage);
+            resetItem.setEnabled(operationEditor.running);
+        }
         if (speedBar != null){
             fasterButton.setEnabled(speedBar.getSelection() < 100);
             slowerButton.setEnabled(speedBar.getSelection() > 10);
         }
-        resetButton.setEnabled(operationEditor.running);
     }
 
     void updateLayout() {

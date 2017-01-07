@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Classifier;
@@ -59,14 +61,14 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public final Colors colors;
 
-    public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark) {
+    public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp) {
         this.display = display;
 
         flowgridRoot = flowgridRootDir;
         storageRoot = new File(flowgridRoot, "files");
         cacheRoot = new File(flowgridRoot, "cache");
 
-        colors = new Colors(display, dark);
+        colors = new Colors(display, dark, pixelPerDp);
         shell = new Shell(display);
         shell.setText("FlowGrid");
     }
@@ -120,6 +122,12 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     void clear() {
         for(Control control: shell.getChildren()) {
             control.dispose();
+        }
+        ToolBar toolBar = shell.getToolBar();
+        if (toolBar != null) {
+            for (ToolItem toolItem : toolBar.getItems()) {
+                toolItem.dispose();
+            }
         }
     }
 

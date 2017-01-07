@@ -4,7 +4,8 @@
 
     <application android:theme="@style/Theme.AppCompat.NoActionBar"
                  android:label="FlowGrid (SWT)">
-        <activity android:name="org.flowgrid.android.swt.MainActivity">
+        <activity android:name="org.flowgrid.android.swt.MainActivity"
+                  android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
