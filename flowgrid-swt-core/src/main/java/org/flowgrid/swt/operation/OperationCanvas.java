@@ -136,7 +136,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         operation.ensureLoaded();  // FIXME
 
         if (!operation.isTutorial()) {
-            slowerButton = new Button(this, SWT.PUSH);
+            slowerButton = new Button(this, SWT.PUSH | SWT.FLAT);
             slowerButton.setImage(flowgrid.colors.getIcon(Colors.Icon.SLOW_MOTION_VIDEO));
             slowerButton.addSelectionListener(new SelectionAdapter() {
                 @Override
@@ -158,7 +158,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 }
             });
 
-            fasterButton = new Button(this, SWT.PUSH);
+            fasterButton = new Button(this, SWT.PUSH | SWT.FLAT);
             fasterButton.setImage(flowgrid.colors.getIcon(Colors.Icon.FAST_FORWARD));
             fasterButton.addSelectionListener(new SelectionAdapter() {
                 @Override
@@ -197,13 +197,13 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
 
         if (toolBar != null) {
-            resetItem = new ToolItem(toolBar, SWT.PUSH);
-            resetItem.setImage(flowgrid.colors.getIcon(Colors.Icon.STOP));
-            resetItem.addSelectionListener(resetListener);
-
             startPauseItem = new ToolItem(toolBar, SWT.PUSH);
             startPauseItem.setImage(flowgrid.colors.getIcon(Colors.Icon.PLAY_ARROW));
             startPauseItem.addSelectionListener(startPauseListener);
+
+            resetItem = new ToolItem(toolBar, SWT.PUSH);
+            resetItem.setImage(flowgrid.colors.getIcon(Colors.Icon.STOP));
+            resetItem.addSelectionListener(resetListener);
         } else {
             startPauseButton = new Button(this, SWT.PUSH);
             startPauseButton.setImage(flowgrid.colors.getIcon(Colors.Icon.PLAY_ARROW));
@@ -215,6 +215,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         }
 
         menuAnchor = new Label(this, SWT.NONE);
+        menuAnchor.setBackground(flowgrid.colors.getColor(0));
 
         HutnWriter writer = new HutnWriter(new StringWriter());
         writer.startObject();
@@ -1413,7 +1414,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 this.height = height;
                 this.width = width;
 
-                menuAnchor.setBounds(newX + newW, newY, 1, 1);
+                menuAnchor.setBounds(newX, newY, newW, newH);
+                System.err.println("bounds: " + menuAnchor.getBounds());
 
                 redraw(oldX, oldY, oldW, oldH, true);
                 redraw(newX, newY, newW, newH, true);
