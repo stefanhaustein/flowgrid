@@ -21,7 +21,7 @@ public class Colors {
 
     private final float pixelPerDp;
 
-    public enum Icon {FAST_FORWARD, PAUSE, PLAY_ARROW, STOP, SLOW_MOTION_VIDEO};
+    public enum Icon {FAST_FORWARD, MORE_VERT, PAUSE, PLAY_ARROW, STOP, SLOW_MOTION_VIDEO};
 
     public enum Brightness {DARKEST, DARKER, REGULAR, BRIGHTER, BRIGHTEST};
 

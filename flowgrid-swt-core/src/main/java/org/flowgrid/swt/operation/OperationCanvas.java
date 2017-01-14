@@ -1,6 +1,8 @@
 package org.flowgrid.swt.operation;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.GestureEvent;
+import org.eclipse.swt.events.GestureListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -371,6 +373,44 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     }
                 }
                 pointerId = -1;
+            }
+        });
+
+        addGestureListener(new GestureListener() {
+            @Override
+            public void gesture(GestureEvent e) {
+                if (e.detail != SWT.GESTURE_MAGNIFY) {
+                    return;
+                }
+                int fx = e.x;
+                int fy = e.y;
+
+                float scale = (float) e.magnification;
+/*
+                originX += lastFocusX - fx;
+                originY += lastFocusY - fy;
+*/
+                // we want fx at the same position after scaling
+
+                // absolute coordiantes before scaling.
+                float absFx = originX + fx;
+                float absFy = originY + fy;
+
+                absFx *= scale;
+                absFy *= scale;
+
+                // fx / fy need to remain at the same point...
+                originX = absFx - fx;
+                originY = absFy - fy;
+
+                lastFocusX = fx;
+                lastFocusY = fy;
+
+                cellSize *= scale;
+                sge.setState(originX, originY, cellSize);
+
+                // onScaleEnd();
+                redraw();
             }
         });
 

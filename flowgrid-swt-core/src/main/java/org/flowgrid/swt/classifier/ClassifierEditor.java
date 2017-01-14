@@ -175,8 +175,14 @@ public class ClassifierEditor extends ArtifactEditor {
     }
 
     @Override
-    public void addArtifactMenu(Menu menuBar) {
-        MenuAdapter menuAdapter = new MenuAdapter(menuBar, classifier.isInterface() ? "Interface" : "Class", this);
+    public String getMenuTitle() {
+        return classifier.isInterface() ? "Interface" : "Class";
+    }
+
+
+    @Override
+    public void fillMenu(Menu menu) {
+        MenuAdapter menuAdapter = new MenuAdapter(menu, this);
 
         menuAdapter.addItem(Strings.MENU_ITEM_PUBLIC, SWT.CHECK).setSelection(classifier.isPublic());
 

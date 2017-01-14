@@ -11,6 +11,12 @@ public class MenuAdapter implements SelectionListener {
     private final MenuSelectionHandler handler;
     private final Menu menu;
 
+    public MenuAdapter(Menu menu, MenuSelectionHandler handler) {
+        this.menu = menu;
+        this.handler = handler;
+    }
+
+
     public MenuAdapter(Menu parent, String name, MenuSelectionHandler handler) {
         MenuItem menuItem = new MenuItem(parent, SWT.CASCADE);
         menuItem.setText(name);

@@ -87,7 +87,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
 
         tutorialMode = operation.isTutorial();
 
-        flowgrid.shell().setText(operation.name() + " - FlowGrid");
+//        flowgrid.shell().setText(operation.name() + " - FlowGrid");
 
         classifier = operation.classifier;
         instance = classifier != null ? new Instance(classifier) : null;
@@ -162,12 +162,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         operationCanvas.setLayoutData(canvasGridData);
 
         attachAll();
-
-        for (int i = 0; i < 10; i++) {
-            System.out.println("");
-        }
-
-        updateMenu();
 
         new UiTimerTask(flowgrid.display()) {
             public void runOnUiThread() {
@@ -572,16 +566,8 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         });
     }
 
-
-    public void addArtifactMenu(Menu menuBar) {
-
-        MenuAdapter editMenu = new MenuAdapter(menuBar, "Edit", operationCanvas);
-        editMenu.addItem(Strings.MENU_ITEM_UNDO).setEnabled(operationCanvas.undoHistory.size() > 1);
-        editMenu.addItem(Strings.MENU_ITEM_COPY);
-        editMenu.addItem(Strings.MENU_ITEM_CUT);
-
-
-        MenuAdapter operationMenu = new MenuAdapter(menuBar, "Operation", this);
+    public void fillMenu(Menu menu) {
+        MenuAdapter operationMenu = new MenuAdapter(menu, this);
 
         /*
         SpannableString title = new SpannableString("\u2039 " + operation().name());
@@ -628,6 +614,11 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
             }
             operationMenu.addItem(Strings.MENU_ITEM_DELETE);
         }
+    }
+
+    @Override
+    public String getMenuTitle() {
+        return "Operation";
     }
 
     @Override

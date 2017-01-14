@@ -60,6 +60,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     private ArtifactEditor currentEditor;
 
     public final Colors colors;
+    private ToolItem overflowItem;
 
     public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp) {
         this.display = display;
@@ -93,8 +94,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
         openArtifact(model.artifact(settings.getLastUsed()));
 
-        updateMenu();
-
         shell.pack();
         shell.open();
     }
@@ -113,7 +112,29 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         menuAdapter.addItem("Open");
 
         if (currentEditor != null) {
-            currentEditor.addArtifactMenu(menuBar);
+            if (shell.getToolBar() == null) {
+                MenuItem artifactMenuItem = new MenuItem(menuBar, SWT.POP_UP);
+                artifactMenuItem.setText(currentEditor.getMenuTitle());
+                Menu artifactMenu = new Menu(artifactMenuItem);
+                currentEditor.fillMenu(artifactMenu);
+            } else if (overflowItem == null) {
+                overflowItem = new ToolItem(shell.getToolBar(), SWT.POP_UP);
+                overflowItem.setImage(colors.getIcon(Colors.Icon.MORE_VERT));
+                overflowItem.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Menu menu = new Menu(shell);
+                        currentEditor.fillMenu(menu);
+                        menu.setLocation(shell.toDisplay(shell.getSize().x, 0));
+                        menu.setVisible(true);
+                    }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                            widgetSelected(e);
+                        }
+                });
+            }
         }
 
         shell.setMenuBar(menuBar);
@@ -129,6 +150,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
                 toolItem.dispose();
             }
         }
+        overflowItem = null;
     }
 
     @Override
@@ -303,10 +325,21 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         System.err.println("log: " + message + " -- " + e);
     }
 
+    void setCurrentEditor(ArtifactEditor editor) {
+        currentEditor = editor;
+        if (editor == null) {
+            shell.setText("FlowGrid");
+        } else {
+            Artifact artifact = editor.getArtifact();
+            shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + editor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
+        }
+        updateMenu();
+    }
+
     public void openArtifact(Artifact artifact) {
         if (artifact == null) {
             clear();
-            currentEditor = null;
+            setCurrentEditor(null);
             updateMenu();
             shell.redraw();
         } else if (artifact instanceof Operation) {
@@ -323,8 +356,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     public void openClassifier(Classifier classifier) {
         clear();
         settings.setLastUsed(classifier);
-        currentEditor = new ClassifierEditor(this, classifier);
-        updateMenu();
+        setCurrentEditor(new ClassifierEditor(this, classifier));
     }
 
     public void openOperation(Operation operation) {
@@ -341,7 +373,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             System.out.println("FIXME: SwtFlowgrid.openOperation for run mode");
         }
         settings.setLastUsed(operation);
-        currentEditor = new OperationEditor(this, operation);
+        setCurrentEditor(new OperationEditor(this, operation));
     }
 
     public void openProperty(Property p) {

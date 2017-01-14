@@ -9,15 +9,15 @@ import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 public abstract class ArtifactEditor implements MenuSelectionHandler {
 
-
-    public abstract void addArtifactMenu(Menu menuBar);
-
     public abstract Artifact getArtifact();
 
     public abstract SwtFlowgrid flowgrid();
 
-    public void menuItemSelected(MenuItem item) {
+    public abstract void fillMenu(Menu menu);
 
+    public abstract String getMenuTitle();
+
+    public void menuItemSelected(MenuItem item) {
         String title = item.getText();
         final SwtFlowgrid flowgrid = flowgrid();
         final Artifact artifact = getArtifact();
@@ -49,6 +49,5 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
                 Strings.MENU_ITEM_RENAME.equals(title)) {
             MoveDialog.show(this, artifact);
         }
-
     }
 }
