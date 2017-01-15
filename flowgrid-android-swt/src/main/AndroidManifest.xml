@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.flowgrid.android.swt.flowgrid">
 
-    <application android:theme="@style/Theme.AppCompat.NoActionBar"
+    <application android:theme="@style/FlowGridTheme"
                  android:label="FlowGrid (SWT)">
         <activity android:name="org.flowgrid.android.swt.MainActivity"
                   android:screenOrientation="landscape" >

@@ -33,14 +33,7 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
             });
         } else if (Strings.MENU_ITEM_DOCUMENTATION.equals(title)
                 || Strings.MENU_ITEM_ADD_DOCUMENTATION.equals(title)) {
-            Dialogs.promptMultiline(flowgrid.shell, artifact == artifact.model().rootModule ? "Flowgrid" : artifact.toString(DisplayType.TITLE), null, artifact.documentation(), new Callback<String>() {
-                @Override
-                public void run(String value) {
-                    if (artifact.setDocumentation(value)) {
-                        artifact.save();
-                    }
-                }
-            });
+            editDocumentation(null);
         } else if (Strings.MENU_ITEM_PUBLIC.equals(title)) {
             artifact.setPublic(!artifact.isPublic());
             item.setSelection(artifact.isPublic());
@@ -49,5 +42,21 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
                 Strings.MENU_ITEM_RENAME.equals(title)) {
             MoveDialog.show(this, artifact);
         }
+    }
+
+    protected void editDocumentation(final Runnable callback) {
+        final SwtFlowgrid flowgrid = flowgrid();
+        final Artifact artifact = getArtifact();
+        Dialogs.promptMultiline(flowgrid.shell, artifact == artifact.model().rootModule ? "Flowgrid" : artifact.toString(DisplayType.TITLE), null, artifact.documentation(), new Callback<String>() {
+            @Override
+            public void run(String value) {
+                if (artifact.setDocumentation(value)) {
+                    artifact.save();
+                    if (callback != null) {
+                        callback.run();
+                    }
+                }
+            }
+        });
     }
 }

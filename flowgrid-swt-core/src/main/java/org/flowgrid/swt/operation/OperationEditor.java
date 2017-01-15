@@ -2,6 +2,8 @@ package org.flowgrid.swt.operation;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -144,16 +146,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
 
         scrolledComposite.setContent(controlPanel);
 
-        if (operation.isTutorial()) {
-            Composite labelCage = new Composite(controlPanel, SWT.NONE);
-            labelCage.setLayout(new WrappingLabelCage());
-            labelCage.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
-            Label tutorialHelp = new Label(labelCage, SWT.WRAP);
-            if (operation.documentation() != null) {
-                tutorialHelp.setText(operation.documentation());
-            }
-        }
-
         controller.setVisual(true);
         operationCanvas = new OperationCanvas(this, flowgrid.shell());
 
@@ -162,6 +154,29 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         operationCanvas.setLayoutData(canvasGridData);
 
         attachAll();
+
+        Composite labelCage = new Composite(controlPanel, SWT.NONE);
+        labelCage.setLayout(new WrappingLabelCage());
+        labelCage.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        final Label documentationLabel = new Label(labelCage, SWT.WRAP);
+        final Runnable updateDocumentation = new Runnable() {
+            public void run() {
+                String documentation = operation.documentation();
+                if (documentation == null || documentation.trim().isEmpty()) {
+                    documentation = "(no documentation)";
+                }
+                documentationLabel.setText(documentation);
+            }
+        };
+        documentationLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent e) {
+                if (!tutorialMode) {
+                    editDocumentation(updateDocumentation);
+                }
+            }
+        });
+        updateDocumentation.run();
 
         new UiTimerTask(flowgrid.display()) {
             public void runOnUiThread() {
@@ -581,10 +596,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         fakeActionBar.setText(title);
         setArtifact(operation());  // Updates the action bar.
 */
-        if (!tutorialMode) {
-            operationMenu.addItem(Strings.MENU_ITEM_DOCUMENTATION);
-        }
-
         if (!operation.isTutorial()) {
             /*
             operationMenu.addItem(Strings.MENU_ITEM_RUN_MODE);

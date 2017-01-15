@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.flowgrid.model.Artifact;
@@ -125,7 +124,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     SwtFlowgrid flowgrid;
     ArrayList<String> undoHistory = new ArrayList<>();
     int currentSpeed = 50;
-    ProgressBar speedBar;
+    boolean paused;
+    Label speedBar;
 
 
     public OperationCanvas(final OperationEditor operationEditor, final Composite parent) {
@@ -137,25 +137,24 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         operation.ensureLoaded();  // FIXME
 
-        if (!operation.isTutorial()) {
+        if (operation.isTutorial()) {
+            setSpeed(operation.tutorialData.speed);
+        } else {
             slowerButton = new Button(this, SWT.PUSH | SWT.FLAT);
             slowerButton.setImage(flowgrid.colors.getIcon(Colors.Icon.SLOW_MOTION_VIDEO));
             slowerButton.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    setSpeedBarPosition(Math.max(10, speedBar.getSelection() - 10));
+                    setSpeed(Math.max(10, currentSpeed - 10));
                     updateButtons();
                 }
             });
 
-            speedBar = new ProgressBar(this, SWT.NONE);
-            speedBar.setMaximum(100);
-            speedBar.setSelection(50);
-            speedBar.setMinimum(0);
+            speedBar = new Label(this, SWT.NONE);
             speedBar.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseUp(MouseEvent e) {
-                    setSpeedBarPosition(50);
+                    setSpeed(50);
                     updateButtons();
                 }
             });
@@ -165,10 +164,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             fasterButton.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    setSpeedBarPosition(Math.min(100, speedBar.getSelection() + 10));
+                    setSpeed(Math.min(100, currentSpeed + 10));
                     updateButtons();
                 }
             });
+            setSpeed(50);
        }
 
        ToolBar toolBar = flowgrid.shell().getToolBar();
@@ -177,11 +177,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (operationEditor.running) {
-                    if (currentSpeed > 0) {
-                        currentSpeed = 0;
-                    } else {
-                        unpause();
-                    }
+                    paused = !paused;
                     updateButtons();
                 } else {
                     operationEditor.start();
@@ -193,7 +189,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             @Override
             public void widgetSelected(SelectionEvent e) {
                 operationEditor.stop();
-                unpause();
+                paused = false;
             }
         };
 
@@ -495,32 +491,12 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
                 if (!operationEditor.tutorialMode) {
                     Control[] bottomControls = new Control[]{slowerButton, speedBar, fasterButton};
-                    for (int i = 0; i < bottomControls.length; i++) {
-                        int buttonW = 0;
-                        int buttonH = 0;
-                        for (Control control : bottomControls) {
-                            if (control instanceof Button) {
-                                Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                                if (size.x > buttonW) {
-                                    buttonW = size.x;
-                                }
-                                if (size.y > buttonH) {
-                                    buttonH = size.y;
-                                }
-                            }
-                        }
 
-                        if (buttonW < buttonH) {
-                            buttonW = buttonH;
-                        }
-                        int x = bounds.width - (buttonW + spacing) * (bottomControls.length - i);
-                        int y = bounds.height - spacing - buttonH;
-                        int h = buttonH;
-                        if (bottomControls[i] == speedBar) {
-                            h = Math.min(buttonH, speedBar.computeSize(-1, -1).y);
-                            y += (buttonH - h) / 2;
-                        }
-                        bottomControls[i].setBounds(x, y, buttonW, h);
+                    int y = bounds.height;
+                    for (Control control : bottomControls) {
+                        Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                        y -= size.y + spacing;
+                        control.setBounds(bounds.width - spacing - size.x, y, size.x, size.y);
                     }
 
                 }
@@ -841,7 +817,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         cellsReady.clear();
         for (VisualData data: operationEditor.controller.getAndAdvanceVisualData(
-                operation().isTutorial() ? operation().tutorialData.speed : currentSpeed)) {
+                paused ? 0 : currentSpeed)) {
             drawData(data, gc);
         }
 
@@ -972,12 +948,10 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         redraw();
     }
 
-    void setSpeedBarPosition(int speed) {
-        if (currentSpeed != 0){
-            currentSpeed = speed;
-        }
+    void setSpeed(int speed) {
+        currentSpeed = speed;
         if (speedBar != null) {
-            speedBar.setSelection(speed);
+            speedBar.setText(speed == 100 ? "100%" : ("\u00a0\u00a0" + speed + "%\u00a0"));
         }
     }
 
@@ -1332,19 +1306,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         afterChange();
     }
 
-    private void unpause() {
-        if (speedBar != null) {
-            currentSpeed = speedBar.getSelection();
-        } else {
-            currentSpeed = operation.tutorialData.speed;
-        }
-    }
-
     /**
      * Called from OperationEditor.updataMenu();
      */
     void updateButtons() {
-        Image startPauseImage = flowgrid.colors.getIcon(operationEditor.running && currentSpeed > 0
+        Image startPauseImage = flowgrid.colors.getIcon(operationEditor.running && !paused
                 ? Colors.Icon.PAUSE : Colors.Icon.PLAY_ARROW);
         if (startPauseButton != null) {
             startPauseButton.setImage(startPauseImage); //: */"\u25FC" );
@@ -1354,8 +1320,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             resetItem.setEnabled(operationEditor.running);
         }
         if (speedBar != null){
-            fasterButton.setEnabled(speedBar.getSelection() < 100);
-            slowerButton.setEnabled(speedBar.getSelection() > 10);
+            fasterButton.setEnabled(currentSpeed < 100);
+            slowerButton.setEnabled(currentSpeed > 10);
         }
     }
 
