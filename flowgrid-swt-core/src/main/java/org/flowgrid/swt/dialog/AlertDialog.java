@@ -21,6 +21,8 @@ public class AlertDialog implements DialogInterface {
     Shell shell;
     Composite buttonRow;
     Composite contentContainer;
+    static boolean android = System.getProperty("java.vendor") != null
+            && System.getProperty("java.vendor").toLowerCase().indexOf("android") != -1;
 
 
     public static void center(Shell dialog) {
@@ -43,6 +45,7 @@ public class AlertDialog implements DialogInterface {
         contentContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         buttonRow = new Composite(shell, 0);
         buttonRow.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
+
         buttonRow.setLayout(new RowLayout());
     }
 
@@ -51,7 +54,7 @@ public class AlertDialog implements DialogInterface {
     }
 
     void setButton(final int code, String label, final OnClickListener onClickListener) {
-        Button button = new Button(buttonRow, SWT.PUSH);
+        Button button = new Button(buttonRow, android ? SWT.PUSH|SWT.FLAT : SWT.PUSH);
         button.setText(label);
         button.addSelectionListener(new SelectionAdapter() {
             @Override
