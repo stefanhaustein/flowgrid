@@ -55,7 +55,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     File cacheRoot;
 
     private HutnObject editBuffer;
-    private Settings settings = new Settings();
+    private Settings settings;
     private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
     private ArtifactEditor currentEditor;
 
@@ -66,6 +66,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         this.display = display;
 
         flowgridRoot = flowgridRootDir;
+        settings = new Settings(new File(flowgridRoot, "settings.json"));
         storageRoot = new File(flowgridRoot, "files");
         cacheRoot = new File(flowgridRoot, "cache");
 
