@@ -918,7 +918,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         } else if (portType.equals("Test")) {
             TestPortDialog.show(flowgrid.shell(), portCommand, creating, callback);
         } else {
-            WidgetPortDialog.show(flowgrid, operation.module, portCommand, creating, callback);
+            new WidgetPortDialog(flowgrid, operation.module, portCommand, creating, callback).show();
         }
     }
 

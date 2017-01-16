@@ -1,6 +1,7 @@
 package org.flowgrid.swt.port;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -35,9 +36,13 @@ public class WidgetPortDialog {
                 type == PrimitiveType.BOOLEAN ? INPUT_OPTIONS_BOOLEAN : INPUT_OPTIONS;
     }
 
-    public static void show(SwtFlowgrid platform, final Module module, final PortCommand portCommand,
+    private final AlertDialog alert;
+    private Combo widgetSpinner;
+    private TypeSpinner typeSpinner;
+
+    public WidgetPortDialog(SwtFlowgrid platform, final Module module, final PortCommand portCommand,
                             boolean create, final Callback<Void> callback) {
-        AlertDialog alert = new AlertDialog(platform.shell());
+        alert = new AlertDialog(platform.shell());
         final boolean output = portCommand.inputCount() > 0;
         final boolean input = portCommand.outputCount() > 0;
 
@@ -70,41 +75,29 @@ public class WidgetPortDialog {
             fixedType = null;
         }
 
-        //alert.setTitle((create ? "Add " : "Edit ") + title);
+        alert.setTitle((create ? "Add " : "Edit ") + title);
 
         final Composite main = new Composite(alert.getContentContainer(), 0);
-        GridLayout gridLayout = new GridLayout(2, false);
+        GridLayout gridLayout = new GridLayout(6, false);
         main.setLayout(gridLayout);
+        main.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        Label label = new Label(main, 0);
-        label.setText("Name");
-
+        new Label(main, SWT.NONE).setText("Name:");
         final Text editText = new Text(main, 0);
         editText.setText(portCommand.name());
-//        main.addView(Views.addLabel("Name", editText), 0, 1);
+        editText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 5, 1));
 
-        boolean needsTypeSpinner = fixedType == null;
-        boolean needsWidgetSpinner = needsTypeSpinner && input;
-
-        if (needsTypeSpinner) {
-            label = new Label(main, SWT.SINGLE);
-            label.setText("Type");
-        }
-
-        final TypeSpinner typeSpinner = needsTypeSpinner ? new TypeSpinner(main, platform, module, Type.ANY, TypeFilter.ALL) : null;
-
-        if (needsWidgetSpinner) {
-            label = new Label(main, SWT.SINGLE);
-            label.setText("MetaControl");
-        }
-
-        final Combo widgetSpinner = needsWidgetSpinner ? new Combo(main, SWT.POP_UP) : null;
-
-        if (needsTypeSpinner) {
+        if (fixedType == null) {
+            new Label(main, SWT.NONE).setText("Type:");
+            typeSpinner = new TypeSpinner(main, platform, module, Type.ANY, TypeFilter.ALL);
             typeSpinner.setType(create ? PrimitiveType.NUMBER : portCommand.dataType());
 
-            if (widgetSpinner != null) {
+            if (input) {
+                new Label(main, SWT.NONE);
+                new Label(main, SWT.NONE).setText("Control:");
+                widgetSpinner = new Combo(main, SWT.POP_UP);
                 widgetSpinner.setItems(getInputWidgetOptions(typeSpinner.type()));
+
                 String currenWidget = portCommand.peerJson().getString("widget", "");
                 if (currenWidget != null && !currenWidget.isEmpty()) {
                     String[] widgetOptions = getInputWidgetOptions(typeSpinner.type());
@@ -114,36 +107,31 @@ public class WidgetPortDialog {
                         }
                     }
                 }
-
                 typeSpinner.setOnTypeChangedListener(new TypeWidget.OnTypeChangedListener() {
                     @Override
                     public void onTypeChanged(Type type) {
                         widgetSpinner.setItems(getInputWidgetOptions(type));
                     }
                 });
+                new Label(main, SWT.NONE);
+            } else {
+                new Label(main, SWT.SINGLE).setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 5, 1));
             }
-        }
+        } 
 
+        new Label(main, SWT.NONE).setText("Width:");
 
-        label = new Label(main, SWT.SINGLE);
-        label.setText("width");
-        //   final JSONObject peerJson = port.peerJson();
         final Combo widthSpinner = new Combo(main, SWT.DROP_DOWN);
         widthSpinner.setItems(WIDTH_OPTIONS);
 
-        label = new Label(main, SWT.SINGLE);
-        label.setText("height");
+        new Label(main, SWT.NONE).setText("\u00a0\u00a0\u00a0\u00a0");
+        new Label(main, SWT.NONE).setText("Height:");
+
         final Combo heightSpinner = new Combo(main, SWT.DROP_DOWN);
         heightSpinner.setItems(HEIGHT_OPTIONS);
 
         widthSpinner.select(peerJson.getInt("width", 1));
         heightSpinner.select(peerJson.getInt("height", 1));
-
-        /*
-        TabHost tabHost = Views.createTabHost(platform);
-        Views.addTab(tabHost, title, main);
-        Views.addTab(tabHost, "Layout", layout);
-        alert.setView(tabHost);*/
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, final int whichButton) {
@@ -165,16 +153,19 @@ public class WidgetPortDialog {
             }
         };
 
-        alert.setPositiveButton("Ok", listener);
+        new Label(main, SWT.NONE).setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+
+
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 callback.cancel();
             }
         });
-
-
-        alert.show();
+        alert.setPositiveButton("Ok", listener);
     }
 
+    public void show() {
+        alert.show();
+    }
 
 }
