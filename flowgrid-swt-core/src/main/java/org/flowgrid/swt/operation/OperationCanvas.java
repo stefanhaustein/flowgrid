@@ -910,7 +910,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             }
         };
 
-        String portType = OperationEditor.portType(portCommand.peerJson());
+        String portType = OperationEditor.portType(portCommand);
         if (portType.equals("Sensor")) {
             callback.run(null);
       /*  } else if (portType.equals("Firmata")) {

@@ -13,5 +13,4 @@ public interface PortManager {
     boolean isRunning();
     CustomOperation operation();
     void addInput(WidgetPort inputPort);
-    void removeWidget(MetaControl widget);
 }

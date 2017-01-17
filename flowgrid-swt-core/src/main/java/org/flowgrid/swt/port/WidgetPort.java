@@ -128,7 +128,7 @@ public class WidgetPort implements MetaControl, Port {
 
 
     public void detach() {
-        manager.removeWidget(this);
+        dispose();
     }
 
     @Override

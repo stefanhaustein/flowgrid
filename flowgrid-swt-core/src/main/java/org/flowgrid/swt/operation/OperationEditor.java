@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -46,6 +47,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class OperationEditor extends ArtifactEditor implements PortManager {
+
+    static String portType(PortCommand portCommand) {
+        return portType(portCommand.peerJson());
+    }
 
     static String portType(HutnObject peerJson) {
         String portType = peerJson.getString("portType", "");
@@ -188,27 +193,41 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
 
     @Override
     public void addInput(WidgetPort inputPort) {
-       /* int pos = 0;
-        for (;pos < controlLayout.getChildCount(); pos++) {
-            View view = controlLayout.getChildAt(pos);
-            WidgetPort other = findWidgetPort(view);
-            if (other == null || other.port.cell().compareTo(input.port.cell()) > 0) {
-                break;
+        int pos = classifier == null ? 0 : (classifier.properties(null).size() + 1);
+        for (Cell cell: operation) {
+            if (cell.command() instanceof PortCommand) {
+                PortCommand portCommand = (PortCommand) cell.command();
+                String portType = portType(portCommand);
+                if (!portType.equals("Test") && !portType.equals("Sensor")) {
+                    if (inputPort.port() == portCommand) {
+                        break;
+                    }
+                    pos++;
+                }
             }
         }
+
+        Control[] children = controlPanel.getChildren();
+        Control insertBefore = pos >= children.length ? null : children[pos];
+/*
         View view = input.view();
         int colSpan = input.port.peerJson().getInt("width", 1);
         int rowSpan = input.port.peerJson().getInt("height", 1);
         controlLayout.addView(pos, view, colSpan, rowSpan); */
 
-        inputPort.createControl(controlPanel).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        Control control = inputPort.createControl(controlPanel);
+        control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        if (insertBefore != null) {
+            control.moveBelow(insertBefore);
+        }
+        controlPanel.layout();
     }
 
 
     Port attachPort(PortCommand portCommand) {
         Port result;
 
-        String portType = portType(portCommand.peerJson());
+        String portType = portType(portCommand);
         /*
         if (portType.equals("Sensor")) {
             result = new SensorPort(this, portCommand);
@@ -452,11 +471,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                 };
             };
         };
-    }
-
-    @Override
-    public void removeWidget(MetaControl widget) {
-        System.out.println("TBD: OperationEditor.removeWidget()");
     }
 
     void resetTutorial() {
