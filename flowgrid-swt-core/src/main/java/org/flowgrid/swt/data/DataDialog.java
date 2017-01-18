@@ -1,35 +1,58 @@
 package org.flowgrid.swt.data;
 
+import javafx.scene.control.Alert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.Type;
-import org.flowgrid.swt.Colors;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 
 public class DataDialog {
-    public static void show(SwtFlowgrid platform, String title, Type type, Module localModule, Object value, final Callback<Object> callback) {
-        AlertDialog alert = new AlertDialog(platform.shell());
+
+    final AlertDialog alert;
+    final DataMetaControl.Builder controlBuilder;
+    final Callback<Object> callback;
+    Object value;
+
+    public DataDialog(SwtFlowgrid platform, String title, final Callback<Object> callback) {
+        alert = new AlertDialog(platform.shell());
         alert.setTitle(title);
-        final DataMetaControl dataWidget = new DataMetaControl.Builder(platform).setType(type)
-                .setEditable(true)
-                .setLocalModule(localModule)
-                .build(alert.getContentContainer());
+        controlBuilder = new DataMetaControl.Builder(platform)
+                .setEditable(true);
+        this.callback = callback;
+    }
+
+    DataDialog setType(Type type) {
+        controlBuilder.setType(type);
+        return this;
+    }
+
+    DataDialog setValue(Object value) {
+        this.value = value;
+        return this;
+    }
+
+    public DataDialog setLocalModule(Module localModule) {
+        controlBuilder.setLocalModule(localModule);
+        return this;
+    }
+
+    public void show() {
+        final DataMetaControl dataControl = controlBuilder.build(alert.getContentContainer());
         if (value != null) {
-            dataWidget.setValue(value);
+            dataControl.setValue(value);
         }
-        dataWidget.getControl().setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        dataControl.getControl().setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                callback.run(dataWidget.value());
+                callback.run(dataControl.value());
             }
         });
-        alert.setNegativeButton("Cancel", null);
         alert.show();
     }
 }

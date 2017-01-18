@@ -139,7 +139,13 @@ public class DataMetaControl implements MetaControl {
                         if (inner != null) {
                             inner.dispose();
                         }
-                        inner = new DataMetaControl.Builder(flowgrid).setType(type).build(container);
+                        inner = new DataMetaControl.Builder(flowgrid).setType(type).setEditable(true).build(container);
+                        inner.setOnValueChangedListener(new OnValueChangedListener() {
+                            @Override
+                            public void onValueChanged(Object newValue) {
+                                inputChangedTo(newValue, false);
+                            }
+                        });
                     }
                 };
                 typeChangedListener.onTypeChanged(typeSpinner.type());

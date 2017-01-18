@@ -507,7 +507,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
     void addLiteral() {
-        DataDialog.show(flowgrid, "Add Literal", Type.ANY, operation.module(), null, new Callback<Object>() {
+        new DataDialog(flowgrid, "Add Literal", new Callback<Object>() {
             @Override
             public void run(Object value) {
                 beforeChange();
@@ -522,7 +522,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             public void cancel() {
                 selection.setVisibility(false);
             }
-        });
+        }).setLocalModule(operation.module()).show();
 
         flowgrid.editStructuredDataValue(operation(), new String[]{"literal", Position.toString(selection.row, selection.col)},
                 menuAnchor, new Callback<TypeAndValue>() {
