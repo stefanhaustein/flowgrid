@@ -30,8 +30,8 @@ import org.flowgrid.swt.DefaultSelectionAdapter;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.UiTimerTask;
-import org.flowgrid.swt.data.DataMetaControl;
-import org.flowgrid.swt.data.PropertyMetaControl;
+import org.flowgrid.swt.data.DataComponent;
+import org.flowgrid.swt.data.PropertyComponent;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.port.PortManager;
@@ -39,7 +39,6 @@ import org.flowgrid.swt.port.TestPort;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.widget.ColumnLayout;
 import org.flowgrid.swt.widget.MenuAdapter;
-import org.flowgrid.swt.widget.MetaControl;
 import org.flowgrid.swt.widget.WrappingLabelCage;
 
 import java.util.Iterator;
@@ -141,7 +140,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
             controlLayout.addView(separator);
             */
             for (Property property: classifier.properties(null)) {
-                DataMetaControl input = new PropertyMetaControl(controlPanel, flowgrid, property, instance);
+                DataComponent input = new PropertyComponent(controlPanel, flowgrid, property, instance);
                 //Control control =
                 input.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
                 //                controlLayout.addView(view);

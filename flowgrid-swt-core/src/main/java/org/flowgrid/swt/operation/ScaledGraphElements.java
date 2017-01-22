@@ -19,7 +19,7 @@ import org.flowgrid.model.Types;
 import org.flowgrid.model.api.LocalCallCommand;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.api.PropertyCommand;
-import org.flowgrid.swt.Colors;
+import org.flowgrid.swt.ResourceManager;
 import org.flowgrid.swt.graphics.Drawing;
 import org.flowgrid.swt.graphics.EmojiTextHelper;
 import org.flowgrid.swt.port.TestPort;
@@ -30,7 +30,7 @@ public class ScaledGraphElements {
     private float originX;
     private float originY;
     private final Display display;
-    private final Colors colors;
+    private final ResourceManager resourceManager;
     private final Color highlightColor;
     private Font operatorFont;
     private Font valueFont;
@@ -40,9 +40,9 @@ public class ScaledGraphElements {
     int operatorOutlineWidth;
     int valueBorderWidth;
 
-    ScaledGraphElements(Display display, Colors colors, Model model) {
+    ScaledGraphElements(Display display, ResourceManager resourceManager, Model model) {
         this.display = display;
-        this.colors = colors;
+        this.resourceManager = resourceManager;
         this.highlightColor = new Color(display, 255, 255, 255, 127);
         this.model = model;
     }
@@ -55,8 +55,8 @@ public class ScaledGraphElements {
         // valueFont.dispose();
 
         if (cellSize != this.cellSize || operatorFont == null) {
-            operatorFont = colors.getFont(Math.round(cellSize / 2), 0);
-            valueFont = colors.getFont(Math.round(cellSize / 3), 0);
+            operatorFont = resourceManager.getFont(Math.round(cellSize / 2), 0);
+            valueFont = resourceManager.getFont(Math.round(cellSize / 3), 0);
 
             arrayConnectorWidth = Math.max(1, Math.round(2 * cellSize / 16));
             connectorWidth = Math.max(1, Math.round(cellSize / 16));
@@ -100,12 +100,12 @@ public class ScaledGraphElements {
 
 
     public void drawConnector(GC gc, int x0, int y0, int x1, int y1, Type type) {
-        Color color = colors.typeColor(type, false);
+        Color color = resourceManager.typeColor(type, false);
         if (type instanceof ArrayType) {
             gc.setLineWidth(arrayConnectorWidth);
             gc.setForeground(color);
             gc.drawLine(x0, y0, x1, y1);
-            gc.setForeground(colors.background);
+            gc.setForeground(resourceManager.background);
         } else {
             gc.setForeground(color);
         }
@@ -166,8 +166,8 @@ public class ScaledGraphElements {
         gc.setLineWidth(valueBorderWidth);
 
         if (constant) {
-            gc.setBackground(mod == 0 ? colors.background : colors.grays[Colors.Brightness.REGULAR.ordinal()]);
-            gc.setForeground(colors.foreground);
+            gc.setBackground(mod == 0 ? resourceManager.background : resourceManager.grays[ResourceManager.Brightness.REGULAR.ordinal()]);
+            gc.setForeground(resourceManager.foreground);
             int[] points = new int[] {
                 x0, y0,
                 x1 + border, y0,
@@ -183,19 +183,19 @@ public class ScaledGraphElements {
                 text = value.equals(Boolean.TRUE) ? "\uf889" : "\uf888";
             }
 
-            gc.setFont(colors.getFont(Math.round(cellSize / 2), 0));
+            gc.setFont(resourceManager.getFont(Math.round(cellSize / 2), 0));
             if (mod > 0) {
-                Drawing.drawHalo(gc, x, y, Math.round(cellSize * 2 / 3), colors.white);
+                Drawing.drawHalo(gc, x, y, Math.round(cellSize * 2 / 3), resourceManager.white);
             }
 
         //    paint = operatorTextPaint; */
         } else {
-//            valueTextPaint.setColor(colors.white);
-            gc.setForeground(colors.background);
-            Colors.Brightness brightness = colors.dark
-                    ? (mod > 0 ? Colors.Brightness.BRIGHTER : Colors.Brightness.DARKEST)
-                    : (mod > 0 ? Colors.Brightness.DARKEST : Colors.Brightness.REGULAR);
-            Color rgb = colors.typeColor(model.type(value), brightness);
+//            valueTextPaint.setColor(resourceManager.white);
+            gc.setForeground(resourceManager.background);
+            ResourceManager.Brightness brightness = resourceManager.dark
+                    ? (mod > 0 ? ResourceManager.Brightness.BRIGHTER : ResourceManager.Brightness.DARKEST)
+                    : (mod > 0 ? ResourceManager.Brightness.DARKEST : ResourceManager.Brightness.REGULAR);
+            Color rgb = resourceManager.typeColor(model.type(value), brightness);
             gc.setBackground(rgb);
             if (mod <= 0) {
                 mod = -mod + 1;
@@ -204,7 +204,7 @@ public class ScaledGraphElements {
             gc.fillRoundRectangle(x0, y0, x1 - x0, y1 - y0, 2 * border, 2 * border);
             gc.drawRoundRectangle(x0, y0, x1 - x0, y1 - y0, 2 * border, 2 * border);
 
-            gc.setForeground(colors.white);
+            gc.setForeground(resourceManager.white);
         }
 
         //gc.drawString(text, tX, tY, true);
@@ -333,8 +333,8 @@ public class ScaledGraphElements {
 
         //Paint boxPaint = highlight ? readyBoxPaint : operatorBoxPaint; FIXME
 
-        gc.setForeground(colors.foreground);
-        gc.setBackground(highlight ? colors.highlight : colors.background);
+        gc.setForeground(resourceManager.foreground);
+        gc.setBackground(highlight ? resourceManager.highlight : resourceManager.background);
         gc.setLineWidth(operatorOutlineWidth);
 
         int tX = Math.round(x0 + cellSize * width / 2);
@@ -451,10 +451,10 @@ public class ScaledGraphElements {
                 gc.fillPolygon(points);
 
                 if (passThrough) {
-                    gc.setForeground(colors.greens[Colors.Brightness.DARKEST.ordinal()]);
+                    gc.setForeground(resourceManager.greens[ResourceManager.Brightness.DARKEST.ordinal()]);
                     gc.drawLine(Math.round(x0 + cellSize / 2), y0 + border,
                             Math.round(x0 + cellSize / 2), y1 - border);
-                    gc.setForeground(colors.foreground);
+                    gc.setForeground(resourceManager.foreground);
                 }
                 gc.drawPolygon(points);
                 break;
@@ -578,10 +578,10 @@ public class ScaledGraphElements {
                 }
 
                 if (passThrough) {
-                    gc.setForeground(colors.greens[Colors.Brightness.DARKEST.ordinal()]);
+                    gc.setForeground(resourceManager.greens[ResourceManager.Brightness.DARKEST.ordinal()]);
                     gc.drawLine(Math.round(x0 + cellSize / 2), y0 + border,
                             Math.round(x0 + cellSize / 2), y1 - border);
-                    gc.setForeground(colors.foreground);
+                    gc.setForeground(resourceManager.foreground);
                 }
         }
 
@@ -603,7 +603,7 @@ public class ScaledGraphElements {
         Point textExtent = gc.stringExtent(text);
 
         if (textExtent.x > available) {
-            gc.setFont(colors.getFont(Math.round(cellSize/3), 0));
+            gc.setFont(resourceManager.getFont(Math.round(cellSize/3), 0));
             while ((textExtent = gc.stringExtent(text.substring(0, len))).x > available) {
                 len--;
             }
@@ -644,7 +644,7 @@ public class ScaledGraphElements {
 
 
     public void drawOpenConnection(GC gc, int toX, int toY, Type type) {
-        gc.setBackground(colors.typeColor(type, false));
+        gc.setBackground(resourceManager.typeColor(type, false));
 
         int r = Math.round(cellSize / 16);
         gc.fillOval(toX - r, toY - r, 2 * r, 2 * r);
@@ -652,7 +652,7 @@ public class ScaledGraphElements {
 
     public void drawErrorMarker(GC gc, int x, int y0) {
         int radius = Math.round(cellSize / 4);
-        gc.setForeground(colors.reds[2]);
+        gc.setForeground(resourceManager.reds[2]);
         gc.setLineWidth(Math.max(1, Math.round(cellSize / 8)));
         gc.drawLine(x - radius, y0 - radius, x + radius, y0 + radius);
         gc.drawLine(x - radius, y0 + radius, x + radius, y0 - radius);
@@ -660,8 +660,8 @@ public class ScaledGraphElements {
 
 
     public void drawBuffer(GC gc, int x, int y) {
-        gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-        gc.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+        gc.setBackground(resourceManager.background);
+        gc.setForeground(resourceManager.foreground);
         int radius = Math.round(cellSize / 6);
         gc.fillRectangle(x - radius, y - radius, 2 * radius, 2 *  radius);
         gc.drawRectangle(x - radius, y - radius, 2 * radius, 2 *  radius);

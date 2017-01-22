@@ -17,7 +17,7 @@ public class TypeSpinner extends Button implements TypeWidget {
         private TypeWidget.OnTypeChangedListener listener = null;
 
         public TypeSpinner(Composite parent, final SwtFlowgrid platform, final Container localModule,
-                           final Type assignableTo, final TypeFilter filter) {
+                           final Type assignableTo, final TypeFilter.Category filter) {
             super(parent, SWT.PUSH);
             setText(type.name());
 //            Views.applyEditTextStyle(this, true);

@@ -3,30 +3,60 @@ package org.flowgrid.swt.graphics;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.flowgrid.swt.Colors;
+import org.flowgrid.model.Artifact;
+import org.flowgrid.model.Classifier;
+import org.flowgrid.model.CustomOperation;
+import org.flowgrid.model.Module;
+import org.flowgrid.model.Operation;
+import org.flowgrid.model.Property;
+import org.flowgrid.swt.ResourceManager;
 
-public class ArtifactIcon extends Canvas {
+public class ArtifactIcon {
     public enum Kind {
         CONTINUOUS_OPERATION, OPERATION, PROPERTY, CLASSIFIER, MODULE, SOUND, TUTORIAL,
         BRANCH_LEFT, BRANCH_RIGHT, BRANCH_ALL, BRANCH_LEFT_AND_RIGTH, PARENT, NO_ICON, IMAGE
     }
 
+    public static ArtifactIcon create(ResourceManager resourceManager, Artifact artifact) {
+        ArtifactIcon.Kind kind;
+        String text = null;
+        if (artifact instanceof Module) {
+            kind = ArtifactIcon.Kind.MODULE;
+        } else if (artifact instanceof Classifier) {
+            kind = ArtifactIcon.Kind.CLASSIFIER;
+            text = ((Classifier) artifact).isInterface() ? "I" : "C";
+        } else if (artifact instanceof Property){
+            kind = ArtifactIcon.Kind.PROPERTY;
+            text = "p";
+        } else if (artifact instanceof Operation) {
+            kind = ArtifactIcon.Kind.OPERATION; // ((Operation) artifact).
+            if (artifact instanceof CustomOperation) {
+                text = ((CustomOperation) artifact).classifier != null ? "m" : "op";
+                if (((CustomOperation) artifact).asyncInput()) {
+                    kind = ArtifactIcon.Kind.CONTINUOUS_OPERATION;
+                }
+            }
+        } else {
+            kind = ArtifactIcon.Kind.NO_ICON;
+            text = "???";
+        }
+        return new ArtifactIcon(resourceManager, kind, text);
+    }
+
     final Kind kind;
     final String text;
-    final Colors colors;
+    final ResourceManager resourceManager;
     Color color;
 
     public void setEnabled(boolean enabled) {
-        color = enabled ? colors.foreground : colors.grays[3];
+        color = enabled ? resourceManager.foreground : resourceManager.grays[3];
     }
 
-    public ArtifactIcon(Composite parent, Colors colors, Kind kind, String text) {
-        super(parent, SWT.NONE);
-        this.colors = colors;
+
+    public ArtifactIcon(ResourceManager resourceManager, Kind kind, String text) {
+        this.resourceManager = resourceManager;
         if (kind == Kind.IMAGE) {
            this.kind = Kind.OPERATION;
            this.text = "\u273f";
@@ -48,18 +78,23 @@ public class ArtifactIcon extends Canvas {
         setEnabled(true);
     }
 
+    public Image createImage(int size) {
+        Image result = new Image(resourceManager.display, size, size);
+        GC gc = new GC(result);
+        draw(gc, 0, 0, size);
+        gc.dispose();
+        return result;
+    }
 
-    @Override
-    public void drawBackground(GC gc, int clipX, int clipY, int clipW, int clipH) {
-        Rectangle bounds = getBounds();
+    public void draw(GC gc, int x, int y, int cellSize) {
         gc.setAntialias(SWT.ON);
-        int cellSize = Math.min(bounds.height, bounds.width);
         int border = Math.max(1, Math.round(cellSize / 8));
-        cellSize -= 2 * border;
-        int x0 = bounds.x + border;
-        int y0 = bounds.y + border;
-        int w = bounds.width - 2 * border - 1;
-        int h = bounds.height - 2 * border - 1;
+        //cellSize -= 2 * border;
+        int x0 = x + border;
+        int y0 = y + border;
+        int w = cellSize - 2 * border; //- 1;
+        int h = cellSize - 2 * border;// - 1;
+      //  int size = cellSize - 2 * border;
 
         int x1 = x0 + w;
         int y1 = y0 + h;
@@ -67,7 +102,13 @@ public class ArtifactIcon extends Canvas {
         int yM = (y0 + y1) / 2;
         gc.setLineWidth(Math.max(1, border / 2));
         gc.setForeground(color);
-
+/*
+        size debug code
+        gc.setBackground(resourceManager.reds[0]);
+        gc.fillRectangle(x, y, cellSize, cellSize);
+        gc.setBackground(resourceManager.greens[0]);
+        gc.fillRectangle(x0, y0, w, h);
+*/
         switch (kind) {
             case NO_ICON:
                 break;
@@ -87,9 +128,9 @@ public class ArtifactIcon extends Canvas {
                 break;
 
             case CLASSIFIER:
-                gc.setBackground(colors.grays[1]);
-                gc.fillOval(x0, y0, cellSize, cellSize);
-                gc.drawOval(x0, y0, cellSize, cellSize);
+                gc.setBackground(resourceManager.grays[1]);
+                gc.fillOval(x0, y0, w, h);
+                gc.drawOval(x0, y0, w, h);
                 break;
 
             case TUTORIAL:
@@ -144,15 +185,15 @@ public class ArtifactIcon extends Canvas {
         }
 
         if (text != null) {
-            gc.setForeground(kind == Kind.CLASSIFIER ? colors.white : colors.foreground);
+            gc.setForeground(kind == Kind.CLASSIFIER ? resourceManager.white : resourceManager.foreground);
             if (kind == Kind.TUTORIAL) {
-                gc.setFont(colors.getFont(Math.round(cellSize * 0.33f), 0));
+                gc.setFont(resourceManager.getFont(Math.round(cellSize * 0.33f), 0));
                 Point size = gc.stringExtent(text);
                 gc.drawString(text, x0 + w - size.x, y0 + h - size.y, true);
 
 //            TextHelper.drawText(context, canvas, text, bounds.right, bounds.bottom, paint, TextHelper.VerticalAlign.BOTTOM);
             } else {
-                gc.setFont(colors.getFont(Math.round(cellSize * (kind == Kind.CLASSIFIER ? 0.66f : 0.5f)), 0));
+                gc.setFont(resourceManager.getFont(Math.round(cellSize * (kind == Kind.CLASSIFIER ? 0.66f : 0.5f)), 0));
                 Point size = gc.stringExtent(text);
                 gc.drawString(text, x0 + (w - size.x) / 2, y0 + (h - size.y) / 2, true);
             //                  paint.setTextSize();
@@ -167,9 +208,9 @@ public class ArtifactIcon extends Canvas {
       rect.set(bounds);
       rect.inset(border, border);
       rect.top += border;
-      paint.setColor(Colors.GRAY[0]);
+      paint.setColor(ResourceManager.GRAY[0]);
       canvas.drawRect(rect, paint);
-      paint.setColor(Colors.GRAY[3]);
+      paint.setColor(ResourceManager.GRAY[3]);
       paint.setStrokeWidth(cellSize / 16);
       paint.setStyle(Paint.Style.STROKE);
       canvas.drawRect(rect, paint);
@@ -191,10 +232,5 @@ public class ArtifactIcon extends Canvas {
     }
 */
     }
-
-         @Override
-         public Point computeSize(int wHint, int hHint, boolean changed) {
-             return new Point(32, 32);
-         }
 
 }

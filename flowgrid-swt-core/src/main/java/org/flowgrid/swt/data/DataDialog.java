@@ -1,6 +1,5 @@
 package org.flowgrid.swt.data;
 
-import javafx.scene.control.Alert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.flowgrid.model.Callback;
@@ -13,14 +12,14 @@ import org.flowgrid.swt.dialog.DialogInterface;
 public class DataDialog {
 
     final AlertDialog alert;
-    final DataMetaControl.Builder controlBuilder;
+    final DataComponent.Builder controlBuilder;
     final Callback<Object> callback;
     Object value;
 
     public DataDialog(SwtFlowgrid platform, String title, final Callback<Object> callback) {
         alert = new AlertDialog(platform.shell());
         alert.setTitle(title);
-        controlBuilder = new DataMetaControl.Builder(platform)
+        controlBuilder = new DataComponent.Builder(platform)
                 .setEditable(true);
         this.callback = callback;
     }
@@ -41,7 +40,7 @@ public class DataDialog {
     }
 
     public void show() {
-        final DataMetaControl dataControl = controlBuilder.build(alert.getContentContainer());
+        final DataComponent dataControl = controlBuilder.build(alert.getContentContainer());
         if (value != null) {
             dataControl.setValue(value);
         }

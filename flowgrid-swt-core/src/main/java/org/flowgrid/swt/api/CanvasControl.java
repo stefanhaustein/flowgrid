@@ -5,7 +5,6 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -48,7 +47,7 @@ public class CanvasControl extends Canvas {
         super(parent, SWT.DEFAULT);
         this.controller = controller;
         this.flowgrid = platform;
-        pixelPerDp = platform.dpToPx(1);
+        pixelPerDp = platform.resourceManager.pixelPerDp;
 
 
         this.addControlListener(new ControlListener() {
@@ -238,7 +237,7 @@ public class CanvasControl extends Canvas {
         double y = instance.getNumber("y");
         Object colorObject = instance.get("color");
 
-        gc.setBackground(flowgrid.colors.getColor(colorObject instanceof org.flowgrid.model.api.Color
+        gc.setBackground(flowgrid.resourceManager.getColor(colorObject instanceof org.flowgrid.model.api.Color
                 ? ((org.flowgrid.model.api.Color) colorObject).argb() : 0xffffffff));
         Object imageObject = instance.get("image");
         Object textObject = instance.get("text");
@@ -252,7 +251,7 @@ public class CanvasControl extends Canvas {
             //  canvas.drawBitmap(image.bitmap(), dst.left, dst.top, null);
             gc.drawImage(image.bitmap(), 0, 0, image.width(), image.height(), sx - sw / 2, sy - sh / 2, sw, sh);
         } else if (textObject instanceof String) {
-            gc.setFont(flowgrid.colors.getFont((int) (100 * sizePx / 1000), 0));
+            gc.setFont(flowgrid.resourceManager.getFont((int) (100 * sizePx / 1000), 0));
             int start = 0;
             String text = (String) textObject;
             while (start < text.length()) {
@@ -286,7 +285,7 @@ public class CanvasControl extends Canvas {
         if (background != null) {
             gc.drawImage(background, 0, 0);
         } else {
-            gc.setBackground(flowgrid.colors.black);
+            gc.setBackground(flowgrid.resourceManager.black);
             gc.fillRectangle(0, 0, widthPx, heightPx);
         }
 
@@ -314,7 +313,7 @@ public class CanvasControl extends Canvas {
         if (background == null) {
             background = new Image(getDisplay(), widthPx, heightPx);
             GC gc = new GC(background);
-            gc.setBackground(flowgrid.colors.black);
+            gc.setBackground(flowgrid.resourceManager.black);
             gc.fillRectangle(0, 0, widthPx, heightPx);
             gc.dispose();
         }

@@ -22,10 +22,10 @@ import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeSpinner;
 import org.flowgrid.swt.type.TypeWidget;
-import org.flowgrid.swt.widget.MetaControl;
+import org.flowgrid.swt.widget.Component;
 import org.kobjects.swt.Validator;
 
-public class DataMetaControl implements MetaControl {
+public class DataComponent implements Component {
 
     public interface OnValueChangedListener {
         void onValueChanged(Object newValue);
@@ -50,13 +50,13 @@ public class DataMetaControl implements MetaControl {
     private Control control;
     private String widget;
     private SwtFlowgrid flowgrid;
-    private DataMetaControl inner;
+    private DataComponent inner;
     private Module localModule;
 
 
 
-    protected DataMetaControl(final Composite parentComposite, final SwtFlowgrid flowgrid, final Type type,
-                              final String name, final String widget, final Module localModule, boolean editable) {
+    protected DataComponent(final Composite parentComposite, final SwtFlowgrid flowgrid, final Type type,
+                            final String name, final String widget, final Module localModule, boolean editable) {
         this.flowgrid = flowgrid;
         this.type = type;
         this.widget = widget;
@@ -98,7 +98,7 @@ public class DataMetaControl implements MetaControl {
             }
 
             if (type == PrimitiveType.NUMBER || type == PrimitiveType.TEXT) {
-                System.out.println("*** MetaControl for " + name + ": " + widget);
+                System.out.println("*** Component for " + name + ": " + widget);
                 setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
                 Validator.add(text, Validator.TYPE_CLASS_NUMBER | Validator.TYPE_NUMBER_FLAG_DECIMAL | Validator.TYPE_NUMBER_FLAG_SIGNED);
 
@@ -132,14 +132,14 @@ public class DataMetaControl implements MetaControl {
                 control = container;
                 container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-                TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.INSTANTIABLE);
+                TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.Category.INSTANTIABLE);
                 TypeWidget.OnTypeChangedListener typeChangedListener = new TypeWidget.OnTypeChangedListener() {
                     @Override
                     public void onTypeChanged(Type type) {
                         if (inner != null) {
                             inner.dispose();
                         }
-                        inner = new DataMetaControl.Builder(flowgrid).setType(type).setEditable(true).build(container);
+                        inner = new DataComponent.Builder(flowgrid).setType(type).setEditable(true).build(container);
                         inner.setOnValueChangedListener(new OnValueChangedListener() {
                             @Override
                             public void onValueChanged(Object newValue) {
@@ -301,8 +301,8 @@ public class DataMetaControl implements MetaControl {
             return this;
         }
 
-        public DataMetaControl build(Composite parent) {
-            return new DataMetaControl(parent, flowgrid, type, name, widget, localModule, editable);
+        public DataComponent build(Composite parent) {
+            return new DataComponent(parent, flowgrid, type, name, widget, localModule, editable);
         }
 
     }

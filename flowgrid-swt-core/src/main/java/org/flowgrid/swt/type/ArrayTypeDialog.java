@@ -3,7 +3,6 @@ package org.flowgrid.swt.type;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -12,14 +11,13 @@ import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Container;
 import org.flowgrid.model.Type;
-import org.flowgrid.model.io.Stat;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 
 public class ArrayTypeDialog {
 
-    public static void show(SwtFlowgrid platform, Container localModule, Type assignableTo, TypeFilter filter,
+    public static void show(SwtFlowgrid platform, Container localModule, Type assignableTo, TypeFilter.Category filter,
                             final Callback<Type> callback) {
 
         final int fixedLength = (assignableTo instanceof ArrayType) ?

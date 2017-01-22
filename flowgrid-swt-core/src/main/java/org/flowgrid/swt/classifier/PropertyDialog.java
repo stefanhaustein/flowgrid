@@ -1,18 +1,16 @@
 package org.flowgrid.swt.classifier;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Container;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.Type;
 import org.flowgrid.swt.Dialogs;
 import org.flowgrid.swt.SwtFlowgrid;
-import org.flowgrid.swt.data.DataMetaControl;
+import org.flowgrid.swt.data.DataComponent;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.type.TypeFilter;
@@ -28,7 +26,7 @@ public class PropertyDialog {
     final AlertDialog alert;
     final boolean virtual;
     final TypeSpinner typeSpinner;
-    DataMetaControl valueWidget;
+    DataComponent valueWidget;
     Combo visibilityCombo;
 
     public PropertyDialog(final SwtFlowgrid flowgrid, final Property property) {
@@ -55,7 +53,7 @@ public class PropertyDialog {
         }
 
         new Label(content, SWT.SINGLE).setText("Type");
-        typeSpinner = new TypeSpinner(content, flowgrid, property.owner(), Type.ANY, property.classifier == null ? TypeFilter.INSTANTIABLE : TypeFilter.ALL);
+        typeSpinner = new TypeSpinner(content, flowgrid, property.owner(), Type.ANY, property.classifier == null ? TypeFilter.Category.INSTANTIABLE : TypeFilter.Category.ALL);
         typeSpinner.setType(property.type());
         typeSpinner.setOnTypeChangedListener(new TypeWidget.OnTypeChangedListener() {
             @Override
@@ -100,9 +98,6 @@ public class PropertyDialog {
 
             }
         });
-
-
-        alert.show();
     }
 
     void setType() {
@@ -110,7 +105,7 @@ public class PropertyDialog {
             if (valueWidget != null) {
                 valueWidget.dispose();
             }
-            valueWidget = new DataMetaControl.Builder(flowgrid).setType(typeSpinner.type()).setEditable(true).build(alert.getContentContainer());
+            valueWidget = new DataComponent.Builder(flowgrid).setType(typeSpinner.type()).setEditable(true).build(alert.getContentContainer());
             valueWidget.setValue(property.value());
         }
     }

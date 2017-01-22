@@ -13,7 +13,7 @@ import org.flowgrid.model.Port;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.api.PortCommand;
-import org.flowgrid.swt.Colors;
+import org.flowgrid.swt.ResourceManager;
 import org.flowgrid.swt.graphics.Drawing;
 import org.flowgrid.swt.graphics.EmojiTextHelper;
 import org.flowgrid.swt.graphics.ImageCache;
@@ -37,12 +37,12 @@ public class TestPort implements Port {
     static float HEIGHT_FACTOR = 0.5f; // see ColumLayout (16 vs. 64-16)
     private static HashMap<String,Image> bitmapCache = new HashMap<String,Image>();
     PortManager manager;
-    Colors colors;
+    ResourceManager resourceManager;
 
     public TestPort(PortManager manager, PortCommand command) {
         this.manager = manager;
         this.command = command;
-        this.colors = manager.flowgrid().colors;
+        this.resourceManager = manager.flowgrid().resourceManager;
         Type dataType = command.dataType();
         mode = command.input ? Mode.SOURCE : Mode.CHECK;
 
@@ -126,12 +126,12 @@ public class TestPort implements Port {
         }
 
 
-        gc.setForeground(manager.flowgrid().colors.white);
+        gc.setForeground(manager.flowgrid().resourceManager.white);
         gc.setLineWidth(h/10);
         int border = h/10;
         int x = x0 + border;
         int fontSize = Math.round(h * HEIGHT_FACTOR);
-        gc.setFont(manager.flowgrid().colors.getFont(fontSize, 0));
+        gc.setFont(manager.flowgrid().resourceManager.getFont(fontSize, 0));
 
         for (int i = 0; i < Math.max(values.size(), received.size()); i++) {
             String s;
@@ -148,12 +148,12 @@ public class TestPort implements Port {
                 if (value instanceof Boolean || Emoji.isEmoji(s)) {
                     gc.setAlpha(sent ? 0x044 : 0xff);
                    if (matches) {
-                        Drawing.drawHalo(gc, x, y, w, colors.greens[Colors.Brightness.REGULAR.ordinal()]);
+                        Drawing.drawHalo(gc, x, y, w, resourceManager.greens[ResourceManager.Brightness.REGULAR.ordinal()]);
                    }
                 } else {
-                    gc.setForeground(matches ? manager.flowgrid().colors.greens[Colors.Brightness.REGULAR.ordinal()]
-                            : sent ? colors.grays[Colors.Brightness.REGULAR.ordinal()] : colors.white);
-                    gc.setFont(manager.flowgrid().colors.getFont(fontSize, matches ? SWT.BOLD : SWT.NORMAL));
+                    gc.setForeground(matches ? manager.flowgrid().resourceManager.greens[ResourceManager.Brightness.REGULAR.ordinal()]
+                            : sent ? resourceManager.grays[ResourceManager.Brightness.REGULAR.ordinal()] : resourceManager.white);
+                    gc.setFont(manager.flowgrid().resourceManager.getFont(fontSize, matches ? SWT.BOLD : SWT.NORMAL));
                 }
                 EmojiTextHelper.drawText(gc, s, x, y, SWT.CENTER, SWT.CENTER);
             } else {

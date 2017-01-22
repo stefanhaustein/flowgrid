@@ -1,7 +1,6 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
@@ -59,8 +58,9 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
     private ArtifactEditor currentEditor;
 
-    public final Colors colors;
+    public final ResourceManager resourceManager;
     private ToolItem overflowItem;
+    float pixelPerDp;
 
     public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp) {
         this.display = display;
@@ -70,9 +70,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         storageRoot = new File(flowgridRoot, "files");
         cacheRoot = new File(flowgridRoot, "cache");
 
-        colors = new Colors(display, dark, pixelPerDp);
+        resourceManager = new ResourceManager(display, dark, pixelPerDp);
         shell = new Shell(display);
         shell.setText("FlowGrid");
+        this.pixelPerDp = pixelPerDp;
     }
 
     public void start() {
@@ -110,7 +111,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
         MenuAdapter menuAdapter = new MenuAdapter(menuBar, "File", this);
         menuAdapter.addItem("About");
-        menuAdapter.addItem("Open");
+        menuAdapter.addItem("Open / Create");
 
         if (currentEditor != null) {
             if (shell.getToolBar() == null) {
@@ -120,7 +121,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
                 currentEditor.fillMenu(artifactMenu);
             } else if (overflowItem == null) {
                 overflowItem = new ToolItem(shell.getToolBar(), SWT.POP_UP);
-                overflowItem.setImage(colors.getIcon(Colors.Icon.MORE_VERT));
+                overflowItem.setImage(resourceManager.getIcon(ResourceManager.Icon.MORE_VERT));
                 overflowItem.addSelectionListener(new SelectionListener() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
@@ -171,7 +172,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         Object value = data.get(name);
         Type type = data.type(name);
         if (value == null && Types.isAbstract(type)) {
-            new TypeMenu(this, anchor, owner.module, data.type(name), TypeFilter.INSTANTIABLE, new Callback<Type>() {
+            new TypeMenu(this, anchor, owner.module, data.type(name), Category.INSTANTIABLE, new Callback<Type>() {
                 @Override
                 public void run(Type type) {
                     editStructuredDataValue(owner, path, type, callback);
@@ -404,7 +405,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     @Override
     public void menuItemSelected(MenuItem menuItem) {
         String label = menuItem.getText();
-        if ("Open".equals(label)) {
+        if ("Open / Create".equals(label)) {
             Module module = model.rootModule;
             if (currentEditor != null) {
                 Container container = currentEditor.getArtifact().owner();
@@ -415,10 +416,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         } else if ("About".equals(label)) {
             AboutDialog.show(this);
         }
-    }
-
-    public int dpToPx(float dp) {
-        return Math.round(dp);
     }
 
     public String documentation(String s) {

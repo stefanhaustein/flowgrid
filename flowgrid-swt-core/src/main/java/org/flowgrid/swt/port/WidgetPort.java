@@ -11,14 +11,14 @@ import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.swt.api.CanvasControl;
-import org.flowgrid.swt.data.DataMetaControl;
-import org.flowgrid.swt.widget.MetaControl;
+import org.flowgrid.swt.data.DataComponent;
+import org.flowgrid.swt.widget.Component;
 
-public class WidgetPort implements MetaControl, Port {
+public class WidgetPort implements Component, Port {
 
     public final PortCommand port;
     private final PortManager manager;
-    DataMetaControl dataWidget;
+    DataComponent dataWidget;
     Type type;
     /*Histogram histogram;
     RunChart runChart;
@@ -194,7 +194,7 @@ public class WidgetPort implements MetaControl, Port {
             });
 */
         } else {
-            dataWidget = new DataMetaControl.Builder(manager.flowgrid())
+            dataWidget = new DataComponent.Builder(manager.flowgrid())
                     .setType(port.dataType())
                     .setEditable(port.outputCount() != 0)
                     .setWidget(widget)
@@ -210,7 +210,7 @@ public class WidgetPort implements MetaControl, Port {
                 }
             }
 
-            dataWidget.setOnValueChangedListener(new DataMetaControl.OnValueChangedListener() {
+            dataWidget.setOnValueChangedListener(new DataComponent.OnValueChangedListener() {
                 @Override
                 public void onValueChanged(final Object newValue) {
                     //view.setBackgroundColor(0);

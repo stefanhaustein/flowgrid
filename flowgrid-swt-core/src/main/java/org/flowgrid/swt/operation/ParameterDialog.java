@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.VirtualOperation;
-import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.type.TypeFilter;
@@ -49,7 +48,7 @@ public class ParameterDialog {
         directionCombo.add("Out");
 
         typeSpinner = new TypeSpinner(alert.getContentContainer(), operationDialog.flowgrid,
-                operationDialog.operation.module, Type.ANY, TypeFilter.ALL);
+                operationDialog.operation.module, Type.ANY, TypeFilter.Category.ALL);
 
         if (parameter != null) {
             typeSpinner.setType(parameter.type);

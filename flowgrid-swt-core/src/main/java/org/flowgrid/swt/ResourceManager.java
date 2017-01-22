@@ -11,22 +11,18 @@ import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
-import org.flowgrid.swt.port.Sprite;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Colors {
+public class ResourceManager {
 
-    private final float pixelPerDp;
+    public final float pixelPerDp;
 
     public enum Icon {FAST_FORWARD, MORE_VERT, PAUSE, PLAY_ARROW, STOP, SLOW_MOTION_VIDEO};
 
     public enum Brightness {DARKEST, DARKER, REGULAR, BRIGHTER, BRIGHTEST};
-
-    public String FAST_FORWARD = "fast_forward";
-
 
 
     public static int brightenChannel(int value, boolean brighten) {
@@ -51,7 +47,7 @@ public class Colors {
     public final Color[] oranges;
     public final Color[] reds;
     public final Color[] grays;
-    private final Display display;
+    public final Display display;
     public final boolean dark;
     private Map<Integer,Color> colors = new HashMap<>();
     private Map<Icon,Image> icons = new HashMap<>();
@@ -60,7 +56,7 @@ public class Colors {
         return new Color(display, (argb >> 16) & 255, (argb >> 8) & 255, argb & 255);
     }
 
-    Colors(Display display, boolean dark, float pixelPerDp) {
+    ResourceManager(Display display, boolean dark, float pixelPerDp) {
         this.display = display;
         this.dark = dark;
         this.pixelPerDp = pixelPerDp;
@@ -87,7 +83,7 @@ public class Colors {
 
 
     public Color typeColor(Type type, boolean ready) {
-        return typeColor(type, ready ? (dark ? Colors.Brightness.BRIGHTEST : Brightness.DARKER) : Colors.Brightness.REGULAR);
+        return typeColor(type, ready ? (dark ? ResourceManager.Brightness.BRIGHTEST : Brightness.DARKER) : ResourceManager.Brightness.REGULAR);
     }
 
     public Color typeColor(Type type, Brightness brightness) {
@@ -133,6 +129,11 @@ public class Colors {
     public void releaseColor(Color color) {
 
     }
+
+    public int dpToPx(int dp) {
+        return Math.round(pixelPerDp * dp);
+    }
+
 
     public Image getIcon(Icon id) {
         Image image = icons.get(id);

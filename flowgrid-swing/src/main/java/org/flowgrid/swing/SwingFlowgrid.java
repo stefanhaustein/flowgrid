@@ -14,6 +14,7 @@ public class SwingFlowgrid {
             // Set System L&F
             UIManager.setLookAndFeel(
                     UIManager.getSystemLookAndFeelClassName());
+
         }
         catch (UnsupportedLookAndFeelException e) {
             // handle exception

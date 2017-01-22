@@ -46,7 +46,7 @@ import org.flowgrid.model.api.PropertyCommand;
 import org.flowgrid.model.hutn.Hutn;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.model.hutn.HutnWriter;
-import org.flowgrid.swt.Colors;
+import org.flowgrid.swt.ResourceManager;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.data.DataDialog;
@@ -133,7 +133,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         this.operationEditor = operationEditor;
         this.operation = operationEditor.operation;
         this.flowgrid = operationEditor.flowgrid;
-        this.sge = new ScaledGraphElements(operationEditor.flowgrid.display(), operationEditor.flowgrid.colors, operationEditor.flowgrid.model());
+        this.sge = new ScaledGraphElements(operationEditor.flowgrid.display(), operationEditor.flowgrid.resourceManager, operationEditor.flowgrid.model());
 
         operation.ensureLoaded();  // FIXME
 
@@ -141,7 +141,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             setSpeed(operation.tutorialData.speed);
         } else {
             slowerButton = new Button(this, SWT.PUSH | SWT.FLAT);
-            slowerButton.setImage(flowgrid.colors.getIcon(Colors.Icon.SLOW_MOTION_VIDEO));
+            slowerButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.SLOW_MOTION_VIDEO));
             slowerButton.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -160,7 +160,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             });
 
             fasterButton = new Button(this, SWT.PUSH | SWT.FLAT);
-            fasterButton.setImage(flowgrid.colors.getIcon(Colors.Icon.FAST_FORWARD));
+            fasterButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.FAST_FORWARD));
             fasterButton.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -196,24 +196,24 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         if (toolBar != null) {
             startPauseItem = new ToolItem(toolBar, SWT.PUSH);
-            startPauseItem.setImage(flowgrid.colors.getIcon(Colors.Icon.PLAY_ARROW));
+            startPauseItem.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.PLAY_ARROW));
             startPauseItem.addSelectionListener(startPauseListener);
 
             resetItem = new ToolItem(toolBar, SWT.PUSH);
-            resetItem.setImage(flowgrid.colors.getIcon(Colors.Icon.STOP));
+            resetItem.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.STOP));
             resetItem.addSelectionListener(resetListener);
         } else {
             startPauseButton = new Button(this, SWT.PUSH);
-            startPauseButton.setImage(flowgrid.colors.getIcon(Colors.Icon.PLAY_ARROW));
+            startPauseButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.PLAY_ARROW));
             startPauseButton.addSelectionListener(startPauseListener);
 
             resetButton = new Button(this, SWT.PUSH);
-            resetButton.setImage(flowgrid.colors.getIcon(Colors.Icon.STOP));
+            resetButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.STOP));
             resetButton.addSelectionListener(resetListener);
         }
 
         menuAnchor = new Label(this, SWT.NONE);
-        menuAnchor.setBackground(flowgrid.colors.getColor(0));
+        menuAnchor.setBackground(flowgrid.resourceManager.getColor(0));
 
         HutnWriter writer = new HutnWriter(new StringWriter());
         writer.startObject();
@@ -564,9 +564,9 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
         String name = namePrefix + suffix;
         if (widget != null) {
-            addPortCommand("MetaControl", name, input, output, "widget", widget);
+            addPortCommand("Component", name, input, output, "widget", widget);
         } else {
-            addPortCommand("MetaControl", name, input, output);
+            addPortCommand("Component", name, input, output);
         }
     }
 
@@ -642,7 +642,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
             return newCellSize; // * scale;
         }
-        return flowgrid.dpToPx(32);
+        return flowgrid.resourceManager.dpToPx(32);
     }
 
     void beforeBulkChange() {
@@ -687,14 +687,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     public void drawBackground(GC gc, int clipX, int clipY, int clipW, int clipH) {
         sge.setState(originX, originY, cellSize);
 
-        Colors colors = operationEditor.flowgrid.colors;
+        ResourceManager resourceManager = operationEditor.flowgrid.resourceManager;
 
         gc.setAntialias(SWT.ON);
         // gc.setTextAntialias(SWT.ON);  // FIXME
         gc.setLineJoin(SWT.JOIN_ROUND);
         gc.setLineCap(SWT.CAP_ROUND);
 
-        gc.setBackground(colors.background);
+        gc.setBackground(resourceManager.background);
         gc.fillRectangle(clipX, clipY, clipW, clipH);
 
         gc.setLineWidth(Math.round(cellSize / 32));
@@ -714,7 +714,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
      //   int maxY = Math.round(100 * cellSize - originY - 1);
 
         for (int col = -100; col <= 100; col++) {
-            gc.setForeground(col == 0 ? colors.origin : colors.grid);
+            gc.setForeground(col == 0 ? resourceManager.origin : resourceManager.grid);
             int lx = Math.round(col * cellSize - originX - 1);
             gc.drawLine(lx, clipY, lx, clipY + clipH);
         }
@@ -723,7 +723,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
  //       float maxX = 100 * cellSize - originX - 1;
 
         for (int row = -100; row <= 100; row++) {
-            gc.setForeground(row == minRow || row == maxRow ? colors.origin : colors.grid);
+            gc.setForeground(row == minRow || row == maxRow ? resourceManager.origin : resourceManager.grid);
             int ly = Math.round(row * cellSize - originY - 1);
             gc.drawLine(clipX, ly, clipX + clipW, ly);
         }
@@ -744,8 +744,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         if (tutorialData != null && tutorialData.order == 0) {
             int x0 = Math.round(1.5f * cellSize - originX);
             int y0 = Math.round(4.5f * cellSize - originY);
-            gc.setForeground(colors.white);
-            gc.setFont(colors.getFont(Math.round(cellSize), 0));
+            gc.setForeground(resourceManager.white);
+            gc.setFont(resourceManager.getFont(Math.round(cellSize), 0));
             EmojiTextHelper.drawText(gc, "\u21e9", x0, y0, SWT.CENTER, SWT.TOP);
     /*        if (!landscapeMode) {
                 downArrowPaint.setColor(Color.LTGRAY);
@@ -763,8 +763,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
             if (tutorialData != null && cell.row() < operationEditor.countedToRow && cell.row() >= minRow) {
                 Color color = (operationEditor.counted < operation().tutorialData.optimalCellCount
-                        ? operationEditor.flowgrid.colors.greens[2]
-                        : operationEditor.flowgrid.colors.oranges[2]); // & 0x3fffffff; FIXME
+                        ? operationEditor.flowgrid.resourceManager.greens[2]
+                        : operationEditor.flowgrid.resourceManager.oranges[2]); // & 0x3fffffff; FIXME
                 sge.highlightCell(gc, x0, y0, color);
                 operationEditor.counted += cell.command() == null ? 1 : 2;
             }
@@ -801,14 +801,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             int x0 = Math.round(zoomData.cell.col() * cellSize - originX);
             int y0 = Math.round(zoomData.cell.row() * cellSize - originY);
 
-            gc.setBackground(colors.black);
+            gc.setBackground(resourceManager.black);
             gc.setAlpha(zoomData.alpha);
             gc.fillRectangle(x0, y0, Math.round(x0 + zoomData.cell.width() * cellSize),
                     Math.round(y0 + cellSize));
             gc.setAlpha(255);
             // canvas.drawRect(x0, y0, x0 + zoomData.cell.width() * cellSize, y0 + cellSize, zoomData.outlinePaint);
 
-            ScaledGraphElements childSge = new ScaledGraphElements(getDisplay(), colors, flowgrid.model());
+            ScaledGraphElements childSge = new ScaledGraphElements(getDisplay(), resourceManager, flowgrid.model());
             childSge.setState(-x0, -y0, cellSize / zoomData.rows);
             for (Cell childCell: zoomData.operation) {
                 childSge.drawCell(gc, childCell, false);
@@ -854,7 +854,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         int selectionX = sge.screenX(selection.col);
         int selectionY = sge.screenY(selection.row);
 
-        gc.setBackground(colors.selection);
+        gc.setBackground(resourceManager.selection);
         gc.fillRectangle(selectionX, selectionY,
                 Math.round(cellSize * selection.width), Math.round(cellSize * selection.height));
     }
@@ -1310,8 +1310,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
      * Called from OperationEditor.updataMenu();
      */
     void updateButtons() {
-        Image startPauseImage = flowgrid.colors.getIcon(operationEditor.running && !paused
-                ? Colors.Icon.PAUSE : Colors.Icon.PLAY_ARROW);
+        Image startPauseImage = flowgrid.resourceManager.getIcon(operationEditor.running && !paused
+                ? ResourceManager.Icon.PAUSE : ResourceManager.Icon.PLAY_ARROW);
         if (startPauseButton != null) {
             startPauseButton.setImage(startPauseImage); //: */"\u25FC" );
             resetButton.setEnabled(operationEditor.running);

@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.Callback;
-import org.flowgrid.model.FlowGridException;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
@@ -17,6 +16,7 @@ import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
+import org.flowgrid.swt.type.TypeComponent;
 import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeSpinner;
 import org.flowgrid.swt.type.TypeWidget;
@@ -38,7 +38,7 @@ public class WidgetPortDialog {
 
     private final AlertDialog alert;
     private Combo widgetSpinner;
-    private TypeSpinner typeSpinner;
+    private TypeComponent typeSpinner;
 
     public WidgetPortDialog(SwtFlowgrid platform, final Module module, final PortCommand portCommand,
                             boolean create, final Callback<Void> callback) {
@@ -89,7 +89,8 @@ public class WidgetPortDialog {
 
         if (fixedType == null) {
             new Label(main, SWT.NONE).setText("Type:");
-            typeSpinner = new TypeSpinner(main, platform, module, Type.ANY, TypeFilter.ALL);
+            TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(module).build();
+            typeSpinner = new TypeComponent(platform, main, typeFilter);
             typeSpinner.setType(create ? PrimitiveType.NUMBER : portCommand.dataType());
 
             if (input) {

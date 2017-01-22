@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.flowgrid.swt.Colors;
+import org.flowgrid.swt.ResourceManager;
 import org.flowgrid.swt.graphics.EmojiTextHelper;
 
 public class Graphics {
@@ -30,9 +30,9 @@ public class Graphics {
 
     public Graphics(CanvasControl canvasControl) {
         this.canvasControl = canvasControl;
-        Colors colors = canvasControl.flowgrid.colors;
-        background = colors.black;
-        foreground = colors.blues[Colors.Brightness.REGULAR.ordinal()];
+        ResourceManager resourceManager = canvasControl.flowgrid.resourceManager;
+        background = resourceManager.black;
+        foreground = resourceManager.blues[ResourceManager.Brightness.REGULAR.ordinal()];
     }
 
     private GC gc() {
@@ -129,7 +129,7 @@ public class Graphics {
         synchronized (canvasControl) {
             int pxSize = Math.round(canvasControl.pixelSize(textSize));
 
-            gc().setFont(canvasControl.flowgrid.colors.getFont(pxSize, 0));
+            gc().setFont(canvasControl.flowgrid.resourceManager.getFont(pxSize, 0));
 
             int pX = Math.round(canvasControl.pixelX(x));
             int pY = Math.round(canvasControl.pixelY(y));
@@ -141,7 +141,7 @@ public class Graphics {
     public void setFillColor(org.flowgrid.model.api.Color color) {
         int argb = color.argb();
         fill = (argb & 0x0ff000000) != 0;
-        background = canvasControl.flowgrid.colors.getColor(argb);
+        background = canvasControl.flowgrid.resourceManager.getColor(argb);
         if (gc != null) {
             gc.setBackground(background);
         }
@@ -150,7 +150,7 @@ public class Graphics {
     public void setStrokeColor(org.flowgrid.model.api.Color color) {
         int argb = color.argb();
         stroke = strokeWidthPx > 0 && (argb & 0x0ff000000) != 0;
-        foreground = canvasControl.flowgrid.colors.getColor(argb);
+        foreground = canvasControl.flowgrid.resourceManager.getColor(argb);
         if (gc != null) {
             gc.setForeground(background);
         }

@@ -30,10 +30,7 @@ import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeMenu;
 import org.flowgrid.swt.widget.MenuAdapter;
-import org.flowgrid.swt.widget.MenuSelectionHandler;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class ClassifierEditor extends ArtifactEditor {
@@ -53,6 +50,7 @@ public class ClassifierEditor extends ArtifactEditor {
 
         scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.NONE);
         scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
 
         Composite contentPanel = new Composite(scrolledComposite, SWT.NONE);
         GridLayout contentLayout = new GridLayout(4, true);
@@ -70,8 +68,8 @@ public class ClassifierEditor extends ArtifactEditor {
         propertyPanel.setLayout(propertyLayout);
 
         operationPanel = new Composite(contentPanel, SWT.NONE);
-        operationPanel.setBackground(flowgrid.colors.white);
-        operationPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
+        operationPanel.setBackground(flowgrid.resourceManager.background);
+        operationPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         GridLayout operationLayout = new GridLayout(2, true);
         operationLayout.marginHeight = 0;
         operationLayout.marginWidth = 0;
@@ -111,8 +109,7 @@ public class ClassifierEditor extends ArtifactEditor {
         };
         for (final Operation operation: classifier.operations(null)) {
             ArtifactComposite artifactComposite = new ArtifactComposite(
-                    operationPanel, flowgrid.colors, operation, false);
-            artifactComposite.setBackground(flowgrid.colors.white);
+                    operationPanel, flowgrid.resourceManager, operation);
             artifactComposite.setListener(openCallback);
             artifactComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         }
@@ -147,7 +144,7 @@ public class ClassifierEditor extends ArtifactEditor {
                 }
             });
         } else if ("Implement Interface...".equals(title)) {
-            new TypeMenu(flowgrid(), operationPanel, classifier.module(), Type.ANY, TypeFilter.INTERFACE, new Callback<Type>() {
+            new TypeMenu(flowgrid(), operationPanel, classifier.module(), Type.ANY, TypeFilter.Category.INTERFACE, new Callback<Type>() {
                 @Override
                 public void run(Type value) {
                     Classifier implement = (Classifier) value;
