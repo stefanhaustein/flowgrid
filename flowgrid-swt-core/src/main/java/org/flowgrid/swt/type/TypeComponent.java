@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
-import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
@@ -22,8 +21,9 @@ public class TypeComponent implements Component {
     boolean foreignSelection;
     Type selectedType;
     int selectedIndex;
+    private OnTypeChangedListener onTypeChangedListener;
 
-    public TypeComponent(final SwtFlowgrid flowgrid, Composite parent, final TypeFilter typeFilter) {
+    public TypeComponent(Composite parent, final SwtFlowgrid flowgrid, final TypeFilter typeFilter) {
         this.flowgrid = flowgrid;
         this.typeFilter = typeFilter;
         combo = new Combo(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
@@ -94,6 +94,9 @@ public class TypeComponent implements Component {
                 }
             }
         }
+        if (onTypeChangedListener != null) {
+            onTypeChangedListener.onTypeChanged(selectedType);
+        }
     }
 
     @Override
@@ -106,10 +109,15 @@ public class TypeComponent implements Component {
         combo.dispose();
     }
 
-    public void setOnTypeChangedListener(TypeWidget.OnTypeChangedListener onTypeChangedListener) {
+    public void setOnTypeChangedListener(OnTypeChangedListener onTypeChangedListener) {
+        this.onTypeChangedListener = onTypeChangedListener;
     }
 
     public Type type() {
         return selectedType;
+    }
+
+    public interface OnTypeChangedListener {
+        void onTypeChanged(Type type);
     }
 }

@@ -14,8 +14,7 @@ import org.flowgrid.swt.data.DataComponent;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.type.TypeFilter;
-import org.flowgrid.swt.type.TypeSpinner;
-import org.flowgrid.swt.type.TypeWidget;
+import org.flowgrid.swt.type.TypeComponent;
 
 import java.util.Objects;
 
@@ -25,7 +24,7 @@ public class PropertyDialog {
     final Property property;
     final AlertDialog alert;
     final boolean virtual;
-    final TypeSpinner typeSpinner;
+    final TypeComponent typeSpinner;
     DataComponent valueWidget;
     Combo visibilityCombo;
 
@@ -53,9 +52,10 @@ public class PropertyDialog {
         }
 
         new Label(content, SWT.SINGLE).setText("Type");
-        typeSpinner = new TypeSpinner(content, flowgrid, property.owner(), Type.ANY, property.classifier == null ? TypeFilter.Category.INSTANTIABLE : TypeFilter.Category.ALL);
+        TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(property.owner()).setCategory(property.classifier == null ? TypeFilter.Category.INSTANTIABLE : TypeFilter.Category.ALL).build();
+        typeSpinner = new TypeComponent(content, flowgrid, typeFilter);
         typeSpinner.setType(property.type());
-        typeSpinner.setOnTypeChangedListener(new TypeWidget.OnTypeChangedListener() {
+        typeSpinner.setOnTypeChangedListener(new TypeComponent.OnTypeChangedListener() {
             @Override
             public void onTypeChanged(Type type) {
                 setType();

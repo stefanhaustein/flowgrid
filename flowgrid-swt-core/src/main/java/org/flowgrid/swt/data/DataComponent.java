@@ -20,8 +20,7 @@ import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.type.TypeFilter;
-import org.flowgrid.swt.type.TypeSpinner;
-import org.flowgrid.swt.type.TypeWidget;
+import org.flowgrid.swt.type.TypeComponent;
 import org.flowgrid.swt.widget.Component;
 import org.kobjects.swt.Validator;
 
@@ -132,8 +131,9 @@ public class DataComponent implements Component {
                 control = container;
                 container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-                TypeSpinner typeSpinner = new TypeSpinner(container, flowgrid, localModule, Type.ANY, TypeFilter.Category.INSTANTIABLE);
-                TypeWidget.OnTypeChangedListener typeChangedListener = new TypeWidget.OnTypeChangedListener() {
+                TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(localModule).setCategory(TypeFilter.Category.INSTANTIABLE).build();
+                TypeComponent typeSpinner = new TypeComponent(container, flowgrid, typeFilter);
+                TypeComponent.OnTypeChangedListener typeChangedListener = new TypeComponent.OnTypeChangedListener() {
                     @Override
                     public void onTypeChanged(Type type) {
                         if (inner != null) {

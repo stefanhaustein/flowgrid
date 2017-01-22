@@ -11,15 +11,19 @@ import org.flowgrid.model.Callback;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.hutn.HutnObject;
+import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
-import org.flowgrid.swt.type.PrimitiveTypeSpinner;
+import org.flowgrid.swt.type.TypeComponent;
+import org.flowgrid.swt.type.TypeFilter;
 
 public class TestPortDialog {
 
-    public static void show(final Shell shell, final PortCommand portCommand, boolean create, final Callback<Void> callback) {
+    AlertDialog alert;
+
+    public TestPortDialog(final SwtFlowgrid flowgrid, final PortCommand portCommand, boolean create, final Callback<Void> callback) {
         System.out.println("FIXME: TestPortDialog.show()");   // FIXME
-        AlertDialog alert = new AlertDialog(shell);
+        alert = new AlertDialog(flowgrid.shell());
         final boolean output = portCommand.inputCount() > 0;
 
         final HutnObject peerJson = portCommand.peerJson();
@@ -33,7 +37,8 @@ public class TestPortDialog {
 
         Label label = new Label(main, SWT.SINGLE);
         label.setText("Type");
-        final PrimitiveTypeSpinner inputTypeSpinner = new PrimitiveTypeSpinner(main);
+        TypeFilter typeFilter = new TypeFilter.Builder().setCategory(TypeFilter.Category.PRIMITIVE).build();
+        final TypeComponent inputTypeSpinner = new TypeComponent(main, flowgrid, typeFilter);
         inputTypeSpinner.setType(!(portCommand.dataType() instanceof PrimitiveType) ? PrimitiveType.NUMBER : (PrimitiveType) portCommand.dataType());
 
         label = new Label(main, SWT.SINGLE);
@@ -75,7 +80,10 @@ public class TestPortDialog {
             }
         });
 
-        alert.show();
 
+    }
+
+    public void show() {
+        alert.show();
     }
 }

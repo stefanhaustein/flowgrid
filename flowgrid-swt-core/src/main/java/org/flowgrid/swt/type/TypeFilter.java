@@ -9,12 +9,11 @@ import org.flowgrid.model.Type;
 import org.flowgrid.model.Types;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class TypeFilter {
 
     public enum Category {
-        ALL, INSTANTIABLE, INTERFACE
+        ALL, INSTANTIABLE, INTERFACE, PRIMITIVE
     }
 
     public static class Builder {
@@ -78,6 +77,11 @@ public class TypeFilter {
         switch (category) {
             case ALL:
                 break;
+            case PRIMITIVE:
+                if (!(type instanceof PrimitiveType)) {
+                    return false;
+                }
+                break;
             case INSTANTIABLE:
                 if (Types.isAbstract(type)) {
                     return false;
@@ -117,9 +121,11 @@ public class TypeFilter {
             }
         }
         // Sub-modules
-        for (Artifact entry: module) {
-            if (filter(entry)) {
-                result.add(entry.toString());
+        if (category != Category.PRIMITIVE) {
+            for (Artifact entry : module) {
+                if (filter(entry)) {
+                    result.add(entry.toString());
+                }
             }
         }
         return result;

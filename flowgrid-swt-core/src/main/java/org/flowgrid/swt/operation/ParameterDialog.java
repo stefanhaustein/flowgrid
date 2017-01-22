@@ -7,19 +7,18 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.flowgrid.model.Type;
 import org.flowgrid.model.VirtualOperation;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.type.TypeFilter;
-import org.flowgrid.swt.type.TypeSpinner;
+import org.flowgrid.swt.type.TypeComponent;
 
 public class ParameterDialog {
 
     AlertDialog alert;
     Spinner positionField;
     Text nameField;
-    TypeSpinner typeSpinner;
+    TypeComponent typeSpinner;
     Combo directionCombo;
     int existingIndex;
     int existingDirection;
@@ -47,8 +46,8 @@ public class ParameterDialog {
         directionCombo.add("In");
         directionCombo.add("Out");
 
-        typeSpinner = new TypeSpinner(alert.getContentContainer(), operationDialog.flowgrid,
-                operationDialog.operation.module, Type.ANY, TypeFilter.Category.ALL);
+        TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(operationDialog.operation.module).build();
+        typeSpinner = new TypeComponent(alert.getContentContainer(), operationDialog.flowgrid, typeFilter);
 
         if (parameter != null) {
             typeSpinner.setType(parameter.type);

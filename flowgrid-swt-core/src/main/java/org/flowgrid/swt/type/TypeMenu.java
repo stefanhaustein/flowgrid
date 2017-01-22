@@ -1,13 +1,10 @@
 package org.flowgrid.swt.type;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.eclipse.swt.widgets.Control;
-import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Container;
 import org.flowgrid.model.Module;
-import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.widget.ContextMenu;

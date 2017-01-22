@@ -48,7 +48,8 @@ public class ArrayTypeDialog {
         });
 
         new Label(layout, SWT.SINGLE).setText("Element type");
-        final TypeSpinner elementTypeSpinner = new TypeSpinner(layout, platform, localModule, elementType, filter);
+        TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(localModule).setAssignableTo(elementType).setCategory(filter).build();
+        final TypeComponent elementTypeSpinner = new TypeComponent(layout, platform, typeFilter);
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override

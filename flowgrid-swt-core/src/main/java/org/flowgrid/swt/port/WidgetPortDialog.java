@@ -18,8 +18,6 @@ import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.type.TypeComponent;
 import org.flowgrid.swt.type.TypeFilter;
-import org.flowgrid.swt.type.TypeSpinner;
-import org.flowgrid.swt.type.TypeWidget;
 
 import java.util.Locale;
 
@@ -90,7 +88,7 @@ public class WidgetPortDialog {
         if (fixedType == null) {
             new Label(main, SWT.NONE).setText("Type:");
             TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(module).build();
-            typeSpinner = new TypeComponent(platform, main, typeFilter);
+            typeSpinner = new TypeComponent(main, platform, typeFilter);
             typeSpinner.setType(create ? PrimitiveType.NUMBER : portCommand.dataType());
 
             if (input) {
@@ -108,7 +106,7 @@ public class WidgetPortDialog {
                         }
                     }
                 }
-                typeSpinner.setOnTypeChangedListener(new TypeWidget.OnTypeChangedListener() {
+                typeSpinner.setOnTypeChangedListener(new TypeComponent.OnTypeChangedListener() {
                     @Override
                     public void onTypeChanged(Type type) {
                         widgetSpinner.setItems(getInputWidgetOptions(type));
