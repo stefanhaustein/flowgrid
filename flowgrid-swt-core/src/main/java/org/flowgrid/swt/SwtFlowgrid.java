@@ -21,6 +21,7 @@ import org.flowgrid.model.Model;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.Operation;
 import org.flowgrid.model.Platform;
+import org.flowgrid.model.PortFactory;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.Sound;
 import org.flowgrid.model.Type;
@@ -61,6 +62,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     public final ResourceManager resourceManager;
     private ToolItem overflowItem;
     float pixelPerDp;
+    Callback<Model> setup;
 
     public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp) {
         this.display = display;
@@ -76,7 +78,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         this.pixelPerDp = pixelPerDp;
     }
 
-    public void start() {
+    public void start(Callback<Model>... setup) {
         Settings.BootCommand bootCommand = settings.bootCommand();
 
         if (!storageRoot().exists() || storageRoot().list().length == 0) {
@@ -91,7 +93,11 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             return;
         }
 
-        model = new Model(this);
+        Callback<Model>[] mergedSetup = new Callback[setup.length + 1];
+        System.arraycopy(setup, 0, mergedSetup, 1, setup.length);
+        mergedSetup[0] = new SwtApiSetup(this);
+
+        model = new Model(this, mergedSetup);
         loadDocumentation();
 
         openArtifact(model.artifact(settings.getLastUsed()));
@@ -287,11 +293,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         System.out.println("FIXME: log: " + message);
     }
 
-    @Override
-    public Callback<Model> platformApiSetup() {
-        return new SwtApiSetup(this);
-    }
-
     public Settings settings() {
         return settings;
     }
@@ -308,13 +309,11 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     @Override
-    public String platformId() {
-        return null;
-    }
-
-    @Override
     public void error(String message, Exception e) {
         System.err.println("error: " + message + " -- " + e);
+        if (e != null) {
+            e.printStackTrace();
+        }
     }
 
     @Override

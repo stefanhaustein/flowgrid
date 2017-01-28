@@ -20,7 +20,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.google.android.things:androidthings:0.1-devpreview'
+//    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':flowgrid-core')
     compile project(':flowgrid-swt-core')
     compile project(':jswt-core')

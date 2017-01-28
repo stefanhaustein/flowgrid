@@ -88,10 +88,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
   private int actionBarIconId = R.drawable.ic_menu_white_24dp;
   private LinkedHashMap<String, String> documentation = new LinkedHashMap<>();
 
-  public Callback<Model> platformApiSetup() {
-    return new AndroidApiSetup(this);
-  }
-
   public HutnObject editBuffer() {
     return editBuffer;
   }
@@ -187,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
 
     log("Setting up the model and launching the module browser.");
 
-    model = new Model(MainActivity.this);
+    model = new Model(MainActivity.this, new AndroidApiSetup(this));
    /* FragmentTransaction transaction = getFragmentManager().beginTransaction();
     transaction.add(R.id.rootContainer, new ModuleFragment(), null);
     transaction.commitAllowingStateLoss(); */

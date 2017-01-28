@@ -5,6 +5,7 @@ import org.flowgrid.model.Classifier;
 import org.flowgrid.model.JavaOperation;
 import org.flowgrid.model.Model;
 import org.flowgrid.model.Module;
+import org.flowgrid.model.PortFactory;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.swt.SwtFlowgrid;
 

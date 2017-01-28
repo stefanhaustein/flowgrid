@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -32,6 +33,7 @@ import org.flowgrid.model.Command;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.Edge;
 import org.flowgrid.model.Module;
+import org.flowgrid.model.PortFactory;
 import org.flowgrid.model.Position;
 import org.flowgrid.model.Property;
 import org.flowgrid.model.TutorialData;
@@ -59,9 +61,12 @@ import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 
 public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener, MenuSelectionHandler {
@@ -126,6 +131,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     int currentSpeed = 50;
     boolean paused;
     Label speedBar;
+    Menu ioPortMenu;
 
 
     public OperationCanvas(final OperationEditor operationEditor, final Composite parent) {
@@ -538,9 +544,22 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 });
     }
 
-    void addPortCommand(String type, String name, boolean input, boolean output, Object... peerJson) {
+    void addPortCommand(PortFactory portFactory) {
+        System.err.println("FIXME: addPortCommand: " + portFactory.getPortType() + " " + portFactory);
+
+        // Dummy name, real name will be obtained from the port.
+        String name = portFactory.getPortType();
+        int cut = name.lastIndexOf("/");
+        PortCommand portCommand = new PortCommand(name.substring(cut + 1), portFactory.hasOutput(), portFactory.hasInput());
+        portCommand.setDataType(portFactory.getDataType());
+        portCommand.peerJson().put("portType", portFactory.getPortType());
+
+        editPort(portCommand, true);
+    }
+
+    void addPortCommand(String portType, String name, boolean input, boolean output, Object... peerJson) {
         PortCommand portCommand = new PortCommand(name, input, output);
-        portCommand.peerJson().put("portType", type);
+        portCommand.peerJson().put("portType", portType);
         for (int i = 0; i < peerJson.length; i += 2) {
             portCommand.peerJson().put((String) peerJson[i], peerJson[i + 1]);
         }
@@ -911,10 +930,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
         };
 
         String portType = OperationEditor.portType(portCommand);
-        if (portType.equals("Sensor")) {
-            callback.run(null);
-      /*  } else if (portType.equals("Firmata")) {
-            FirmataPortDialog.show(flowgrid, flowgrid.model(), portCommand, creating, callback); */
+
+        PortFactory factory = flowgrid.model().portFactory(portType);
+        if (factory != null) {
+            if (factory.getOptions() != null && factory.getOptions().length > 0) {
+                new GenericPortDialog(flowgrid, factory, portCommand, creating, callback).show();
+            } else {
+                callback.run(null);
+            }
         } else if (portType.equals("Test")) {
             new TestPortDialog(flowgrid, portCommand, creating, callback).show();
         } else {
@@ -1020,13 +1043,14 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     outputMenu.add(Strings.MENU_ITEM_RUN_CHART);
                     outputMenu.add(Strings.MENU_ITEM_WEB_VIEW);
 
-                    ContextMenu firmataMenu = ioMenu.addSubMenu("Firmata\u2026").getSubMenu();
+                    ioMenu.add("IO Port\u2026");
+                    /*                    ContextMenu firmataMenu = ioMenu.addSubMenu("Firmata\u2026").getSubMenu();
                     firmataMenu.add(Strings.MENU_ITEM_FIRMATA_ANALOG_INPUT);
                     firmataMenu.add(Strings.MENU_ITEM_FIRMATA_ANALOG_OUTPUT);
                     firmataMenu.add(Strings.MENU_ITEM_FIRMATA_DIGITAL_INPUT);
                     firmataMenu.add(Strings.MENU_ITEM_FIRMATA_DIGITAL_OUTPUT);
                     firmataMenu.add(Strings.MENU_ITEM_FIRMATA_SERVO_OUTPUT);
-
+*/
                     ContextMenu testMenu = ioMenu.addSubMenu("Test\u2026").getSubMenu();
                     testMenu.add(Strings.MENU_ITEM_TEST_INPUT);
                     testMenu.add(Strings.MENU_ITEM_EXPECTATION);
@@ -1168,6 +1192,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 */
         Module module = null;
         String[] filter = {};
+
         if (label.equals(Strings.MENU_ITEM_OPERATIONS_CLASSES)) {
             module = flowgrid.model().rootModule;
             filter = operation().isTutorial() && !operationEditor.tutorialMode
@@ -1188,6 +1213,13 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
             return true;
         }
+
+        if (label.equals("IO Port\u2026")) {
+            showIoPortMenu();
+            return true;
+        }
+
+
 /*
         if (SENSOR_MAP.containsKey(label)) {
             beforeChange();
@@ -1294,6 +1326,44 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             afterChange();
         }
         return true;
+    }
+
+    private void showIoPortMenu() {
+        if (ioPortMenu == null) {
+            ioPortMenu = new Menu(menuAnchor);
+
+            Map<String,Menu> categoryMenus = new HashMap<>();
+
+            for (Map.Entry<String, PortFactory> entry : flowgrid.model().portFactories.entrySet()) {
+                int cut = entry.getKey().indexOf("/");
+                String category = entry.getKey().substring(0, cut);
+                String name = entry.getKey().substring(cut + 1);
+
+                Menu categoryMenu = categoryMenus.get(category);
+                if (categoryMenu == null) {
+                    MenuItem item = new MenuItem(ioPortMenu, SWT.CASCADE);
+                    item.setText(category);
+                    categoryMenu = new Menu(item);
+                    categoryMenus.put(category, categoryMenu);
+                }
+
+                MenuItem item = new MenuItem(categoryMenu, SWT.PUSH);
+                item.setText(name);
+                final PortFactory factory = entry.getValue();
+                item.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                            addPortCommand(factory);
+                        }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                            widgetSelected(e);
+                        }
+                });
+            }
+        }
+        ioPortMenu.setVisible(true);
     }
 
     private void setSelectionMode(boolean b) {

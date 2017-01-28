@@ -17,12 +17,6 @@ public interface Platform extends StatusListener {
    * Create an sound object from the given stream.
    */
   Sound sound(InputStream is) throws IOException;
-  
-  /**
-   * Returns a callback to register platform builtins. Called from the
-   * model constructor to set up builtins before the model is loaded.
-   */
-  Callback<Model> platformApiSetup();
 
   /**
    * Returns the root directory for storing data.
@@ -43,13 +37,6 @@ public interface Platform extends StatusListener {
    */
   IOCallback<Void> defaultIoCallback(String message);
 
-  /**
-   * Returns a string describing the current hardware platform.
-   * May be useful for debugging distributed data corruption
-   * issues.
-   */
-  String platformId();
-  
   /**
    * Called in case of an error that may not be recoverable.
    * Should display a dialog that offers doing nothing, 

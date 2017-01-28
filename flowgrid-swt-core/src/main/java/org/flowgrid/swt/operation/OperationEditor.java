@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.flowgrid.model.PortFactory;
 import org.flowgrid.swt.ArtifactEditor;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Cell;
@@ -227,6 +228,13 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         Port result;
 
         String portType = portType(portCommand);
+
+        PortFactory portFactory = flowgrid().model().portFactory(portType);
+
+        if (portFactory != null) {
+            result = portFactory.create(controller, portCommand);
+        } else
+
         /*
         if (portType.equals("Sensor")) {
             result = new SensorPort(this, portCommand);

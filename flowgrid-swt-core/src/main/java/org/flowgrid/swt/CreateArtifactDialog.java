@@ -2,6 +2,7 @@ package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -21,10 +22,13 @@ public class CreateArtifactDialog {
         alert = new AlertDialog(flowgrid.shell);
         alert.setTitle("Create Artifact");
 
-        new Label(alert.getContentContainer(), SWT.NONE).setText("Module");
-        new Label(alert.getContentContainer(), SWT.NONE).setText(module.qualifiedName());
+        alert.getContentContainer().setLayout(new GridLayout(2, false));
 
-        new Label(alert.getContentContainer(), SWT.NONE).setText("Type");
+        Label moduleLabel = new Label(alert.getContentContainer(), SWT.NONE);
+        moduleLabel.setText("In " + module.qualifiedName());
+        moduleLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
+
+        new Label(alert.getContentContainer(), SWT.NONE).setText("Type:");
         typeField = new Combo(alert.getContentContainer(), SWT.DROP_DOWN | SWT.READ_ONLY);
         typeField.add("Module");
         typeField.add("Operation");
@@ -32,7 +36,7 @@ public class CreateArtifactDialog {
         typeField.add("Interface");
         typeField.select(0);
 
-        new Label(alert.getContentContainer(), SWT.NONE).setText("Name");
+        new Label(alert.getContentContainer(), SWT.NONE).setText("Name:");
         nameField = new Text(alert.getContentContainer(), SWT.NONE);
         nameField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 

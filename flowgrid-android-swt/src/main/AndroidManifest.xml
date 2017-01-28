@@ -4,12 +4,14 @@
 
     <application android:theme="@style/FlowGridTheme"
                  android:label="FlowGrid (SWT)">
+        <uses-library android:name="com.google.android.things" android:required="false"/>
         <activity android:name="org.flowgrid.android.swt.MainActivity"
                   android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
+                <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.IOT_LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.flowgrid.model.ActionFactory.Action;
 import org.flowgrid.model.annotation.FgType;
@@ -32,7 +33,6 @@ public class Model {
   private static final DecimalFormat mediumDecimalFormat = new DecimalFormat("###0.#");
   private static final DecimalFormat shortExponentialFormat = new DecimalFormat("0.#E0");
 
-
   public enum JavaTypeSupportLevel {
     FULL,           // Maps to a FG type directly
     CONVERT,        // Needs conversion
@@ -43,6 +43,7 @@ public class Model {
   final private HashMap<String,String> aliasMap = new HashMap<String,String>();
   public final Platform platform;
   public final Module rootModule;
+  public final TreeMap<String, PortFactory> portFactories = new TreeMap<>();
 
   private String resolveAlias(String name) {
     String resolved = aliasMap.get(name);
@@ -66,8 +67,8 @@ public class Model {
   }
 
 
-  public Model(Platform storage) {
-    this.platform = storage;
+  public Model(Platform platform, Callback<Model>... setup) {
+    this.platform = platform;
     rootModule = new Module(this, null, "", false);
 
     Module systemModule = rootModule.systemModule("system");
@@ -88,9 +89,9 @@ public class Model {
     mapJavaClass(List.class, Model.JavaTypeSupportLevel.FULL, ArrayType.ANY);
 
     new ApiSetup().run(this);
-    Callback<Model> platformApiSetup = platform.platformApiSetup();
-    if (platformApiSetup != null) {
-      platformApiSetup.run(this);
+
+    for (Callback<Model> callback : setup) {
+      callback.run(this);
     }
 
     aliases("/system/Boolean", "/boolean/Boolean", "/logic/Boolean", "/system/boolean");
@@ -111,6 +112,11 @@ public class Model {
   public void mapJavaClass(Class<?> javaClass, JavaTypeSupportLevel supportLevel, Type type) {
     classMap.put(javaClass, new TypeMapping(supportLevel, type));
   }
+
+  public void addPortFactory(PortFactory factory) {
+    portFactories.put(factory.getPortType(), factory);
+  }
+
 
   public Artifact artifact(final String qualifiedName) {
     final String resolved = resolveAlias(qualifiedName);
@@ -181,6 +187,11 @@ public class Model {
   public CustomOperation operation(String qualifiedName) {
     return (CustomOperation) artifact(qualifiedName, CustomOperation.class);
   }
+
+  public PortFactory portFactory(String portType) {
+    return portFactories.get(portType);
+  }
+
 
   public ResourceFile resourceFile(String qualifiedName) {
     return (ResourceFile) artifact(qualifiedName, ResourceFile.class);
