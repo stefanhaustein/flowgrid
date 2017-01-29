@@ -36,6 +36,7 @@ import org.flowgrid.model.Module;
 import org.flowgrid.model.PortFactory;
 import org.flowgrid.model.Position;
 import org.flowgrid.model.Property;
+import org.flowgrid.model.Shape;
 import org.flowgrid.model.TutorialData;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.TypeAndValue;
@@ -761,8 +762,11 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
 
         if (tutorialData != null && tutorialData.order == 0) {
-            int x0 = Math.round(1.5f * cellSize - originX);
-            int y0 = Math.round(4.5f * cellSize - originY);
+            int x0 = Math.round(cellSize - originX);
+            int y0 = Math.round(4 * cellSize - originY);
+
+            sge.drawShape(gc, Shape.ARROW_DOWN, null, x0, y0, 1, false, false);
+            /*
             gc.setForeground(resourceManager.white);
             gc.setFont(resourceManager.getFont(Math.round(cellSize), 0));
             EmojiTextHelper.drawText(gc, "\u21e9", x0, y0, SWT.CENTER, SWT.TOP);

@@ -337,6 +337,12 @@ public class ScaledGraphElements {
         int tX = Math.round(x0 + cellSize * width / 2);
 
         switch(shape) {
+            case ARROW_DOWN:
+                gc.drawLine(xM, y0 + border, xM, y1 - border);
+                gc.drawLine(xM, y1 - border, x0 + border, yM);
+                gc.drawLine(xM, y1 - border, x1 - border, yM);
+                break;
+
             case SQUARE:
             case CIRCLE: {
                 //   tX = width > 1 ? x0 + cellSize * 3 / 4 : x0 + cellSize / 2;
