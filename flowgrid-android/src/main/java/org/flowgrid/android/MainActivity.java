@@ -606,20 +606,6 @@ public class MainActivity extends AppCompatActivity implements Platform, Context
     };
   }
 
-  @Override
-  public String platformId() {
-    String id = android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT + " " + android.os.Build.MODEL;
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < id.length(); i++) {
-      char c = id.charAt(i);
-      if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
-        sb.append(c);
-      } else {
-        sb.append('_');
-      }
-    }
-    return sb.toString();
-  }
 
   @Override
   public void info(final String message, Exception e) {

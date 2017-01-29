@@ -42,7 +42,7 @@ public class AboutDialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (restart[0]) {
-                    platform.reboot(Settings.BootCommand.NONE, null);
+                    platform.restart(Settings.BootCommand.NONE, null);
                 }
             }
         });
@@ -51,7 +51,7 @@ public class AboutDialog {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     platform.settings().setDeveloperMode(false);
-                    platform.reboot(Settings.BootCommand.NONE, null);
+                    platform.restart(Settings.BootCommand.NONE, null);
                 }
             });
         }

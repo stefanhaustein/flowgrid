@@ -62,9 +62,9 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     public final ResourceManager resourceManager;
     private ToolItem overflowItem;
     float pixelPerDp;
-    Callback<Model> setup;
+    Callback<Model>[] setup;
 
-    public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp) {
+    public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp, Callback<Model>... setup) {
         this.display = display;
 
         flowgridRoot = flowgridRootDir;
@@ -76,9 +76,10 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         shell = new Shell(display);
         shell.setText("FlowGrid");
         this.pixelPerDp = pixelPerDp;
+        this.setup = setup;
     }
 
-    public void start(Callback<Model>... setup) {
+    public void start() {
         Settings.BootCommand bootCommand = settings.bootCommand();
 
         if (!storageRoot().exists() || storageRoot().list().length == 0) {
@@ -118,6 +119,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         MenuAdapter menuAdapter = new MenuAdapter(menuBar, "File", this);
         menuAdapter.addItem("About");
         menuAdapter.addItem("Open / Create");
+        menuAdapter.addItem("Tutorial");
+        menuAdapter.addItem("Reset");
 
         if (currentEditor != null) {
             if (shell.getToolBar() == null) {
@@ -414,6 +417,19 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             new OpenArtifactDialog(this, module).show();
         } else if ("About".equals(label)) {
             AboutDialog.show(this);
+        } else if ("Tutorial".equals(label)) {
+            Module missions = model().rootModule.module("missions");
+            for (Artifact artifact : missions) {
+                if (artifact instanceof CustomOperation) {
+                    CustomOperation operation = (CustomOperation) artifact;
+                    if (operation.isTutorial() && !operation.tutorialData.passed()) {
+                        openOperation(operation);
+                        break;
+                    }
+                }
+            }
+        } else if ("Reset".equals(label)) {
+            new ResetDialog(this).show();
         }
     }
 
@@ -421,7 +437,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         return documentation.get(s);
     }
 
-    public void reboot(Settings.BootCommand none, Object o) {
-        System.out.println("FIXME: SwtFlowgrid.reboot()");  // FIXME
+    public void restart(Settings.BootCommand bootCommand, String path) {
+        setCurrentEditor(null);
+        settings.setBootCommand(bootCommand, path);
     }
 }

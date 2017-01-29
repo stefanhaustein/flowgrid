@@ -16,10 +16,9 @@ public class MainActivity extends SwtActivity {
 //        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         float pixelPerDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
 
-
-
-        new SwtFlowgrid(getDisplay(), getExternalFilesDir(null), true, pixelPerDp).start(
+        new SwtFlowgrid(getDisplay(), getExternalFilesDir(null), true, pixelPerDp,
                 new SensorSetup(this),
-                new PeripheralIoSetup());
+                new PeripheralIoSetup()
+        ).start();                ;
     }
 }

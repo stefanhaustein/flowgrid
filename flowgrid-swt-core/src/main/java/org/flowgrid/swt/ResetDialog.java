@@ -17,9 +17,10 @@ public class ResetDialog {
             Settings.BootCommand.DELETE_AND_RESTORE,
     };
 
-    public static void show(final SwtFlowgrid platform, final String path) {
-        AlertDialog alert = new AlertDialog(platform.shell());
-        alert.setTitle("Restore " + path);
+    AlertDialog alert;
+    public ResetDialog(final SwtFlowgrid flowgrid) {
+        AlertDialog alert = new AlertDialog(flowgrid.shell());
+        alert.setTitle("Restore");
         final int[] option = new int[1];
 
         Composite main = alert.getContentContainer();
@@ -29,9 +30,12 @@ public class ResetDialog {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                platform.reboot(BOOT_COMMANDS[options.getSelectionIndex()], path);
+           flowgrid.restart(BOOT_COMMANDS[options.getSelectionIndex()], null);
             }
         });
+    }
+
+    public void show() {
         alert.show();
     }
 }
