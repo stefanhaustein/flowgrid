@@ -77,7 +77,9 @@ public class ContextMenu {
         public ContextMenu getSubMenu() {
             return subMenu;
         }
-
+        public Item getParentItem() {
+            return parentMenu == null ? null : parentMenu.parentItem;
+        }
         @Override
         public void widgetSelected(SelectionEvent e) {
             ContextMenu.Item current = this;

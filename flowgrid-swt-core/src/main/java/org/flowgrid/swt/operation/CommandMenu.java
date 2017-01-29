@@ -237,6 +237,12 @@ public class CommandMenu implements ContextMenu.ItemClickListener {
     public boolean onContextMenuItemClick(ContextMenu.Item item) {
         String label = item.getTitle().toString();
         String name = normalizeName(label);
+
+        if (parentItem != item && item.getParentItem() != null && item.getParentItem() != parentItem) {
+            // State transition for a skipped parent.
+            onContextMenuItemClick(item.getParentItem());
+        }
+
         parentItem = item;
 
         switch (mode) {
