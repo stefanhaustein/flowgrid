@@ -3,6 +3,7 @@ package org.flowgrid.swt.operation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
@@ -622,6 +623,7 @@ public class ScaledGraphElements {
                 }
                 if (start2 < len) {
                     len = start2;
+                    textExtent = gc.stringExtent(text.substring(0, len));
                 }
                 int len2 = text.length();
                 Point textExtent2;
@@ -629,7 +631,8 @@ public class ScaledGraphElements {
                     len2--;
                 }
 
-                int tY = y0; //  - cellSize / 6 + (cellSize - operatorTextPaint.descent() - operatorTextPaint.ascent()) / 2;
+                FontMetrics metrics = gc.getFontMetrics();
+                int tY = Math.round(y0 - cellSize / 6 + (cellSize - metrics.getDescent() - metrics.getAscent()) / 2);
                 gc.drawString(text.substring(0, len), tX - textExtent.x / 2, tY);
                 tY += cellSize / 3;
                 gc.drawString(text.substring(start2, len2), tX - textExtent2.x / 2, tY);

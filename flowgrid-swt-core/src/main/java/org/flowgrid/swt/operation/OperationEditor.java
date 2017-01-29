@@ -84,8 +84,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     boolean running;
     ScrolledComposite scrolledComposite;
     Timer timer;
-    boolean landscapeMode = true;
-    Label tutorialHelp;
 
 
     public OperationEditor(final SwtFlowgrid flowgrid, final CustomOperation operation) {
@@ -122,33 +120,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
        // Label label = new Label(controlPanel, SWT.NONE);
         //label.setText(operation.name());
 
-
-        if (classifier != null) {
-            final Button classifierButton = new Button(controlPanel, SWT.PUSH);
-            classifierButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-            classifierButton.setText(classifier.name());
-            classifierButton.addSelectionListener(new DefaultSelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    flowgrid.openClassifier(classifier);
-                }
-            });
-            /*
-            TextView separator = new TextView(platform);
-            separator.setText(classifier.name() + " properties");
-            Views.applyEditTextStyle(separator, false);
-            separator.setPaintFlags(separator.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            controlLayout.addView(separator);
-            */
-            for (Property property: classifier.properties(null)) {
-                DataComponent input = new PropertyComponent(controlPanel, flowgrid, property, instance);
-                //Control control =
-                input.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-                //                controlLayout.addView(view);
-              //  propertyWidgets.add(input);
-            }
-        }
-
         scrolledComposite.setContent(controlPanel);
 
         controller.setVisual(true);
@@ -159,6 +130,23 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         operationCanvas.setLayoutData(canvasGridData);
 
         attachAll();
+
+        if (classifier != null) {
+            final Button classifierButton = new Button(controlPanel, SWT.PUSH | SWT.FLAT);
+            classifierButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+            classifierButton.setText(classifier.name());
+            classifierButton.addSelectionListener(new DefaultSelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    flowgrid.openClassifier(classifier);
+                }
+            });
+
+            for (Property property: classifier.properties(null)) {
+                DataComponent input = new PropertyComponent(controlPanel, flowgrid, property, instance);
+                input.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+            }
+        }
 
         Composite labelCage = new Composite(controlPanel, SWT.NONE);
         labelCage.setLayout(new WrappingLabelCage());
@@ -193,7 +181,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
 
     @Override
     public void addInput(WidgetPort inputPort) {
-        int pos = classifier == null ? 0 : (classifier.properties(null).size() + 1);
+        int pos = 0;
         for (Cell cell: operation) {
             if (cell.command() instanceof PortCommand) {
                 PortCommand portCommand = (PortCommand) cell.command();
