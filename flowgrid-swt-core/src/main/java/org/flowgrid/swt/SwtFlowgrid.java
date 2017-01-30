@@ -3,6 +3,7 @@ package org.flowgrid.swt;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -77,6 +78,13 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         shell.setText("FlowGrid");
         this.pixelPerDp = pixelPerDp;
         this.setup = setup;
+
+        Rectangle clientArea = display.getClientArea();
+
+        shell.setBounds(clientArea.width /  6, clientArea.height / 6,
+                Math.min(clientArea.width * 3 / 2, Math.round(800 * pixelPerDp)),
+                Math.min(clientArea.height * 3 / 2, Math.round(480 * pixelPerDp)));
+        shell.open();
     }
 
     public void start() {
@@ -102,9 +110,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         loadDocumentation();
 
         openArtifact(model.artifact(settings.getLastUsed()));
-
-        shell.pack();
-        shell.open();
     }
 
 
