@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class SwtFlowgrid implements Platform, MenuSelectionHandler {
@@ -64,6 +65,7 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     private ToolItem overflowItem;
     float pixelPerDp;
     Callback<Model>[] setup;
+    private ArrayList<String> backStack = new ArrayList<>();
 
     public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp, Callback<Model>... setup) {
         this.display = display;
@@ -340,6 +342,17 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             shell.setText("FlowGrid");
         } else {
             Artifact artifact = editor.getArtifact();
+            settings.setLastUsed(artifact);
+            String qualifiedName = artifact.qualifiedName();
+            int cut = backStack.indexOf(qualifiedName);
+            if (cut == -1) {
+                backStack.add(qualifiedName);
+            } else {
+                while (backStack.size() > cut + 1) {
+                    backStack.remove(backStack.size() - 1);
+                }
+            }
+
             shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + editor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
         }
         updateMenu();
@@ -364,7 +377,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
 
     public void openClassifier(Classifier classifier) {
         clear();
-        settings.setLastUsed(classifier);
         setCurrentEditor(new ClassifierEditor(this, classifier));
     }
 
@@ -381,7 +393,6 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         if (!editable) {
             System.out.println("FIXME: SwtFlowgrid.openOperation for run mode");
         }
-        settings.setLastUsed(operation);
         setCurrentEditor(new OperationEditor(this, operation));
     }
 
