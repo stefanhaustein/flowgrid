@@ -1,6 +1,8 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
@@ -87,6 +89,15 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
                 Math.min(clientArea.width * 3 / 2, Math.round(800 * pixelPerDp)),
                 Math.min(clientArea.height * 3 / 2, Math.round(480 * pixelPerDp)));
         shell.open();
+        shell.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.MODIFIER_MASK) == SWT.ALT && backStack.size() > 1) {
+                    openArtifact(model.artifact(backStack.get(backStack.size() - 2)));
+                    e.doit = false;
+                }
+            }
+        });
     }
 
     public void start() {
