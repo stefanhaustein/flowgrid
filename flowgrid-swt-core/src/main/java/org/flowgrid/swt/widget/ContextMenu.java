@@ -62,16 +62,42 @@ public class ContextMenu {
         MenuItem swtItem;
         ContextMenu subMenu;
 
-        Item(ContextMenu parent, String title, boolean sub) {
+        Item(final ContextMenu parent, final String title, boolean sub) {
             this.parentMenu = parent;
             if (sub) {
                 swtItem = new MenuItem(parent.swtMenu, SWT.CASCADE);
                 subMenu = new ContextMenu(this);
+                propagateDisabledState(subMenu);
             } else {
                 swtItem = new MenuItem(parent.swtMenu, SWT.PUSH);
                 swtItem.addSelectionListener(Item.this);
             }
+            if (parentMenu.disabledMap != null) {
+                swtItem.setEnabled(parentMenu.disabledMap.isEnabled(title));
+            }
             swtItem.setText(title);
+            if (parentMenu.editDisabledMode) {
+                final MenuItem disabler = new MenuItem(parent.swtMenu, SWT.CHECK);
+                disabler.setText("[^ enabled]");
+                disabler.setSelection(parentMenu.disabledMap.isEnabled(title));
+                disabler.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (disabler.getSelection()) {
+                            parentMenu.disabledMap.disable(title);
+                        } else {
+                            parentMenu.disabledMap.enable(title);
+                        }
+                        parentMenu.editDisabledCallback.run(null);
+                    }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        widgetSelected(e);
+                    }
+                });
+
+            }
         }
 
         public ContextMenu getSubMenu() {
@@ -105,8 +131,11 @@ public class ContextMenu {
             return swtItem.getText();
         }
 
-        public void propagateDisabledState(ContextMenu menu) {
-            System.out.println("FIXME: ContextMenu.Item.propagateDisabledState()");  // FIXME
+        public void propagateDisabledState(ContextMenu target) {
+            if (parentMenu.disabledMap != null) {
+                target.setDisabledMap(parentMenu.disabledMap.getChild(getTitle()),
+                        parentMenu.editDisabledMode, parentMenu.editDisabledCallback);
+            }
         }
 
         public boolean hasSubMenu() {
@@ -114,12 +143,11 @@ public class ContextMenu {
         }
 
         public boolean isChecked() {
-            System.out.println("FIXME: ContextMenu.Item.isChecked");   // FIXME
-            return false;
+            return swtItem.getSelection();
         }
 
         public void setEnabled(boolean b) {
-            System.out.println("FIXMLE: ContextMenuItem.setEnabled()");  // FIXME
+            swtItem.setEnabled(b);
         }
 
         public void setHelp(Callable<String> stringCallable) {

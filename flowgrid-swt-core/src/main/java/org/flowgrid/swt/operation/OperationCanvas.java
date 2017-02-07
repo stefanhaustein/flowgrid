@@ -496,7 +496,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                     }
                 }
 
-                if (!operationEditor.tutorialMode) {
+                if (!operation.isTutorial()) {
                     Control[] bottomControls = new Control[]{slowerButton, speedBar, fasterButton};
 
                     int y = bounds.height;
