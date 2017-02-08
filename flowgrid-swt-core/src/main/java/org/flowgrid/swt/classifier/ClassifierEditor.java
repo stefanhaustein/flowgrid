@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.DisplayType;
 import org.flowgrid.model.Operation;
@@ -29,7 +28,7 @@ import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeMenu;
-import org.flowgrid.swt.widget.MenuAdapter;
+import org.flowgrid.swt.widget.ContextMenu;
 
 import java.util.List;
 
@@ -117,8 +116,8 @@ public class ClassifierEditor extends ArtifactEditor {
     }
 
     @Override
-    public void menuItemSelected(MenuItem menuItem) {
-        final String title = menuItem.getText();
+    public boolean onContextMenuItemClick(ContextMenu.Item menuItem) {
+        final String title = menuItem.getTitle();
         if (Strings.MENU_ITEM_ADD_PROPERTY.equals(title)) {
             Dialogs.promptIdentifier(flowgrid.shell(), "Add property", "Name", "", new Callback<String>() {
                 @Override
@@ -130,7 +129,9 @@ public class ClassifierEditor extends ArtifactEditor {
                     flowgrid.openProperty(property);
                 }
             });
-        } else if (Strings.MENU_ITEM_ADD_METHOD.equals(title)) {
+            return true;
+        }
+        if (Strings.MENU_ITEM_ADD_METHOD.equals(title)) {
             Dialogs.promptIdentifier(flowgrid.shell(), title, "Name", "", new Callback<String>() {
                 @Override
                 public void run(String value) {
@@ -143,7 +144,9 @@ public class ClassifierEditor extends ArtifactEditor {
                     flowgrid().openOperation(operation);
                 }
             });
-        } else if ("Implement Interface...".equals(title)) {
+            return true;
+        }
+        if ("Implement Interface...".equals(title)) {
             new TypeMenu(flowgrid(), operationPanel, classifier.module(), Type.ANY, TypeFilter.Category.INTERFACE, new Callback<Type>() {
                 @Override
                 public void run(Type value) {
@@ -166,9 +169,9 @@ public class ClassifierEditor extends ArtifactEditor {
                     }
                 }
             }).show();
-        } else {
-            super.menuItemSelected(menuItem);
+            return true;
         }
+        return super.onContextMenuItemClick(menuItem);
     }
 
     @Override
@@ -179,15 +182,16 @@ public class ClassifierEditor extends ArtifactEditor {
 
     @Override
     public void fillMenu(Menu menu) {
-        MenuAdapter menuAdapter = new MenuAdapter(menu, this);
+        ContextMenu menuAdapter = new ContextMenu(menu);
+        menuAdapter.setOnMenuItemClickListener(this);
 
-        menuAdapter.addItem(Strings.MENU_ITEM_PUBLIC, SWT.CHECK).setSelection(classifier.isPublic());
+        menuAdapter.addCheckable(Strings.MENU_ITEM_PUBLIC).setChecked(classifier.isPublic());
 
-        menuAdapter.addItem(Strings.MENU_ITEM_ADD_PROPERTY);
-        menuAdapter.addItem(Strings.MENU_ITEM_ADD_METHOD);
+        menuAdapter.add(Strings.MENU_ITEM_ADD_PROPERTY);
+        menuAdapter.add(Strings.MENU_ITEM_ADD_METHOD);
 
-        menuAdapter.addItem(Strings.MENU_ITEM_RENAME_MOVE);
-        menuAdapter.addItem(Strings.MENU_ITEM_DELETE);
+        menuAdapter.add(Strings.MENU_ITEM_RENAME_MOVE);
+        menuAdapter.add(Strings.MENU_ITEM_DELETE);
     }
 
     @Override

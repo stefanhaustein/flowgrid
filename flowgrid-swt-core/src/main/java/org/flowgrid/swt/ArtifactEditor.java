@@ -5,9 +5,9 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.DisplayType;
-import org.flowgrid.swt.widget.MenuSelectionHandler;
+import org.flowgrid.swt.widget.ContextMenu;
 
-public abstract class ArtifactEditor implements MenuSelectionHandler {
+public abstract class ArtifactEditor implements ContextMenu.ItemClickListener {
 
     public abstract Artifact getArtifact();
 
@@ -17,8 +17,9 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
 
     public abstract String getMenuTitle();
 
-    public void menuItemSelected(MenuItem item) {
-        String title = item.getText();
+    @Override
+    public boolean onContextMenuItemClick(ContextMenu.Item item) {
+        String title = item.getTitle();
         final SwtFlowgrid flowgrid = flowgrid();
         final Artifact artifact = getArtifact();
         if (Strings.MENU_ITEM_DELETE.equals(title)) {
@@ -31,17 +32,25 @@ public abstract class ArtifactEditor implements MenuSelectionHandler {
                     flowgrid.openArtifact(null);
                 }
             });
-        } else if (Strings.MENU_ITEM_DOCUMENTATION.equals(title)
+            return true;
+        }
+        if (Strings.MENU_ITEM_DOCUMENTATION.equals(title)
                 || Strings.MENU_ITEM_ADD_DOCUMENTATION.equals(title)) {
             editDocumentation(null);
-        } else if (Strings.MENU_ITEM_PUBLIC.equals(title)) {
+            return true;
+        }
+        if (Strings.MENU_ITEM_PUBLIC.equals(title)) {
             artifact.setPublic(!artifact.isPublic());
-            item.setSelection(artifact.isPublic());
+            item.setChecked(artifact.isPublic());
             artifact.save();
-        } else if (Strings.MENU_ITEM_RENAME_MOVE.equals(title) ||
+            return true;
+        }
+        if (Strings.MENU_ITEM_RENAME_MOVE.equals(title) ||
                 Strings.MENU_ITEM_RENAME.equals(title)) {
             MoveDialog.show(this, artifact);
+            return true;
         }
+        return false;
     }
 
     protected void editDocumentation(final Runnable callback) {

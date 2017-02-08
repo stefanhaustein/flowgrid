@@ -53,12 +53,10 @@ import org.flowgrid.swt.ResourceManager;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.data.DataDialog;
-import org.flowgrid.swt.graphics.EmojiTextHelper;
 import org.flowgrid.swt.port.TestPortDialog;
 import org.flowgrid.swt.port.WidgetPort;
 import org.flowgrid.swt.port.WidgetPortDialog;
 import org.flowgrid.swt.widget.ContextMenu;
-import org.flowgrid.swt.widget.MenuSelectionHandler;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -70,7 +68,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 
-public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener, MenuSelectionHandler {
+public class OperationCanvas extends Canvas implements ContextMenu.ItemClickListener {
     static final float ZOOM_STEP = 1.1f;
     static final int PIXEL_SNAP = 16;
     static final int ZOOM_TIME_MS = 1000;
@@ -1106,39 +1104,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
     }
 
     @Override
-    public void menuItemSelected(MenuItem menuItem) {
-        String label = menuItem.getText();
-        if (Strings.MENU_ITEM_COPY.equals(label)) {
-            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col,
-                    selection.height, selection.width));
-
-        } else if (Strings.MENU_ITEM_CUT.equals(label)) {
-            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col,
-                    selection.height, selection.width));
-            beforeBulkChange();
-            operation.clear(selection.row, selection.col, selection.height, selection.width);
-            afterBulkChange();
-            setSelectionMode(false);
-
-        } else if (label.equals(Strings.MENU_ITEM_UNDO)) {
-            HutnObject json = (HutnObject) Hutn.parse(undoHistory.get(undoHistory.size() - 2));
-            flowgrid.log("undo to: " + json.toString());
-            beforeBulkChange();
-            operation.clear();
-            operation.setPublic(false);
-            operation.setAsyncInput(false);
-            operation.fromJson(json, Artifact.SerializationType.FULL, null);
-            afterBulkChange();
-            undoHistory.remove(undoHistory.size() - 1);
-            undoHistory.remove(undoHistory.size() - 1);
-            if (undoHistory.size() == 1) {
-                operationEditor.updateMenu();
-            }
-        }
-
-    }
-
-    @Override
     public boolean onContextMenuItemClick(ContextMenu.Item item) {
 
         System.out.println("onContextMenuItemClick: " + item.getTitle());
@@ -1163,6 +1128,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             setSelectionMode(false);
             return true;
         }*/
+
+
 
         if (currentTypeFilter.size() > 0 && currentTypeFilter.get(0) instanceof Classifier &&
                 label.equals(currentTypeFilter.get(0).name() + "\u2026")) {
@@ -1223,7 +1190,6 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             return true;
         }
 
-
 /*
         if (SENSOR_MAP.containsKey(label)) {
             beforeChange();
@@ -1234,9 +1200,43 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             return true;
         } */
 
-        Command command = null;
         int row = selection.row();
         int col = selection.col();
+
+        if (Strings.MENU_ITEM_COPY.equals(label)) {
+            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col,
+                    selection.height, selection.width));
+            return true;
+
+        }
+        if (Strings.MENU_ITEM_CUT.equals(label)) {
+            flowgrid.setEditBuffer(operation.copy(selection.row, selection.col,
+                    selection.height, selection.width));
+            beforeBulkChange();
+            operation.clear(selection.row, selection.col, selection.height, selection.width);
+            afterBulkChange();
+            setSelectionMode(false);
+            return true;
+
+        }
+        if (label.equals(Strings.MENU_ITEM_UNDO)) {
+            HutnObject json = (HutnObject) Hutn.parse(undoHistory.get(undoHistory.size() - 2));
+            flowgrid.log("undo to: " + json.toString());
+            beforeBulkChange();
+            operation.clear();
+            operation.setPublic(false);
+            operation.setAsyncInput(false);
+            operation.fromJson(json, Artifact.SerializationType.FULL, null);
+            afterBulkChange();
+            undoHistory.remove(undoHistory.size() - 1);
+            undoHistory.remove(undoHistory.size() - 1);
+            if (undoHistory.size() == 1) {
+                operationEditor.updateMenu();
+            }
+            return true;
+        }
+
+        Command command = null;
 
         if (label.equals(Strings.MENU_ITEM_ADD_BUFFER) || label.equals(Strings.MENU_ITEM_REMOVE_BUFFER)) {
             Cell below = operation.cell(row + 1, col);

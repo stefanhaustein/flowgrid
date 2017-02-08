@@ -21,6 +21,17 @@ public class ContextMenu {
     private DisabledMap disabledMap;
     private Callback<Void> editDisabledCallback;
 
+    public ContextMenu(Menu parent, String name) {
+        MenuItem menuItem = new MenuItem(parent, SWT.CASCADE);
+        menuItem.setText(name);
+        this.swtMenu = new Menu(menuItem);
+    }
+
+
+    public ContextMenu(Menu swtMenu) {
+        this.swtMenu = swtMenu;
+    }
+
     public ContextMenu(Control control) {
         swtMenu = new Menu(control);
         // control.setMenu(swtMenu);  FIXME
@@ -36,11 +47,15 @@ public class ContextMenu {
     }
 
     public Item add(String label) {
-        return new Item(this, label, false);
+        return new Item(this, label, SWT.PUSH);
+    }
+
+    public Item addCheckable(String label) {
+        return new Item(this, label, SWT.CHECK);
     }
 
     public Item addSubMenu(String label) {
-        return new Item(this, label, true);
+        return new Item(this, label, SWT.CASCADE);
     }
 
     public void setOnMenuItemClickListener(ItemClickListener itemClickListener) {
@@ -62,14 +77,13 @@ public class ContextMenu {
         MenuItem swtItem;
         ContextMenu subMenu;
 
-        Item(final ContextMenu parent, final String title, boolean sub) {
+        Item(final ContextMenu parent, final String title, int style) {
             this.parentMenu = parent;
-            if (sub) {
-                swtItem = new MenuItem(parent.swtMenu, SWT.CASCADE);
+            swtItem = new MenuItem(parent.swtMenu, style);
+            if (style == SWT.CASCADE) {
                 subMenu = new ContextMenu(this);
                 propagateDisabledState(subMenu);
             } else {
-                swtItem = new MenuItem(parent.swtMenu, SWT.PUSH);
                 swtItem.addSelectionListener(Item.this);
             }
             if (parentMenu.disabledMap != null) {
@@ -152,6 +166,10 @@ public class ContextMenu {
 
         public void setHelp(Callable<String> stringCallable) {
             System.out.println("FIXMLE: ContextMenuItem.setHelp()");  // FIXME
+        }
+
+        public void setChecked(boolean checked) {
+            swtItem.setSelection(checked);
         }
     }
 

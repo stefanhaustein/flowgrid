@@ -5,6 +5,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -38,8 +39,7 @@ import org.flowgrid.swt.classifier.ClassifierEditor;
 import org.flowgrid.swt.classifier.PropertyDialog;
 import org.flowgrid.swt.operation.OperationEditor;
 import org.flowgrid.swt.operation.VirtualOperationDialog;
-import org.flowgrid.swt.widget.MenuAdapter;
-import org.flowgrid.swt.widget.MenuSelectionHandler;
+import org.flowgrid.swt.widget.ContextMenu;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,7 +49,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class SwtFlowgrid implements Platform, MenuSelectionHandler {
+public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
     Model model;
     Display display;
     Shell shell;
@@ -122,7 +122,21 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         model = new Model(this, mergedSetup);
         loadDocumentation();
 
-        openArtifact(model.artifact(settings.getLastUsed()));
+        openArtifact(null);
+
+        // This makes sure the window is up on android. Should trigger immediately elsewhere.
+        new UiTimerTask(display) {
+            @Override
+            public void runOnUiThread() {
+                Rectangle clientArea = shell.getClientArea();
+                System.out.println("Shell size: " + clientArea);
+                if (clientArea.height > 0) {
+                    cancel();
+                    openArtifact(model.artifact(settings.getLastUsed()));
+                }
+            }
+        }.schedule(0, 10);
+
     }
 
 
@@ -134,11 +148,12 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     public void updateMenu() {
         Menu menuBar = new Menu(shell);
 
-        MenuAdapter menuAdapter = new MenuAdapter(menuBar, "File", this);
-        menuAdapter.addItem("About");
-        menuAdapter.addItem("Open / Create");
-        menuAdapter.addItem("Tutorial");
-        menuAdapter.addItem("Reset");
+        ContextMenu menuAdapter = new ContextMenu(menuBar, "File");
+        menuAdapter.setOnMenuItemClickListener(this);
+        menuAdapter.add("About");
+        menuAdapter.add("Open / Create");
+        menuAdapter.add("Tutorial");
+        menuAdapter.add("Reset");
 
         if (currentEditor != null) {
             if (shell.getToolBar() == null) {
@@ -432,8 +447,8 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
     }
 
     @Override
-    public void menuItemSelected(MenuItem menuItem) {
-        String label = menuItem.getText();
+    public boolean onContextMenuItemClick(ContextMenu.Item item) {
+        String label = item.getTitle();
         if ("Open / Create".equals(label)) {
             Module module = model.rootModule;
             if (currentEditor != null) {
@@ -442,9 +457,13 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
             }
             module.ensureLoaded();  // Move into to the iterator call?
             new OpenArtifactDialog(this, module).show();
-        } else if ("About".equals(label)) {
+            return true;
+        }
+        if ("About".equals(label)) {
             AboutDialog.show(this);
-        } else if ("Tutorial".equals(label)) {
+            return true;
+        }
+        if ("Tutorial".equals(label)) {
             Module missions = model().rootModule.module("missions");
             for (Artifact artifact : missions) {
                 if (artifact instanceof CustomOperation) {
@@ -455,9 +474,13 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
                     }
                 }
             }
-        } else if ("Reset".equals(label)) {
-            new ResetDialog(this).show();
+            return true;
         }
+        if ("Reset".equals(label)) {
+            new ResetDialog(this).show();
+            return true;
+        }
+        return false;
     }
 
     public String documentation(String s) {
@@ -468,4 +491,5 @@ public class SwtFlowgrid implements Platform, MenuSelectionHandler {
         setCurrentEditor(null);
         settings.setBootCommand(bootCommand, path);
     }
+
 }
