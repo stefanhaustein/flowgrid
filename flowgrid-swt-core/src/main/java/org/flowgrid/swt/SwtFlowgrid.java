@@ -27,6 +27,7 @@ import org.flowgrid.model.Operation;
 import org.flowgrid.model.Platform;
 import org.flowgrid.model.PortFactory;
 import org.flowgrid.model.Property;
+import org.flowgrid.model.ResourceFile;
 import org.flowgrid.model.Sound;
 import org.flowgrid.model.Type;
 import org.flowgrid.model.TypeAndValue;
@@ -78,7 +79,8 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         cacheRoot = new File(flowgridRoot, "cache");
 
         resourceManager = new ResourceManager(display, dark, pixelPerDp);
-        shell = new Shell(display);
+
+        shell = new Shell(display, SWT.SHELL_TRIM);
         shell.setText("FlowGrid");
         this.pixelPerDp = pixelPerDp;
         this.setup = setup;
@@ -122,21 +124,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         model = new Model(this, mergedSetup);
         loadDocumentation();
 
-        openArtifact(null);
-
-        // This makes sure the window is up on android. Should trigger immediately elsewhere.
-        new UiTimerTask(display) {
-            @Override
-            public void runOnUiThread() {
-                Rectangle clientArea = shell.getClientArea();
-                System.out.println("Shell size: " + clientArea);
-                if (clientArea.height > 0) {
-                    cancel();
-                    openArtifact(model.artifact(settings.getLastUsed()));
-                }
-            }
-        }.schedule(0, 10);
-
+        openArtifact(model.artifact(settings.getLastUsed()));
     }
 
 
@@ -184,18 +172,6 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         shell.setMenuBar(menuBar);
     }
 
-    void clear() {
-        for(Control control: shell.getChildren()) {
-            control.dispose();
-        }
-        ToolBar toolBar = shell.getToolBar();
-        if (toolBar != null) {
-            for (ToolItem toolItem : toolBar.getItems()) {
-                toolItem.dispose();
-            }
-        }
-        overflowItem = null;
-    }
 
     @Override
     public IOCallback<Void> defaultIoCallback(String message) {
@@ -362,32 +338,69 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         System.err.println("log: " + message + " -- " + e);
     }
 
-    void setCurrentEditor(ArtifactEditor editor) {
-        currentEditor = editor;
-        if (editor == null) {
-            shell.setText("FlowGrid");
-        } else {
-            Artifact artifact = editor.getArtifact();
-            settings.setLastUsed(artifact);
-            String qualifiedName = artifact.qualifiedName();
-            int cut = backStack.indexOf(qualifiedName);
-            if (cut == -1) {
-                backStack.add(qualifiedName);
-            } else {
-                while (backStack.size() > cut + 1) {
-                    backStack.remove(backStack.size() - 1);
+    void setCurrentEditor(final ArtifactEditorFactory editorFactory, boolean mayHideTitle) {
+        for(Control control: shell.getChildren()) {
+            control.dispose();
+        }
+        ToolBar toolBar = shell.getToolBar();
+        if (toolBar != null) {
+            for (ToolItem toolItem : toolBar.getItems()) {
+                toolItem.dispose();
+            }
+        }
+        overflowItem = null;
+
+        boolean showTitle = !mayHideTitle || display.getClientArea().height >= 480 * pixelPerDp;
+
+        if (showTitle != ((shell.getStyle() & SWT.TITLE) != 0)) {
+            int style = SWT.SHELL_TRIM;
+            if (!showTitle) {
+                style &= ~SWT.TITLE;
+            }
+            Shell newShell = new Shell(display, style);
+            newShell.setBounds(shell.getBounds());
+            shell.dispose();
+            shell = newShell;
+            shell.open();
+        }
+
+        // This makes sure the window is up on android. Should trigger immediately elsewhere.
+        new UiTimerTask(display) {
+            boolean done = false;
+            @Override
+            public void runOnUiThread() {
+                Rectangle clientArea = shell.getClientArea();
+                System.out.println("Shell size: " + clientArea);
+                if (clientArea.height > 0 && !done) {
+                    done = true;
+                    cancel();
+                    currentEditor = editorFactory == null ? null : editorFactory.create();
+                    if (currentEditor == null) {
+                        shell.setText("FlowGrid");
+                    } else {
+                        Artifact artifact = currentEditor.getArtifact();
+                        settings.setLastUsed(artifact);
+                        String qualifiedName = artifact.qualifiedName();
+                        int cut = backStack.indexOf(qualifiedName);
+                        if (cut == -1) {
+                            backStack.add(qualifiedName);
+                        } else {
+                            while (backStack.size() > cut + 1) {
+                                backStack.remove(backStack.size() - 1);
+                            }
+                        }
+
+                        shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + currentEditor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
+                    }
+                    updateMenu();
                 }
             }
-
-            shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + editor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
-        }
-        updateMenu();
+        }.schedule(0, 10);
     }
 
     public void openArtifact(Artifact artifact) {
         if (artifact == null) {
-            clear();
-            setCurrentEditor(null);
+            setCurrentEditor(null, false);
             updateMenu();
             shell.redraw();
         } else if (artifact instanceof Operation) {
@@ -398,12 +411,27 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
             openProperty((Property) artifact);
         } else if (artifact instanceof Module) {
             new OpenArtifactDialog(this, (Module) artifact).show();
+        } else if (artifact instanceof ResourceFile) {
+            openResource((ResourceFile) artifact);
         }
     }
 
-    public void openClassifier(Classifier classifier) {
-        clear();
-        setCurrentEditor(new ClassifierEditor(this, classifier));
+    public void openResource(final ResourceFile resource) {
+        setCurrentEditor(new ArtifactEditorFactory() {
+            @Override
+            public ArtifactEditor create() {
+                return new ResourceEditor(SwtFlowgrid.this, resource);
+            }
+        }, false);
+    }
+
+    public void openClassifier(final Classifier classifier) {
+        setCurrentEditor(new ArtifactEditorFactory() {
+            @Override
+            public ArtifactEditor create() {
+                return new ClassifierEditor(SwtFlowgrid.this, classifier);
+            }
+        }, false);
     }
 
     public void openOperation(Operation operation) {
@@ -414,12 +442,16 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         }
     }
 
-    public void openOperation(CustomOperation operation, boolean editable) {
-        clear();
+    public void openOperation(final CustomOperation operation, boolean editable) {
         if (!editable) {
             System.out.println("FIXME: SwtFlowgrid.openOperation for run mode");
         }
-        setCurrentEditor(new OperationEditor(this, operation));
+        setCurrentEditor(new ArtifactEditorFactory() {
+            @Override
+            public ArtifactEditor create() {
+                return new OperationEditor(SwtFlowgrid.this, operation);
+            }
+        }, true);
     }
 
     public void openProperty(Property p) {
@@ -488,8 +520,12 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
     }
 
     public void restart(Settings.BootCommand bootCommand, String path) {
-        setCurrentEditor(null);
+        setCurrentEditor(null, false);
         settings.setBootCommand(bootCommand, path);
+    }
+
+    interface ArtifactEditorFactory {
+        ArtifactEditor create();
     }
 
 }
