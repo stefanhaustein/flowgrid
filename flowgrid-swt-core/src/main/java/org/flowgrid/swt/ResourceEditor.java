@@ -27,17 +27,33 @@ public class ResourceEditor extends ArtifactEditor {
     ResourceEditor(SwtFlowgrid flowgrid, ResourceFile resource) {
         this.flowgrid = flowgrid;
         this.resource = resource;
-        flowgrid.shell().setLayout(new ColumnLayout(25));
-        Composite left = new Composite(flowgrid.shell, SWT.NONE);
-        left.setLayout(new GridLayout(1, false));
+        GridLayout shellLayout = new GridLayout(4, true);
+        shellLayout.marginWidth = 0;
+        shellLayout.marginHeight = 0;
+        flowgrid.shell().setLayout(shellLayout);
 
-        Label main = new Label(flowgrid.shell, SWT.CENTER);
+        Composite left = new Composite(flowgrid.shell, SWT.NONE);
+        GridLayout leftLayout = new GridLayout(1, false);
+        leftLayout.marginWidth = 0;
+        leftLayout.marginHeight = 0;
+        left.setLayout(leftLayout);
+        left.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+
+        Composite main = new Composite(flowgrid.shell, SWT.NONE);
+        GridLayout mainLayout = new GridLayout(1, false);
+        mainLayout.marginWidth = 0;
+        mainLayout.marginHeight = 0;
+        main.setLayout(mainLayout);
+        main.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         main.setBackground(flowgrid.resourceManager.background);
+
+        Label imageLabel = new Label(main, SWT.NONE);
+        imageLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
 
         if (resource.kind == ResourceFile.Kind.IMAGE) {
             try {
                 ImageImpl img = (ImageImpl) resource.resource();
-                main.setImage(img.bitmap());
+                imageLabel.setImage(img.bitmap());
 
                 new Label(left, SWT.NONE).setText("Width:");
                 Text widthText = new Text(left, SWT.READ_ONLY);
@@ -48,7 +64,7 @@ public class ResourceEditor extends ArtifactEditor {
                 heightText.setText(String.valueOf(img.height()));
                 heightText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
             } catch (IOException e) {
-                main.setText(e.getMessage());
+                imageLabel.setText(e.getMessage());
             }
         }
     }
@@ -70,6 +86,6 @@ public class ResourceEditor extends ArtifactEditor {
 
     @Override
     public String getMenuTitle() {
-        return resource instanceof Image ? "Image" : "Sound";
+        return resource.kind == ResourceFile.Kind.IMAGE ? "Image" : "Sound";
     }
 }

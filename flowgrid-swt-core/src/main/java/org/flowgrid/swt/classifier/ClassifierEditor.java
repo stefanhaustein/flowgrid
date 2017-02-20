@@ -76,8 +76,8 @@ public class ClassifierEditor extends ArtifactEditor {
 
         refresh();
 
-        contentPanel.layout(true, true);
-        flowgrid.shell().layout(true, true);
+       // contentPanel.layout(true, true);
+        //flowgrid.shell().layout(true, true);
     }
 
 

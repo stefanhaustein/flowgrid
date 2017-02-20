@@ -29,6 +29,8 @@ public class SwingFlowgrid {
             // handle exception
         }
 
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+
         SwingDisplay display = new SwingDisplay();
         new SwtFlowgrid(display,
                 new File(new File(System.getProperty("user.home")), "flowgrid"), false, 1).start();

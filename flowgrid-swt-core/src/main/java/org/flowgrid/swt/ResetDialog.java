@@ -17,15 +17,16 @@ public class ResetDialog {
             Settings.BootCommand.DELETE_AND_RESTORE,
     };
 
-    AlertDialog alert;
+    final AlertDialog alert;
     public ResetDialog(final SwtFlowgrid flowgrid) {
-        AlertDialog alert = new AlertDialog(flowgrid.shell());
+        alert = new AlertDialog(flowgrid.shell());
         alert.setTitle("Restore");
         final int[] option = new int[1];
 
         Composite main = alert.getContentContainer();
         final Combo options = new Combo(main, SWT.DEFAULT);
         options.setItems(OPTIONS);
+        options.select(0);
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override

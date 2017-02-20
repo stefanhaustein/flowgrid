@@ -34,7 +34,6 @@ public class ContextMenu {
 
     public ContextMenu(Control control) {
         swtMenu = new Menu(control);
-        // control.setMenu(swtMenu);  FIXME
     }
 
     ContextMenu(Item item) {

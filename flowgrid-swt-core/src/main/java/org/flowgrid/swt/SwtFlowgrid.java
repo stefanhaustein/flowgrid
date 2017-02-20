@@ -69,6 +69,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
     float pixelPerDp;
     Callback<Model>[] setup;
     private ArrayList<String> backStack = new ArrayList<>();
+    private boolean hideOperationEditorTitle;
 
     public SwtFlowgrid(Display display, File flowgridRootDir, boolean dark, float pixelPerDp, Callback<Model>... setup) {
         this.display = display;
@@ -123,6 +124,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
 
         model = new Model(this, mergedSetup);
         loadDocumentation();
+        hideOperationEditorTitle = display.getClientArea().height < 480 * pixelPerDp;
 
         openArtifact(model.artifact(settings.getLastUsed()));
     }
@@ -350,7 +352,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         }
         overflowItem = null;
 
-        boolean showTitle = !mayHideTitle || display.getClientArea().height >= 480 * pixelPerDp;
+        boolean showTitle = !mayHideTitle || !hideOperationEditorTitle;
 
         if (showTitle != ((shell.getStyle() & SWT.TITLE) != 0)) {
             int style = SWT.SHELL_TRIM;
@@ -393,6 +395,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
                         shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + currentEditor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
                     }
                     updateMenu();
+                    shell.layout();
                 }
             }
         }.schedule(0, 10);
@@ -401,8 +404,6 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
     public void openArtifact(Artifact artifact) {
         if (artifact == null) {
             setCurrentEditor(null, false);
-            updateMenu();
-            shell.redraw();
         } else if (artifact instanceof Operation) {
             openOperation((Operation) artifact);
         } else if (artifact instanceof Classifier) {
@@ -449,7 +450,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         setCurrentEditor(new ArtifactEditorFactory() {
             @Override
             public ArtifactEditor create() {
-                return new OperationEditor(SwtFlowgrid.this, operation);
+                return new OperationEditor(SwtFlowgrid.this, operation, hideOperationEditorTitle);
             }
         }, true);
     }

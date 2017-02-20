@@ -20,7 +20,7 @@ public class ResourceManager {
 
     public final float pixelPerDp;
 
-    public enum Icon {FAST_FORWARD, MORE_VERT, PAUSE, PLAY_ARROW, STOP, SLOW_MOTION_VIDEO};
+    public enum Icon {FAST_FORWARD, MORE_VERT, PAUSE, PLAY_ARROW, STOP, MENU, SLOW_MOTION_VIDEO};
 
     public enum Brightness {DARKEST, DARKER, REGULAR, BRIGHTER, BRIGHTEST};
 

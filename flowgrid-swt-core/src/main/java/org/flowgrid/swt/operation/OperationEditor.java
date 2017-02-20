@@ -5,6 +5,7 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -28,6 +29,7 @@ import org.flowgrid.model.TutorialData;
 import org.flowgrid.model.api.PortCommand;
 import org.flowgrid.model.hutn.HutnObject;
 import org.flowgrid.swt.DefaultSelectionAdapter;
+import org.flowgrid.swt.ResourceManager;
 import org.flowgrid.swt.Strings;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.UiTimerTask;
@@ -86,7 +88,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     Timer timer;
 
 
-    public OperationEditor(final SwtFlowgrid flowgrid, final CustomOperation operation) {
+    public OperationEditor(final SwtFlowgrid flowgrid, final CustomOperation operation, boolean addTitle) {
         this.flowgrid = flowgrid;
         this.operation = operation;
 
@@ -107,18 +109,46 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
 
         flowgrid.shell().setLayout(new ColumnLayout(25));
 
-        scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.V_SCROLL);
+        if (addTitle) {
+            Composite scrollParent = new Composite(flowgrid.shell(), SWT.NONE);
+            GridLayout scrollParentLayout = new GridLayout();
+            scrollParentLayout.marginWidth = 0;
+            scrollParentLayout.marginHeight = 0;
+            scrollParent.setLayout(scrollParentLayout);
+
+            Label label = new Label(scrollParent, SWT.NONE);
+            label.setText(operation.name());
+            label.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.MENU));
+            label.setBackground(flowgrid.resourceManager.blues[2]);
+            GridData labelLayoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+            labelLayoutData.minimumHeight = flowgrid.resourceManager.dpToPx(48);
+            label.setLayoutData(labelLayoutData);
+
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseUp(MouseEvent e) {
+                    flowgrid.shell().getMenuBar().setVisible(true);
+                }
+            });
+
+            scrolledComposite = new ScrolledComposite(scrollParent, SWT.V_SCROLL);
+            scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+        } else {
+            scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.V_SCROLL);
+        }
+
+
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-//        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+//
         controlPanel = new Composite(scrolledComposite, SWT.NONE);
 
         final GridLayout controlLayout = new GridLayout(1, false);
         controlLayout.marginHeight = 0;
         controlLayout.marginWidth = 0;
         controlPanel.setLayout(controlLayout);
-       // Label label = new Label(controlPanel, SWT.NONE);
-        //label.setText(operation.name());
+
+
 
         scrolledComposite.setContent(controlPanel);
 
