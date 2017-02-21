@@ -196,7 +196,7 @@ public class WidgetPort implements Component, Port {
         } else {
             dataWidget = new DataComponent.Builder(manager.flowgrid())
                     .setType(port.dataType())
-                    .setEditable(port.outputCount() != 0)
+                    .setReadonly(port.outputCount() == 0)
                     .setWidget(widget)
                     .setName(port.name()).build(parent);
 //            view = dataWidget.view();

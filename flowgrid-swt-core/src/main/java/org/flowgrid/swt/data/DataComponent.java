@@ -34,7 +34,7 @@ public class DataComponent implements Component {
         return value == null ? "" : String.valueOf(value);
     }
 
-    private final boolean editable;
+    private final boolean readonly;
     private final Type type;
     private final String name;
     private OnValueChangedListener onValueChangedListener;
@@ -55,14 +55,14 @@ public class DataComponent implements Component {
 
 
     protected DataComponent(final Composite parentComposite, final SwtFlowgrid flowgrid, final Type type,
-                            final String name, final String widget, final Module localModule, boolean editable) {
+                            final String name, final String widget, final Module localModule, boolean readonly) {
         this.flowgrid = flowgrid;
         this.type = type;
         this.widget = widget;
         this.name = name;
         this.localModule = localModule;
-        this.editable = editable;
-        if (editable) {
+        this.readonly = readonly;
+        if (!readonly) {
             if (type == PrimitiveType.BOOLEAN) {
                 button = new Button(parentComposite, SWT.CHECK);
                 button.setText(name);
@@ -133,19 +133,22 @@ public class DataComponent implements Component {
 
                 TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(localModule).setCategory(TypeFilter.Category.INSTANTIABLE).build();
                 TypeComponent typeSpinner = new TypeComponent(container, flowgrid, typeFilter);
+                typeSpinner.setType(PrimitiveType.NUMBER);
                 TypeComponent.OnTypeChangedListener typeChangedListener = new TypeComponent.OnTypeChangedListener() {
                     @Override
                     public void onTypeChanged(Type type) {
+                        System.out.println("Type changed to: " + type);
                         if (inner != null) {
                             inner.dispose();
                         }
-                        inner = new DataComponent.Builder(flowgrid).setType(type).setEditable(true).build(container);
+                        inner = new DataComponent.Builder(flowgrid).setType(type).build(container);
                         inner.setOnValueChangedListener(new OnValueChangedListener() {
                             @Override
                             public void onValueChanged(Object newValue) {
                                 inputChangedTo(newValue, false);
                             }
                         });
+                        container.layout();
                     }
                 };
                 typeChangedListener.onTypeChanged(typeSpinner.type());
@@ -270,14 +273,14 @@ public class DataComponent implements Component {
         String name;
         String widget;
         Module localModule;
-        boolean editable;
+        boolean readonly;
 
         public Builder(SwtFlowgrid flowgrid) {
             this.flowgrid = flowgrid;
         }
 
-        public Builder setEditable(boolean editable) {
-            this.editable = editable;
+        public Builder setReadonly(boolean readonly) {
+            this.readonly = readonly;
             return this;
         }
 
@@ -302,7 +305,7 @@ public class DataComponent implements Component {
         }
 
         public DataComponent build(Composite parent) {
-            return new DataComponent(parent, flowgrid, type, name, widget, localModule, editable);
+            return new DataComponent(parent, flowgrid, type, name, widget, localModule, readonly);
         }
 
     }

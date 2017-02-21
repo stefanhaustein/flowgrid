@@ -105,7 +105,7 @@ public class PropertyDialog {
             if (valueWidget != null) {
                 valueWidget.dispose();
             }
-            valueWidget = new DataComponent.Builder(flowgrid).setType(typeSpinner.type()).setEditable(true).build(alert.getContentContainer());
+            valueWidget = new DataComponent.Builder(flowgrid).setType(typeSpinner.type()).build(alert.getContentContainer());
             valueWidget.setValue(property.value());
         }
     }

@@ -159,7 +159,7 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
                     public void widgetSelected(SelectionEvent e) {
                         Menu menu = new Menu(shell);
                         currentEditor.fillMenu(menu);
-                        menu.setLocation(shell.toDisplay(shell.getSize().x, 0));
+                        menu.setLocation(shell.toDisplay(shell.getSize().x, shell.getClientArea().y));
                         menu.setVisible(true);
                     }
 

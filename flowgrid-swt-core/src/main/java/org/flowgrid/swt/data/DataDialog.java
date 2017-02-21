@@ -19,8 +19,7 @@ public class DataDialog {
     public DataDialog(SwtFlowgrid platform, String title, final Callback<Object> callback) {
         alert = new AlertDialog(platform.shell());
         alert.setTitle(title);
-        controlBuilder = new DataComponent.Builder(platform)
-                .setEditable(true);
+        controlBuilder = new DataComponent.Builder(platform);
         this.callback = callback;
     }
 
