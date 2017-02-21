@@ -4,11 +4,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -116,18 +119,32 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
             scrollParentLayout.marginHeight = 0;
             scrollParent.setLayout(scrollParentLayout);
 
-            Label label = new Label(scrollParent, SWT.NONE);
-            label.setText(operation.name());
-            label.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.MENU));
-            label.setBackground(flowgrid.resourceManager.blues[2]);
-            GridData labelLayoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-            labelLayoutData.minimumHeight = flowgrid.resourceManager.dpToPx(48);
-            label.setLayoutData(labelLayoutData);
+            Composite topBar = new Composite(scrollParent, SWT.NONE);
+            topBar.setBackground(flowgrid.resourceManager.blues[2]);
+            GridData topBarLayoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+            topBar.setLayoutData(topBarLayoutData);
 
-            label.addMouseListener(new MouseAdapter() {
+            GridLayout topBarLayout = new GridLayout(2, false);
+            topBarLayout.marginHeight = 0;
+            topBarLayout.marginWidth = 0;
+            topBar.setLayout(topBarLayout);
+
+            Button menuButton = new Button(topBar, SWT.PUSH|SWT.FLAT);
+            menuButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.MENU));
+
+            Label label = new Label(topBar, SWT.NONE);
+            label.setText(operation.name());
+            label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
+            menuButton.addSelectionListener(new SelectionListener() {
                 @Override
-                public void mouseUp(MouseEvent e) {
+                public void widgetSelected(SelectionEvent e) {
                     flowgrid.shell().getMenuBar().setVisible(true);
+                }
+
+                @Override
+                public void widgetDefaultSelected(SelectionEvent e) {
+                    widgetSelected(e);
                 }
             });
 

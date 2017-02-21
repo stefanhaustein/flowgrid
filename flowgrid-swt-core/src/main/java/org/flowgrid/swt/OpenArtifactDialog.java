@@ -43,7 +43,7 @@ public class OpenArtifactDialog {
 
         Point shellSize = flowgrid.shell.getSize();
 
-        tableGridData.minimumHeight = shellSize.y * 2 / 3;
+        tableGridData.minimumHeight = shellSize.y / 2;
         table.setLayoutData(tableGridData);
         setModule(module);
 
