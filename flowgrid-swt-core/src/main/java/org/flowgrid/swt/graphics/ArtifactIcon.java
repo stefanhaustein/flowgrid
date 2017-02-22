@@ -11,6 +11,7 @@ import org.flowgrid.model.CustomOperation;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.Operation;
 import org.flowgrid.model.Property;
+import org.flowgrid.model.ResourceFile;
 import org.flowgrid.swt.ResourceManager;
 
 public class ArtifactIcon {
@@ -38,6 +39,8 @@ public class ArtifactIcon {
                     kind = ArtifactIcon.Kind.CONTINUOUS_OPERATION;
                 }
             }
+        } else if (artifact instanceof ResourceFile) {
+            kind = ((ResourceFile) artifact).kind == ResourceFile.Kind.AUDIO ? Kind.SOUND : Kind.IMAGE;
         } else {
             kind = ArtifactIcon.Kind.NO_ICON;
             text = "???";

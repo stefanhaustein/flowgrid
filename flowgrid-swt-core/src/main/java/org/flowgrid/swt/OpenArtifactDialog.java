@@ -5,7 +5,10 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -15,9 +18,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.flowgrid.model.Artifact;
 import org.flowgrid.model.Module;
+import org.flowgrid.model.ResourceFile;
+import org.flowgrid.swt.api.ImageImpl;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.graphics.ArtifactIcon;
+
+import java.io.IOException;
 
 public class OpenArtifactDialog {
     final SwtFlowgrid flowgrid;
@@ -140,11 +147,30 @@ public class OpenArtifactDialog {
         }
         */
 
+        int iconSize = flowgrid.resourceManager.dpToPx(24);
         for (final Artifact artifact: module) {
             if (!artifact.isBuiltin()) {
                 TableItem item = new TableItem(table, SWT.NONE);
 
-                item.setImage(ArtifactIcon.create(flowgrid.resourceManager, artifact).createImage(flowgrid.resourceManager.dpToPx(24)));
+                if (artifact instanceof ResourceFile && ((ResourceFile) artifact).kind == ResourceFile.Kind.IMAGE) {
+                    try {
+                        Image original = ((ImageImpl) ((ResourceFile) artifact).resource()).bitmap();
+                        Image icon = new Image(flowgrid.display, iconSize, iconSize);
+                        Rectangle ob = original.getBounds();
+
+                        int max = Math.max(ob.width, ob.height);
+                        int scaledWidth = iconSize * ob.width / max;
+                        int scaledHeight = iconSize * ob.height / max;
+
+                        new GC(icon).drawImage(original, 0, 0, ob.width, ob.height, (iconSize - scaledWidth) / 2, (iconSize - scaledHeight) / 2, scaledWidth, scaledHeight);
+
+                        item.setImage(icon);
+                    } catch (IOException e) {
+                        item.setImage(ArtifactIcon.create(flowgrid.resourceManager, artifact).createImage(iconSize));
+                    }
+                } else {
+                    item.setImage(ArtifactIcon.create(flowgrid.resourceManager, artifact).createImage(iconSize));
+                }
                 item.setText(0, artifact.name());
 //                ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.resourceManager, artifact, false);
   //              artifactComposite.setListener(callback);
