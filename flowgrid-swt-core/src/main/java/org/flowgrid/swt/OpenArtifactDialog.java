@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -25,6 +26,7 @@ import org.flowgrid.swt.dialog.DialogInterface;
 import org.flowgrid.swt.graphics.ArtifactIcon;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class OpenArtifactDialog {
     final SwtFlowgrid flowgrid;
@@ -33,17 +35,34 @@ public class OpenArtifactDialog {
     final Table table;
     AlertDialog alertDialog;
     Module module;
-    final Composite pathComposite;
+    final Combo pathCombo;
+    final SelectionListener pathSelectionListener;
 
     OpenArtifactDialog(final SwtFlowgrid flowgrid, Module initialModule) {
         this.flowgrid = flowgrid;
-        this.module = initialModule;
         alertDialog = new AlertDialog(flowgrid.shell);
 
         RowLayout pathLayout = new RowLayout();
         pathLayout.spacing = 0;
-        pathComposite = new Composite(alertDialog.getContentContainer(), SWT.NONE);
-        pathComposite.setLayout(pathLayout);
+        pathCombo = new Combo(alertDialog.getContentContainer(), SWT.DROP_DOWN);
+        pathSelectionListener = new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int up = pathCombo.getItemCount() - 1 - pathCombo.getSelectionIndex();
+                System.out.println("itemCount: " + pathCombo.getItemCount() + " sel idx: " + pathCombo.getSelectionIndex() + " up: " + up + " current: " + module);
+                Module current = module;
+                while (up > 0 && current.parent() != null){
+                    current = current.parent();
+                    up--;
+                }
+                setModule(current);
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+        };
 
         table = new Table(alertDialog.getContentContainer(), SWT.NONE);
         GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -52,7 +71,6 @@ public class OpenArtifactDialog {
 
         tableGridData.minimumHeight = shellSize.y / 2;
         table.setLayoutData(tableGridData);
-        setModule(module);
 
         alertDialog.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
             @Override
@@ -95,57 +113,34 @@ public class OpenArtifactDialog {
                 widgetSelected(e);
             }
         });
+
+        setModule(initialModule);
     }
 
     void show() {
         alertDialog.show();
     }
 
-    int addPath(final Module module, int topDistance) {
-        if (module == null) {
-            return 0;
-        }
-        int rootDistance = addPath(module.parent(), topDistance + 1);
-        if (rootDistance < 2 || topDistance < 2) {
-            Label label = new Label(pathComposite, SWT.NONE);
-            label.setData(module);
-            label.setText(module.parent() == null ? "root" : module.name());
-            if (topDistance != 0) {
-                label.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                        setModule(module);
-                    }
-                });
-                new Label(pathComposite, SWT.NONE).setText(" > ");
-            }
-        } else if (topDistance == 2) {
-            new Label(pathComposite, SWT.NONE).setText("... > ");
-        }
-        return rootDistance + 1;
-    }
 
     void setModule(Module module) {
+        if (module == this.module) {
+            return;
+        }
         this.module = module;
         alertDialog.setTitle("Open / Create");
 
-        for (Control part : pathComposite.getChildren()) {
-            part.dispose();
-        }
-
-        addPath(module, 0);
+        pathCombo.removeSelectionListener(pathSelectionListener);
+        pathCombo.removeAll();
+        Module current = module;
+        do {
+            String name = current.name();
+            pathCombo.add(name.isEmpty() ? "<root>" : name, 0);
+            current = current.parent();
+        } while (current != null);
+        pathCombo.select(pathCombo.getItemCount() - 1);
+        pathCombo.addSelectionListener(pathSelectionListener);
 
         table.removeAll();
-
-        /*
-        if (module.parent() != null) {
-            TableItem backItem = new TableItem(table, SWT.NONE);
-            backItem.setText(0, module.parent().parent() == null ? "(root)" : module.parent().name());
-//            ArtifactComposite artifactComposite = new ArtifactComposite(list, flowgrid.resourceManager, module.parent(), true);
-  //          artifactComposite.setListener(callback);
-            backItem.setData(module.parent());
-        }
-        */
 
         int iconSize = flowgrid.resourceManager.dpToPx(24);
         for (final Artifact artifact: module) {

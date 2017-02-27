@@ -89,11 +89,13 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     boolean running;
     ScrolledComposite scrolledComposite;
     Timer timer;
+    boolean fullScreen;
 
 
     public OperationEditor(final SwtFlowgrid flowgrid, final CustomOperation operation, boolean addTitle) {
         this.flowgrid = flowgrid;
         this.operation = operation;
+        this.fullScreen = addTitle;
 
         tutorialMode = operation.isTutorial();
 
@@ -164,8 +166,6 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
         controlLayout.marginHeight = 0;
         controlLayout.marginWidth = 0;
         controlPanel.setLayout(controlLayout);
-
-
 
         scrolledComposite.setContent(controlPanel);
 
@@ -633,6 +633,12 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
     }
 
     public void fillMenu(Menu menu) {
+        if (!fullScreen) {
+            fillMenuImpl(menu);
+        }
+    }
+
+    public void fillMenuImpl(Menu menu) {
         ContextMenu operationMenu = new ContextMenu(menu);
         operationMenu.setOnMenuItemClickListener(this);
 

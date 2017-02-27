@@ -121,6 +121,7 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
 
     Button resetButton;
     Button startPauseButton;
+    Button moreButton;
 
     Button fasterButton;
     Button slowerButton;
@@ -215,6 +216,26 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
             resetButton = new Button(this, SWT.PUSH);
             resetButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.STOP));
             resetButton.addSelectionListener(resetListener);
+
+            if (operationEditor.fullScreen) {
+                moreButton = new Button(this, SWT.PUSH);
+                moreButton.setImage(flowgrid.resourceManager.getIcon(ResourceManager.Icon.MORE_VERT));
+                moreButton.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        Menu menu = new Menu(flowgrid.shell());
+                        operationEditor.fillMenuImpl(menu);
+                        menu.setLocation(moreButton.toDisplay(0, moreButton.getSize().y));
+                        menu.setVisible(true);
+                    }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        widgetSelected(e);
+                    }
+                });
+            }
+
         }
 
         menuAnchor = new Label(this, SWT.NONE);
@@ -468,7 +489,8 @@ public class OperationCanvas extends Canvas implements ContextMenu.ItemClickList
                 int spacing = 5;
 
                 if (startPauseButton != null) {
-                    Button[] topButtons = new Button[]{startPauseButton, resetButton};
+                    Button[] topButtons = moreButton == null ? new Button[]{startPauseButton, resetButton}
+                        : new Button[]{startPauseButton, resetButton, moreButton};
 
                     int buttonW = 0;
                     int buttonH = 0;
