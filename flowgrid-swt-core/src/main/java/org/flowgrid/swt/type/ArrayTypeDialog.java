@@ -3,6 +3,9 @@ package org.flowgrid.swt.type;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -26,30 +29,42 @@ public class ArrayTypeDialog {
                 Type.ANY;
         AlertDialog alert = new AlertDialog(platform.shell());
         alert.setTitle("Array Type");
-        Composite layout = alert.getContentContainer();
-        final Button fixedLengthCheckBox = new Button(layout, SWT.CHECK);
-        fixedLengthCheckBox.setText("Fixed length");
 
-        new Label(layout, SWT.SINGLE).setText("ArrayLength");
-        final Text lengthEditText = new Text(layout, SWT.SIMPLE);
-        //lengthEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        lengthEditText.setEnabled(false);
+        Composite container = alert.getContentContainer();
+        GridLayout containerLayout = new GridLayout(2, false);
+        containerLayout.marginHeight = 0;
+        containerLayout.marginWidth = 0;
+        container.setLayout(containerLayout);
+
+        new Label(container, SWT.NONE).setText("Element type");
+        TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(localModule).setAssignableTo(elementType).setCategory(filter).build();
+        final TypeComponent elementTypeSpinner = new TypeComponent(container, platform, typeFilter);
+
+        new Label(container, SWT.NONE).setText("Fixed length");
+        final Button fixedLengthCheckBox = new Button(container, SWT.CHECK);
+        fixedLengthCheckBox.setSelection(fixedLength != -1);
+
+        new Label(container, SWT.NONE).setText("Array Length");
+        final Text lengthEditText = new Text(container, SWT.SIMPLE);
+        lengthEditText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        lengthEditText.setEnabled(fixedLength != -1);
         if (fixedLength != -1) {
-            fixedLengthCheckBox.setSelection(true);
-            fixedLengthCheckBox.setEnabled(false);
             lengthEditText.setText("" + fixedLength);
         }
-        fixedLengthCheckBox.addSelectionListener(new SelectionAdapter() {
+        fixedLengthCheckBox.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                System.out.println("FIXME: lengthEditText.setEnabled(isChecked);");
+                lengthEditText.setEnabled(fixedLengthCheckBox.getSelection());
             }
 
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
         });
 
-        new Label(layout, SWT.SINGLE).setText("Element type");
-        TypeFilter typeFilter = new TypeFilter.Builder().setLocalModule(localModule).setAssignableTo(elementType).setCategory(filter).build();
-        final TypeComponent elementTypeSpinner = new TypeComponent(layout, platform, typeFilter);
+
         alert.setNegativeButton("Cancel", null);
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override

@@ -14,6 +14,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
+import org.flowgrid.model.ArrayType;
+import org.flowgrid.model.Callback;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.Objects;
 import org.flowgrid.model.PrimitiveType;
@@ -23,6 +25,8 @@ import org.flowgrid.swt.type.TypeFilter;
 import org.flowgrid.swt.type.TypeComponent;
 import org.flowgrid.swt.widget.Component;
 import org.kobjects.swt.Validator;
+
+import java.util.List;
 
 public class DataComponent implements Component {
 
@@ -81,6 +85,31 @@ public class DataComponent implements Component {
                 setControl(button);
                 return;
             }
+
+
+            if (type instanceof ArrayType) {
+                setControl(button = new Button(maybeAddLabel(parentComposite), SWT.PUSH));
+                button.setText(String.valueOf(value));
+                button.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        new ArrayDialog(flowgrid, name, (ArrayType) type, (List) value, new Callback<List<?>>() {
+                            @Override
+                            public void run(List<?> value) {
+                                inputChangedTo(value, false);
+                            }
+                        }).show();
+                    }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        widgetSelected(e);
+                    }
+                });
+                setControl(button);
+                return;
+            }
+
             if (type == PrimitiveType.NUMBER && "slider".equals(widget)) {
                 setControl(scale = new Scale(maybeAddLabel(parentComposite), SWT.NONE));
                 scale.addSelectionListener(new SelectionAdapter() {
@@ -155,6 +184,7 @@ public class DataComponent implements Component {
                 typeSpinner.setOnTypeChangedListener(typeChangedListener);
                 return;
             }
+
         }
 
         setControl(text = new Text(maybeAddLabel(parentComposite), SWT.NONE));
@@ -212,7 +242,12 @@ public class DataComponent implements Component {
      */
     protected void inputChangedTo(Object newValue, boolean delayNotification) {
         value = newValue;
-        // parent.set(name, newValue);
+
+        if (type instanceof ArrayType) {
+            button.setText(String.valueOf(newValue));
+        }
+
+        // parent.set(name, newList);
 /*
         if (delayNotification) {
             if (sendTask != null) {
