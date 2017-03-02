@@ -3,12 +3,14 @@ package org.flowgrid.swt.data;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Callback;
+import org.flowgrid.model.Objects;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
@@ -21,7 +23,13 @@ public class ArrayDialog {
     AlertDialog alert;
     ArrayType type;
     List<Object> newList;
+    List<Object> clipboard = new ArrayList<>();
     org.eclipse.swt.widgets.List swtList;
+
+    int getInsertPostion() {
+        int[] selected = swtList.getSelectionIndices();
+        return selected.length == 0 ? swtList.getItemCount() : selected[0];
+    }
 
     public ArrayDialog(final SwtFlowgrid flowgrid, String name, final ArrayType type, List originalList, final Callback<List<?>> callback) {
         alert = new AlertDialog(flowgrid.shell());
@@ -41,27 +49,33 @@ public class ArrayDialog {
             newList.addAll(originalList);
         }
         swtList = new org.eclipse.swt.widgets.List(mainContainer, SWT.MULTI);
-        swtList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        final GridData swtListData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        Point shellSize = flowgrid.shell().getSize();
+        swtListData.minimumHeight = shellSize.y / 2;
+        swtList.setLayoutData(swtListData);
         for (Object item: newList) {
             swtList.add(String.valueOf(item));
         }
 
         Composite rightBar = new Composite(mainContainer, SWT.NONE);
+        rightBar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
         GridLayout rightLayout = new GridLayout(1, false);
         rightLayout.marginWidth = 0;
         rightLayout.marginHeight = 0;
         rightBar.setLayout(rightLayout);
 
         Button addButton = new Button(rightBar, SWT.PUSH);
-        addButton.setText("Add");
+        addButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        addButton.setText("Insert Value");
         addButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                new DataDialog(flowgrid, "Add List Item", new Callback<Object>() {
+                new DataDialog(flowgrid, "Add Item", new Callback<Object>() {
                     @Override
                     public void run(Object value) {
-                        newList.add(value);
-                        swtList.add(String.valueOf(value));
+                        int index = getInsertPostion();
+                        newList.add(index, value);
+                        swtList.add(String.valueOf(value), index);
                     }
                 }).setType(type.elementType).show();
             }
@@ -72,12 +86,16 @@ public class ArrayDialog {
             }
         });
         Button deleteButton = new Button(rightBar, SWT.PUSH);
-        deleteButton.setText("Delete selected");
+        deleteButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        deleteButton.setText("Cut");
         deleteButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int[] indices = swtList.getSelectionIndices();
-                System.out.println("Selected indices: " + Arrays.toString(indices));
+                clipboard.clear();
+                for (int i = 0; i < indices.length; i++) {
+                    clipboard.add(newList.get(indices[i]));
+                }
                 for (int i = indices.length - 1; i >= 0; i--) {
                     newList.remove(indices[i]);
                     swtList.remove(indices[i]);
@@ -89,16 +107,32 @@ public class ArrayDialog {
                 widgetSelected(e);
             }
         });
+        Button pasteButton = new Button(rightBar, SWT.PUSH);
+        pasteButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        pasteButton.setText("Paste");
+        pasteButton.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                int offset = getInsertPostion();
+                for (int i = 0; i < clipboard.size(); i++) {
+                    newList.add(i + offset, clipboard.get(i));
+                    swtList.add(String.valueOf(clipboard.get(i)), offset + i);
+                }
+            }
 
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+        });
 
-
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton("Discard", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 callback.cancel();
             }
         });
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 callback.run(newList);

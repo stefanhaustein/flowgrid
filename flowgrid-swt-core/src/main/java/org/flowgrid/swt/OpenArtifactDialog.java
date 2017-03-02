@@ -68,7 +68,6 @@ public class OpenArtifactDialog {
         GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 
         Point shellSize = flowgrid.shell.getSize();
-
         tableGridData.minimumHeight = shellSize.y / 2;
         table.setLayoutData(tableGridData);
 
