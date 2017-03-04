@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Callback;
+import org.flowgrid.model.Classifier;
+import org.flowgrid.model.Instance;
 import org.flowgrid.model.Module;
 import org.flowgrid.model.Objects;
 import org.flowgrid.model.PrimitiveType;
@@ -109,6 +111,32 @@ public class DataComponent implements Component {
                 setControl(button);
                 return;
             }
+
+
+            if (type instanceof Classifier && ((Classifier) type).isInstantiable()) {
+                setControl(button = new Button(maybeAddLabel(parentComposite), SWT.PUSH));
+                button.setText(String.valueOf(value));
+                button.addSelectionListener(new SelectionListener() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        new InstanceDialog(flowgrid, name, (Classifier) type, (Instance) value, new Callback<Instance>() {
+                            @Override
+                            public void run(Instance value) {
+                                inputChangedTo(value, false);
+                            }
+                        }).show();
+                    }
+
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        widgetSelected(e);
+                    }
+                });
+                setControl(button);
+                return;
+
+            }
+
 
             if (type == PrimitiveType.NUMBER && "slider".equals(widget)) {
                 setControl(scale = new Scale(maybeAddLabel(parentComposite), SWT.NONE));

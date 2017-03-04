@@ -9,7 +9,7 @@ import org.flowgrid.swt.SwtFlowgrid;
 public class PropertyComponent extends DataComponent {
 
     public PropertyComponent(Composite parent, final SwtFlowgrid flowgrid, final Property property, final Instance instance) {
-        super(parent, flowgrid, property.type(), property.name(), null /* widget */, property.module, true);
+        super(parent, flowgrid, property.type(), property.name(), null /* widget */, property.module, false);
         setValue(instance.get(property.name()));
         setOnValueChangedListener(new OnValueChangedListener() {
             @Override
