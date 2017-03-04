@@ -525,6 +525,10 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
         settings.setBootCommand(bootCommand, path);
     }
 
+    public int getMinimumListHeight() {
+        return shell.getSize().y / 2;
+    }
+
     interface ArtifactEditorFactory {
         ArtifactEditor create();
     }

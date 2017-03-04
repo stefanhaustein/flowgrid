@@ -35,10 +35,7 @@ public class ArrayDialog {
         this.type = type;
 
         Composite mainContainer = new Composite(alert.getContentContainer(), SWT.NONE);
-        GridLayout mainLayout = new GridLayout(2, false);
-        mainLayout.marginHeight = 0;
-        mainLayout.marginWidth = 0;
-        mainContainer.setLayout(mainLayout);
+        mainContainer.setLayout(flowgrid.resourceManager.createGridLayout(2));
         mainContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         int originalSize = originalList == null ? 0 : originalList.size();
@@ -48,8 +45,7 @@ public class ArrayDialog {
         }
         swtList = new org.eclipse.swt.widgets.List(mainContainer, SWT.MULTI);
         final GridData swtListData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        Point shellSize = flowgrid.shell().getSize();
-        swtListData.minimumHeight = shellSize.y / 2;
+        swtListData.minimumHeight = flowgrid.getMinimumListHeight();
         swtList.setLayoutData(swtListData);
         for (Object item: newList) {
             swtList.add(String.valueOf(item));

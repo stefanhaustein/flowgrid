@@ -2,7 +2,7 @@ package org.flowgrid.model;
 
 
 /**
- * Type must be an interface because Classifier iplements it, but is already a subclass of
+ * Type must be an interface because Classifier implements it, but is already a subclass of
  * Container.
  */
 public interface Type extends ActionFactory {

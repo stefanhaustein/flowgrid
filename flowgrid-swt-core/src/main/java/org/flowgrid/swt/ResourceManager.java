@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Classifier;
@@ -167,5 +168,16 @@ public class ResourceManager {
             font.dispose();
         }
     }
+
+
+    public GridLayout createGridLayout(int numColumns) {
+        GridLayout result = new GridLayout(numColumns, false);
+        result.marginHeight = 0;
+        result.marginWidth = 0;
+        return result;
+    }
+
+
+
 
 }

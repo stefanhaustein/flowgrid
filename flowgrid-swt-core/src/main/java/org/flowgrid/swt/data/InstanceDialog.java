@@ -9,6 +9,7 @@ import org.flowgrid.model.Callback;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Instance;
 import org.flowgrid.model.Property;
+import org.flowgrid.model.container.Grid;
 import org.flowgrid.swt.SwtFlowgrid;
 import org.flowgrid.swt.dialog.AlertDialog;
 import org.flowgrid.swt.dialog.DialogInterface;
@@ -20,8 +21,12 @@ public class InstanceDialog {
         alert = new AlertDialog(flowgrid.shell());
         alert.setTitle(title == null || title.isEmpty() ? "Edit " + classifier.name() : title);
 
-        ScrolledComposite scrolledComposite = new ScrolledComposite(alert.getContentContainer(), SWT.NONE);
-        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ScrolledComposite scrolledComposite = new ScrolledComposite(alert.getContentContainer(), SWT.V_SCROLL);
+        GridData listData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        listData.heightHint = flowgrid.getMinimumListHeight();
+        scrolledComposite.setLayoutData(listData);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
 
         Composite propertyPanel = new Composite(scrolledComposite, SWT.NONE);
         GridLayout propertyLayout = new GridLayout(1, false);

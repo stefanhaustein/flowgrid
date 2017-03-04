@@ -66,9 +66,7 @@ public class OpenArtifactDialog {
 
         table = new Table(alertDialog.getContentContainer(), SWT.NONE);
         GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-
-        Point shellSize = flowgrid.shell.getSize();
-        tableGridData.minimumHeight = shellSize.y / 2;
+        tableGridData.minimumHeight = flowgrid.getMinimumListHeight();
         table.setLayoutData(tableGridData);
 
         alertDialog.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
