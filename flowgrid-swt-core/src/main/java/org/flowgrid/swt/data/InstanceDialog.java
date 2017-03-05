@@ -21,12 +21,10 @@ public class InstanceDialog {
         alert = new AlertDialog(flowgrid.shell());
         alert.setTitle(title == null || title.isEmpty() ? "Edit " + classifier.name() : title);
 
-        ScrolledComposite scrolledComposite = new ScrolledComposite(alert.getContentContainer(), SWT.V_SCROLL);
+        ScrolledComposite scrolledComposite = flowgrid.createVerticalScrolledComposite(alert.getContentContainer());
         GridData listData = new GridData(SWT.FILL, SWT.FILL, true, true);
         listData.heightHint = flowgrid.getMinimumListHeight();
         scrolledComposite.setLayoutData(listData);
-        scrolledComposite.setExpandVertical(true);
-        scrolledComposite.setExpandHorizontal(true);
 
         Composite propertyPanel = new Composite(scrolledComposite, SWT.NONE);
         GridLayout propertyLayout = new GridLayout(1, false);

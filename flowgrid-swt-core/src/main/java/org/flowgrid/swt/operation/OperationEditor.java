@@ -150,22 +150,14 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
                 }
             });
 
-            scrolledComposite = new ScrolledComposite(scrollParent, SWT.V_SCROLL);
+            scrolledComposite = flowgrid.createVerticalScrolledComposite(scrollParent);
             scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         } else {
-            scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.V_SCROLL);
+            scrolledComposite = flowgrid.createVerticalScrolledComposite(flowgrid.shell());
         }
 
-
-        scrolledComposite.setExpandHorizontal(true);
-        scrolledComposite.setExpandVertical(true);
-//
         controlPanel = new Composite(scrolledComposite, SWT.NONE);
-
-        final GridLayout controlLayout = new GridLayout(1, false);
-        controlLayout.marginHeight = 0;
-        controlLayout.marginWidth = 0;
-        controlPanel.setLayout(controlLayout);
+        controlPanel.setLayout(flowgrid.resourceManager.createGridLayout(1));
 
         scrolledComposite.setContent(controlPanel);
 

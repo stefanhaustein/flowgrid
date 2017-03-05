@@ -36,7 +36,8 @@ public class ClassifierEditor extends ArtifactEditor {
 
     final SwtFlowgrid flowgrid;
     final Classifier classifier;
-    final ScrolledComposite scrolledComposite;
+    final ScrolledComposite propertyScrolledComposite;
+    final ScrolledComposite operationScrolledComposite;
     final Composite propertyPanel;
     final Composite operationPanel;
 
@@ -47,32 +48,29 @@ public class ClassifierEditor extends ArtifactEditor {
         flowgrid.shell().setText(classifier.name() + " - FlowGrid");
         flowgrid.shell().setLayout(new FillLayout());
 
-        scrolledComposite = new ScrolledComposite(flowgrid.shell(), SWT.NONE);
-        scrolledComposite.setExpandHorizontal(true);
-        scrolledComposite.setExpandVertical(true);
-
-        Composite contentPanel = new Composite(scrolledComposite, SWT.NONE);
         GridLayout contentLayout = new GridLayout(4, true);
         contentLayout.marginHeight = 0;
         contentLayout.marginWidth = 0;
-        contentPanel.setLayout(contentLayout);
+        flowgrid.shell().setLayout(contentLayout);
 
-        scrolledComposite.setContent(contentPanel);
+        propertyScrolledComposite = flowgrid.createVerticalScrolledComposite(flowgrid.shell());
 
-        propertyPanel = new Composite(contentPanel, SWT.NONE);
-        propertyPanel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
-        GridLayout propertyLayout = new GridLayout(1, true);
-      //  propertyLayout.marginHeight = 0;
-      //  propertyLayout.marginWidth = 0;
-        propertyPanel.setLayout(propertyLayout);
+        propertyPanel = new Composite(propertyScrolledComposite, SWT.NONE);
+        propertyPanel.setLayout(flowgrid.resourceManager.createGridLayout(1));
 
-        operationPanel = new Composite(contentPanel, SWT.NONE);
-        operationPanel.setBackground(flowgrid.resourceManager.background);
+        propertyScrolledComposite.setContent(propertyPanel);
+        propertyScrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        operationScrolledComposite = flowgrid.createVerticalScrolledComposite(flowgrid.shell());
+        operationPanel = new Composite(operationScrolledComposite, SWT.NONE);
         operationPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         GridLayout operationLayout = new GridLayout(2, true);
         operationLayout.marginHeight = 0;
         operationLayout.marginWidth = 0;
         operationPanel.setLayout(operationLayout);
+        operationScrolledComposite.setContent(operationPanel);
+        operationScrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+        operationScrolledComposite.setBackground(flowgrid.resourceManager.background);
 
         refresh();
 

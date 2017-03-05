@@ -1,12 +1,14 @@
 package org.flowgrid.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -366,39 +368,26 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
             shell.open();
         }
 
-        // This makes sure the window is up on android. Should trigger immediately elsewhere.
-        new UiTimerTask(display) {
-            boolean done = false;
-            @Override
-            public void runOnUiThread() {
-                Rectangle clientArea = shell.getClientArea();
-                System.out.println("Shell size: " + clientArea);
-                if (clientArea.height > 0 && !done) {
-                    done = true;
-                    cancel();
-                    currentEditor = editorFactory == null ? null : editorFactory.create();
-                    if (currentEditor == null) {
-                        shell.setText("FlowGrid");
-                    } else {
-                        Artifact artifact = currentEditor.getArtifact();
-                        settings.setLastUsed(artifact);
-                        String qualifiedName = artifact.qualifiedName();
-                        int cut = backStack.indexOf(qualifiedName);
-                        if (cut == -1) {
-                            backStack.add(qualifiedName);
-                        } else {
-                            while (backStack.size() > cut + 1) {
-                                backStack.remove(backStack.size() - 1);
-                            }
-                        }
-
-                        shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + currentEditor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
-                    }
-                    updateMenu();
-                    shell.layout();
+        currentEditor = editorFactory == null ? null : editorFactory.create();
+        if (currentEditor == null) {
+              shell.setText("FlowGrid");
+        } else {
+            Artifact artifact = currentEditor.getArtifact();
+            settings.setLastUsed(artifact);
+            String qualifiedName = artifact.qualifiedName();
+            int cut = backStack.indexOf(qualifiedName);
+            if (cut == -1) {
+                backStack.add(qualifiedName);
+            } else {
+                while (backStack.size() > cut + 1) {
+                    backStack.remove(backStack.size() - 1);
                 }
             }
-        }.schedule(0, 10);
+
+            shell.setText("FlowGrid: " + " '" + artifact.name() + "' - " + currentEditor.getMenuTitle() + " in " + artifact.owner().qualifiedName());
+        }
+        updateMenu();
+        shell.layout();
     }
 
     public void openArtifact(Artifact artifact) {
@@ -527,6 +516,12 @@ public class SwtFlowgrid implements Platform, ContextMenu.ItemClickListener {
 
     public int getMinimumListHeight() {
         return shell.getSize().y / 2;
+    }
+
+    public ScrolledComposite createVerticalScrolledComposite(Composite parent) {
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        scrolledComposite.setExpandHorizontal(true);
+        return scrolledComposite;
     }
 
     interface ArtifactEditorFactory {

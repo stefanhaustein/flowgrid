@@ -72,14 +72,13 @@ public class VirtualOperationDialog {
             }
         });
 
-        ScrolledComposite scrolledComposite = new ScrolledComposite(alert.getContentContainer(), SWT.NONE);
+        ScrolledComposite scrolledComposite = flowgrid.createVerticalScrolledComposite(alert.getContentContainer());
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         parameterComposite = new Composite(scrolledComposite, SWT.NONE);
         scrolledComposite.setContent(parameterComposite);
         parameterComposite.setLayout(new GridLayout(4, false));
 
         updateParameterList();
-
 
         alert.setPositiveButton("Ok", null);
     }

@@ -271,7 +271,7 @@ public class DataComponent implements Component {
     protected void inputChangedTo(Object newValue, boolean delayNotification) {
         value = newValue;
 
-        if (type instanceof ArrayType) {
+        if (type instanceof ArrayType || type instanceof Classifier) {
             button.setText(String.valueOf(newValue));
         }
 
