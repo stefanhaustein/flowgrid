@@ -5,6 +5,7 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.flowgrid.model.Callback;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.Instance;
@@ -27,7 +28,7 @@ public class InstanceDialog {
         scrolledComposite.setLayoutData(listData);
 
         Composite propertyPanel = new Composite(scrolledComposite, SWT.NONE);
-        GridLayout propertyLayout = new GridLayout(1, false);
+        GridLayout propertyLayout = new GridLayout(2, false);
         propertyLayout.marginHeight = 0;
         propertyLayout.marginWidth = 0;
         propertyPanel.setLayout(propertyLayout);
@@ -36,7 +37,8 @@ public class InstanceDialog {
         final Instance instance = originalInstance == null ? new Instance(classifier) : originalInstance;
 
         for (Property property: classifier.properties(null)) {
-            PropertyComponent propertyComponent = new PropertyComponent(propertyPanel, flowgrid, property, instance);
+            new Label(propertyPanel, SWT.NONE).setText(property.name());
+            PropertyComponent propertyComponent = new PropertyComponent(propertyPanel, flowgrid, property, instance, false);
             propertyComponent.getControl().setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         }
 

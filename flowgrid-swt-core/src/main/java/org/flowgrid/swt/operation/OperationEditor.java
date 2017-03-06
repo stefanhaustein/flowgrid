@@ -182,7 +182,7 @@ public class OperationEditor extends ArtifactEditor implements PortManager {
             });
 
             for (Property property: classifier.properties(null)) {
-                DataComponent input = new PropertyComponent(controlPanel, flowgrid, property, instance);
+                DataComponent input = new PropertyComponent(controlPanel, flowgrid, property, instance, true);
                 input.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             }
         }
