@@ -279,7 +279,7 @@ public class CommandMenu implements ContextMenu.ItemClickListener {
                     commandAction = ActionFactory.Action.THIS;
                     returnCommand();
                 } else {
-                    throw new RuntimeException("Unrecognized Action: " + label);
+                    throw new RuntimeException("Unrecognized Action1: " + label);
                 }
                 return true;
             }

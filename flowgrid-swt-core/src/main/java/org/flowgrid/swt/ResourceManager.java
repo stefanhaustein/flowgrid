@@ -12,8 +12,10 @@ import org.flowgrid.model.ArrayType;
 import org.flowgrid.model.Classifier;
 import org.flowgrid.model.PrimitiveType;
 import org.flowgrid.model.Type;
+import org.kobjects.swt.avd.AndroidVectorDrawable;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -139,22 +141,34 @@ public class ResourceManager {
     public Image getIcon(Icon id) {
         Image image = icons.get(id);
         if (image == null) {
-            String resourceName = "/icons/ic_" + id.name().toLowerCase() + (dark ? "_white_24dp.png" : "_black_24dp.png");
-            InputStream is = getClass().getResourceAsStream(resourceName);
-            if (is == null) {
-                throw new RuntimeException("Resource not found: " + resourceName);
-            }
-            image = new Image(display, is);
+            String vectorResName = "/icons/ic_" + id.name().toLowerCase() + (dark ? "_white_24dp.xml" : "_black_24dp.xml");
+            InputStream is = getClass().getResourceAsStream(vectorResName);
 
             int expectedSize = Math.round(24 * pixelPerDp);
-            Rectangle bounds = image.getBounds();
 
-            if (bounds.width != expectedSize || bounds.height != expectedSize) {
-                Image scaledImage = new Image(display, expectedSize, expectedSize);
-                GC gc = new GC(scaledImage);
-                gc.setAntialias(SWT.ON);
-                gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, expectedSize, expectedSize);
-                image = scaledImage;
+            if (is != null) {
+                System.out.println(vectorResName);
+                AndroidVectorDrawable avd = AndroidVectorDrawable.read(display, is, pixelPerDp);
+                image = new Image(display, expectedSize, expectedSize);
+                GC gc = new GC(image);
+                avd.draw(gc);
+            } else {
+                String resourceName = "/icons/ic_" + id.name().toLowerCase() + (dark ? "_white_24dp.png" : "_black_24dp.png");
+                is = getClass().getResourceAsStream(resourceName);
+                if (is == null) {
+                    throw new RuntimeException("Resource not found: " + resourceName);
+                }
+                image = new Image(display, is);
+
+                Rectangle bounds = image.getBounds();
+
+                if (bounds.width != expectedSize || bounds.height != expectedSize) {
+                    Image scaledImage = new Image(display, expectedSize, expectedSize);
+                    GC gc = new GC(scaledImage);
+                    gc.setAntialias(SWT.ON);
+                    gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, expectedSize, expectedSize);
+                    image = scaledImage;
+                }
             }
 
             icons.put(id, image);
