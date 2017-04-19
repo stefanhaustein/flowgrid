@@ -1,53 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.flowgrid"
-    android:versionCode="0"
-    android:versionName="InsertedFromGradle" >
-    
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />    
-	
-<!-- Needed for pre-kitkat --> 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-sdk
-        android:minSdkVersion="15" 
-        android:targetSdkVersion="22" />        
+          package="org.flowgrid.android.swt.flowgrid">
 
-    
-    <application
-        android:windowSoftInputMode="adjustPan"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="FlowGrid"
-        android:theme="@style/FlowGridTheme">
-    <!--          android:theme="@style/FlowGridTheme">
-            android:theme="@android:style/Theme.Holo.Light"  -->
-
-        <activity android:name="org.flowgrid.android.BootActivity"
-                  android:label="FlowGrid"
-                  android:configChanges="orientation|screenSize">
+    <application android:theme="@style/FlowGridTheme"
+                 android:label="FlowGrid (SWT)">
+        <uses-library android:name="com.google.android.things" android:required="false"/>
+        <activity android:name="org.flowgrid.android.swt.MainActivity"
+                  android:screenOrientation="landscape" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
-        </activity>
-
-        <activity
-            android:name="org.flowgrid.android.MainActivity"
-            android:label="FlowGrid"
-            android:configChanges="orientation|screenSize">
-            <intent-filter>
-                <action android:name="android.intent.action.RUN" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.IOT_LAUNCHER"/>
             </intent-filter>
         </activity>
-       
-        </application>
+    </application>
 
 </manifest>

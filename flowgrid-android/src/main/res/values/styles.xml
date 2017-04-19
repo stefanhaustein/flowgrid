@@ -1,11 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="FlowGridTheme" parent="Theme.AppCompat">
+    <style name="FlowGridTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
-      <item name="colorPrimary">#ff0099cc</item>
-      <item name="colorPrimaryDark">#aa0099cc</item>
+        <item name="colorPrimary">#ff0099cc</item>
+        <item name="colorPrimaryDark">#aa0099cc</item>
+        <item name="colorAccent">#ffffbd21</item>
     </style>
-
 
 </resources>

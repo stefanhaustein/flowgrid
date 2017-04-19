@@ -5,11 +5,11 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "org.flowgrid"
-        minSdkVersion 9
+        applicationId "org.kobjects.flowgrid"
+        minSdkVersion 17
         targetSdkVersion 25
-        versionCode 11
-        versionName "0.11"
+        versionCode 1
+        versionName "1.0"
     }
     buildTypes {
         release {
@@ -20,8 +20,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':emoji')
+    provided 'com.google.android.things:androidthings:0.1-devpreview'
+//    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':flowgrid-core')
+    compile project(':flowgrid-swt-core')
+
+    compile "com.github.stefanhaustein.jswt:jswt-core:master-SNAPSHOT"
+    compile "com.github.stefanhaustein.jswt:jswt-android:master-SNAPSHOT"
+
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.1.0'
 }
+

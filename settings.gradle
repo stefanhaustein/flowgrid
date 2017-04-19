@@ -1,0 +1,4 @@
+include 'flowgrid-core'
+include 'flowgrid-swt-core'
+include 'flowgrid-swing'
+include 'flowgrid-android'
