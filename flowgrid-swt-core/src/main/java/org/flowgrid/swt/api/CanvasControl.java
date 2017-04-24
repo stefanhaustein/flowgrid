@@ -411,8 +411,12 @@ public class CanvasControl extends Canvas {
     public void postInvalidate() {
         if (!invalidated) {
             invalidated = true;
-            // System.out.println("FIXME: CanvasControl.postInvalidate()");  // FIXME
-            redraw();
+            getDisplay().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    redraw();
+                }
+            });
         }
     }
 
