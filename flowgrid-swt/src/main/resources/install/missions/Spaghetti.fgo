@@ -1,6 +1,7 @@
 
  {
   "name": "Spaghetti",
+  "documentation": "Can you resolve this spaghetti code?",
   "kind": "operation",
   "asyncInput": true,
   "passedWithStars": 0,

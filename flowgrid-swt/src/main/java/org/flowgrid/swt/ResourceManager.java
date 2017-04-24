@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.flowgrid.model.ArrayType;
@@ -146,31 +147,17 @@ public class ResourceManager {
 
             int expectedSize = Math.round(24 * pixelPerDp);
 
-            if (is != null) {
-                System.out.println(vectorResName);
-                AndroidVectorDrawable avd = AndroidVectorDrawable.read(display, is, pixelPerDp);
-                image = new Image(display, expectedSize, expectedSize);
-                GC gc = new GC(image);
-                avd.draw(gc);
-            } else {
-                String resourceName = "/icons/ic_" + id.name().toLowerCase() + (dark ? "_white_24dp.png" : "_black_24dp.png");
-                is = getClass().getResourceAsStream(resourceName);
-                if (is == null) {
-                    throw new RuntimeException("Resource not found: " + resourceName);
-                }
-                image = new Image(display, is);
-
-                Rectangle bounds = image.getBounds();
-
-                if (bounds.width != expectedSize || bounds.height != expectedSize) {
-                    Image scaledImage = new Image(display, expectedSize, expectedSize);
-                    GC gc = new GC(scaledImage);
-                    gc.setAntialias(SWT.ON);
-                    gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, expectedSize, expectedSize);
-                    image = scaledImage;
-                }
+            AndroidVectorDrawable avd = AndroidVectorDrawable.read(display, is, pixelPerDp);
+            image = new Image(display, expectedSize, expectedSize);
+            GC gc = new GC(image);
+            if (expectedSize != 24) {
+                Transform transform = new Transform(display);
+                gc.getTransform(transform);
+                transform.scale(expectedSize/24f, expectedSize/24f);
+                gc.setTransform(transform);
+                transform.dispose();
             }
-
+            avd.draw(gc);
             icons.put(id, image);
         }
         return image;
