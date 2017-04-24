@@ -1,0 +1,70 @@
+
+ {
+  "name": "Lander",
+  "public": true,
+  "artifacts": [
+   {
+    "name": "canvas",
+    "public": true,
+    "type": "/graphics/Canvas",
+    "kind": "property"
+   },
+   {
+    "name": "image",
+    "public": true,
+    "type": "/graphics/Image",
+    "kind": "property"
+   },
+   {
+    "name": "x",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 300.0
+   },
+   {
+    "name": "y",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 900.0
+   },
+   {
+    "name": "crashed",
+    "type": "/system/Boolean",
+    "kind": "property",
+    "value": false
+   },
+   {
+    "name": "fuel",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 800.0
+   },
+   {
+    "name": "height",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 2000.0
+   },
+   {
+    "name": "landed",
+    "type": "/system/Boolean",
+    "kind": "property",
+    "value": false
+   },
+   {
+    "name": "thrust",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 12.0
+   },
+   {
+    "name": "velocity",
+    "type": "/system/Number",
+    "kind": "property"
+   }
+
+  ],
+  "kind": "class"
+ }

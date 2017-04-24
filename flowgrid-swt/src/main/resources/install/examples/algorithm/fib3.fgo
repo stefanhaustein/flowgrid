@@ -1,0 +1,110 @@
+
+ {
+  "name": "fib3",
+  "kind": "operation",
+  "input": [
+   "/system/Number",
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "  b0  d0  f0",
+   "  ↓   ↓   ↓",
+   "↙ b2↘ ↳ ↘ ↓",
+   "a3  c3  e3↓→↘",
+   "a4→ ↓→↘ ↓ ↓ ↓",
+   "↳ ↘ ↓ ↓ ↓ ↓ ↓",
+   "↙ ↓←↓←↓←↓←f6↓",
+   "a7  c7  e7  ↓",
+   "↳ ↘   ↓ ↓ ↙ ↵",
+   "  ↳ ↘ d9",
+   "    ↳ ↓↘",
+   "      d11"
+
+  ],
+  "cells": {
+   "c4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "COMPUTE"
+   },
+   "c5": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c8": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "d1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "count",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "d3": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "e4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "e8": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "f1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "fib2",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "f10": {
+    "artifact": "fib3"
+   },
+   "f12": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "g4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "g8": {
+    "artifact": "/math/+"
+   },
+   "h1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "fib3",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "h7": {
+    "artifact": "/control/branch/Branch left"
+   }
+  }
+ }

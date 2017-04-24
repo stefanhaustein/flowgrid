@@ -1,0 +1,65 @@
+
+ {
+  "name": "main",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/graphics/Canvas",
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0    g0",
+   "↓   ↙ d1↘   ↓",
+   "↓ ↙ ↵   ↳ ↘ ↓",
+   "a3        f3"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "peer": {
+     "portType": "Widget",
+     "widget": "canvas",
+     "width": 1.0,
+     "height": 0.0,
+     "fill": true
+    }
+   },
+   "b4": {
+    "artifact": "/graphics/Canvas/add"
+   },
+   "e1": {
+    "artifact": "Lander",
+    "action": "CREATE"
+   },
+   "e2": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "g4": {
+    "buffered": 1,
+    "artifact": "Lander/thrust",
+    "action": "SET"
+   },
+   "h1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "thrust",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "height": 1.0,
+     "widget": "slider",
+     "fill": false,
+     "width": 1.0
+    }
+   }
+  }
+ }

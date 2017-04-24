@@ -1,0 +1,9 @@
+
+ {
+  "name": "examples",
+  "documentation": "This module contains various sets of example operations.",
+  "artifacts": [
+
+  ],
+  "kind": "module"
+ }

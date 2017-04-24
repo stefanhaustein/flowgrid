@@ -1,0 +1,105 @@
+
+ {
+  "name": "Add",
+  "documentation": "Robby needs a circuit to add numbers. Can you help him?\n\nFind mathematical operations under \"Operations / classes\" > \"math\"",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 23.0,
+  "input": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0    d0",
+   "↓     ↓",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "↓",
+   "a8"
+
+  ],
+  "cells": {
+   "b10": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "exp",
+    "type": "/system/Number",
+    "peer": {
+     "widget": "test",
+     "testData": "6 9 14",
+     "icon": "Robby"
+    }
+   },
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in1",
+    "type": "/system/Number",
+    "peer": {
+     "widget": "test",
+     "testData": "1 2 3",
+     "icon": "Pipe"
+    }
+   },
+   "e2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in2",
+    "type": "/system/Number",
+    "peer": {
+     "widget": "test",
+     "testData": "5 7 11",
+     "icon": "Pipe"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 9,
+   "optimalCellCount": 9,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": true,
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": {
+     "container/": true,
+     "examples/": true,
+     "graphics/": true,
+     "logic/": true,
+     "math/": {
+      "abs (1 : 1)": true,
+      "ceil (1 : 1)": true,
+      "degree/": true,
+      "exp (1 : 1)": true,
+      "floor (1 : 1)": true,
+      "format (2 : 1)": true,
+      "hyperbolic/": true,
+      "log (1 : 1)": true,
+      "log10 (1 : 1)": true,
+      "max (2 : 1)": true,
+      "min (2 : 1)": true,
+      "pow (2 : 1)": true,
+      "radian/": true,
+      "root (2 : 1)": true,
+      "signum (1 : 1)": true,
+      "sqrt (1 : 1)": true,
+      "vector/": true
+     },
+     "sound/": true,
+     "text/": true
+    },
+    "This module…": true
+   }
+  }
+ }

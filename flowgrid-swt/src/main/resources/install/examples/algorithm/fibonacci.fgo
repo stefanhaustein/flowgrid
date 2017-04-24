@@ -1,0 +1,90 @@
+
+ {
+  "name": "fibonacci",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "↓ b3↘",
+   "↓ ↓ ↳ ↘",
+   "↓ b5  d5",
+   "↓ ↓   ↓",
+   "↓ b7  d7",
+   "↓ ↓ ↙ ↵",
+   "↓ b9",
+   "↓↙↵",
+   "a11"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "c12": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0,
+     "fill": false
+    }
+   },
+   "c3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     2.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "SWITCH"
+   },
+   "d10": {
+    "artifact": "/math/+"
+   },
+   "d4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "d6": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "d8": {
+    "artifact": "fibonacci"
+   },
+   "f6": {
+    "buffered": 2,
+    "constants": [
+     null,
+     2.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "f8": {
+    "artifact": "fibonacci"
+   }
+  }
+ }

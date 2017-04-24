@@ -1,0 +1,110 @@
+
+ {
+  "name": "bounceUp",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0    d0    g0",
+   "↓     ↓     ↓",
+   "↓     ↓     g2",
+   "↓     ↓     ↓",
+   "↓     ↓     g4",
+   "↓     ↓ ↙ ← ↵",
+   "↓     d6",
+   "↳ → ↘ ↓ ↓",
+   "    c8  ↓",
+   "    ↳ ↘ ↓",
+   "    c10 ↓",
+   "    ↳ ↘ ↓",
+   "    c12 ↓",
+   "    ↳ ↘ ↓",
+   "      d14",
+   "      ↓ ↳ ↘",
+   "      ↓   ↳ ↘",
+   "      d17   g17"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "d10": {
+    "artifact": "/math/+"
+   },
+   "d12": {
+    "buffered": 1,
+    "constants": [
+     -1.0,
+     null
+
+    ],
+    "artifact": "/math/max"
+   },
+   "d14": {
+    "buffered": 1,
+    "constants": [
+     1.0,
+     null
+
+    ],
+    "artifact": "/math/min"
+   },
+   "e16": {
+    "artifact": "cartesian"
+   },
+   "e19": {
+    "artifact": "Ball/dx",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "e2": {
+    "artifact": "Ball/dx",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "e8": {
+    "artifact": "polar"
+   },
+   "h19": {
+    "artifact": "Ball/dy",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "h2": {
+    "artifact": "Ball/dy",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "h4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "SWITCH"
+   },
+   "h6": {
+    "buffered": 2,
+    "constants": [
+     null,
+     -1.0
+
+    ],
+    "artifact": "/math/×"
+   }
+  }
+ }

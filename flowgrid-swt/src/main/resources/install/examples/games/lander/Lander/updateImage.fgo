@@ -1,0 +1,93 @@
+
+ {
+  "name": "updateImage",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "a1",
+  "graph": [
+   "        e0    h0",
+   "        ↓ ↙ ← ↵",
+   "        e2",
+   "  ↙ ← ← ↵↙↵",
+   "  b4    ↓",
+   "  ↓     e5",
+   "↙ ↵ ↙ ← ↵ ↳ ↘",
+   "↓   c7      g7",
+   "↓ ↙ ↵ ↓   ↙ ↵ ↓",
+   "↓ b9  d9  f9  h9",
+   "↓ ↳ ↘ ↓   ↓ ↙ ↵",
+   "↳ → ↳→↳→↘↙↵←↵",
+   "        e12"
+
+  ],
+  "cells": {
+   "b10": {
+    "artifact": "lander0.png"
+   },
+   "b5": {
+    "artifact": "boom.png"
+   },
+   "c8": {
+    "buffered": 2,
+    "constants": [
+     null,
+     25.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "SWITCH"
+   },
+   "d10": {
+    "artifact": "lander33.png"
+   },
+   "e1": {
+    "artifact": "Lander/effectiveTrust",
+    "implicitInstance": true
+   },
+   "e13": {
+    "artifact": "Lander/image",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "e3": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "e6": {
+    "buffered": 2,
+    "constants": [
+     null,
+     50.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "SWITCH"
+   },
+   "f10": {
+    "artifact": "lander66.png"
+   },
+   "g8": {
+    "buffered": 2,
+    "constants": [
+     null,
+     75.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "SWITCH"
+   },
+   "h1": {
+    "artifact": "Lander/crashed",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "h10": {
+    "artifact": "lander100.png"
+   }
+  }
+ }

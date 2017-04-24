@@ -1,0 +1,119 @@
+
+ {
+  "name": "updateVelocity",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "a1",
+  "graph": [
+   "  b0    e0  g0  i0    l0",
+   "  ↓     ↳ ↘ ↓   ↓ ↙ ← ↵",
+   "  ↓       f2    i2",
+   "  ↓ ↙ ← ← ← g3↘ ↓",
+   "  b4          h4",
+   "  ↓           ↓",
+   "↙ b6↘         h6",
+   "↓   ↳ ↘",
+   "a8    d8",
+   "      ↓",
+   "      d10",
+   "      ↓",
+   "      d12"
+
+  ],
+  "cells": {
+   "a9": {
+    "artifact": "Lander/height",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "b1": {
+    "artifact": "Lander/height",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b5": {
+    "artifact": "/math/−"
+   },
+   "b7": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "d11": {
+    "buffered": 2,
+    "constants": [
+     null,
+     2.0
+
+    ],
+    "artifact": "/math/÷"
+   },
+   "d13": {
+    "artifact": "Lander/y",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "d9": {
+    "buffered": 2,
+    "constants": [
+     null,
+     925.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "e1": {
+    "artifact": "Lander/velocity",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "f3": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "g1": {
+    "artifact": "Lander/landed",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "g4": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "h5": {
+    "artifact": "/math/+"
+   },
+   "h7": {
+    "artifact": "Lander/velocity",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "i1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "dt",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "fill": false,
+     "height": 1.0,
+     "width": 1.0
+    }
+   },
+   "i3": {
+    "constants": [
+     null,
+     null
+
+    ],
+    "artifact": "/math/×"
+   },
+   "l1": {
+    "artifact": "Lander/acceleration",
+    "implicitInstance": true
+   }
+  }
+ }

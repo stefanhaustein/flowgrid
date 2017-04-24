@@ -1,0 +1,79 @@
+
+ {
+  "name": "cartesian",
+  "kind": "operation",
+  "input": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0    d0",
+   "a1→ ↘ ↓",
+   "↓ ↙ ↓←d2",
+   "a3↓ c3↓",
+   "↓ ↓ ↓ ↓",
+   "a5  c5",
+   "↓   ↳ ↘",
+   "a7    d7"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "alpha",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "b3": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "b5": {
+    "artifact": "/math/radian/sin"
+   },
+   "b7": {
+    "artifact": "/math/×"
+   },
+   "b9": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "x",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "d5": {
+    "artifact": "/math/radian/cos"
+   },
+   "d7": {
+    "artifact": "/math/×"
+   },
+   "e2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "r",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "e4": {
+    "artifact": "/control/branch/Branch left"
+   },
+   "e9": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "y",
+    "type": "/system/Number",
+    "peer": {
+    }
+   }
+  }
+ }

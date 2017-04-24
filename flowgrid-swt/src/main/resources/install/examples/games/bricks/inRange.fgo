@@ -1,0 +1,95 @@
+
+ {
+  "name": "inRange",
+  "kind": "operation",
+  "input": [
+   "/system/Number",
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Boolean"
+
+  ],
+  "origin": "c2",
+  "graph": [
+   "a0    d0    g0",
+   "↓     ↓ ↙ ← g1",
+   "a2↘   d2↓→→ ↳↘↘",
+   "↓ ↓   d3    ↓ ↓",
+   "↓ ↳ → ↓→→ ↘ g4",
+   "↓ ↙ ← ↵   ↓ ↓",
+   "a6        f6",
+   "↓ ↙ ← ← ← ↵",
+   "",
+   "↓",
+   "a10"
+
+  ],
+  "cells": {
+   "c12": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Boolean",
+    "peer": {
+     "height": 1.0,
+     "width": 1.0
+    }
+   },
+   "c2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "c4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c8": {
+    "artifact": "/control/compare/≥",
+    "action": "COMPUTE"
+   },
+   "f2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "min",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "f4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "f5": {
+    "artifact": "/math/−"
+   },
+   "h8": {
+    "artifact": "/control/compare/≤",
+    "action": "COMPUTE"
+   },
+   "i2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "width",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "i3": {
+    "artifact": "/control/branch/Branch left"
+   },
+   "i6": {
+    "artifact": "/math/+"
+   }
+  }
+ }

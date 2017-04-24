@@ -1,0 +1,59 @@
+
+ {
+  "name": "onTick",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "a1",
+  "graph": [
+   "      d0",
+   "↙ ← ← d1",
+   "↓     ↓",
+   "a3    d3",
+   "",
+   "a5    d5    g5"
+
+  ],
+  "cells": {
+   "a4": {
+    "artifact": "Lander/updateFuel",
+    "implicitInstance": true
+   },
+   "a6": {
+    "artifact": "Lander/updateImage",
+    "implicitInstance": true
+   },
+   "d1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "dt",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "fill": false,
+     "height": 1.0,
+     "width": 1.0
+    }
+   },
+   "d2": {
+    "artifact": "/control/branch/Branch left"
+   },
+   "d4": {
+    "artifact": "Lander/updateVelocity",
+    "implicitInstance": true
+   },
+   "d6": {
+    "artifact": "Lander/updateState",
+    "implicitInstance": true
+   },
+   "g6": {
+    "artifact": "Lander/updateDisplay",
+    "implicitInstance": true
+   }
+  }
+ }

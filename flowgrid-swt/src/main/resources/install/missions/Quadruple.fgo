@@ -1,0 +1,66 @@
+
+ {
+  "name": "Quadruple",
+  "documentation": "What if I told you that you can use previous work here via the \"this module\" menu option?",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 60.0,
+  "input": [
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "↓",
+   "a8"
+
+  ],
+  "cells": {
+   "b10": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out1",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍪 🍪 🍪 🍪",
+     "icon": "Fluffy"
+    }
+   },
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "test",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍪",
+     "icon": "Pipe"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 9,
+   "optimalCellCount": 7,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": {
+    },
+    "This module…": {
+    }
+   }
+  }
+ }

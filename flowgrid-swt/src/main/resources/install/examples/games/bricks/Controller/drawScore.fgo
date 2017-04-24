@@ -1,0 +1,60 @@
+
+ {
+  "name": "drawScore",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0          g0",
+   "↓           ↓",
+   "a2          g2",
+   "↓           ↓",
+   "a4          ↓",
+   "↳ → → ↘     ↓",
+   "      d6"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "Controller/graphics",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b3": {
+    "artifact": "/graphics/Graphics/setAlignTop"
+   },
+   "b5": {
+    "artifact": "/graphics/Graphics/setAlignRight"
+   },
+   "e7": {
+    "buffered": 6,
+    "constants": [
+     null,
+     500.0,
+     500.0,
+     null
+
+    ],
+    "artifact": "/graphics/Graphics/drawText"
+   },
+   "h1": {
+    "artifact": "Controller/score",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "h3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     "            0"
+
+    ],
+    "artifact": "/math/format"
+   }
+  }
+ }

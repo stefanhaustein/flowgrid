@@ -1,0 +1,85 @@
+
+ {
+  "name": "Branch",
+  "documentation": "Fluffy and Bluffy are both hungry, but there is only one food source. Luckily, the \"Control\" context menu is now enabled. \n\nTap on an empty field to insert a replicator (called \"branch\" here\").",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 40.0,
+  "input": [
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text",
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "↓     ↓",
+   "a6    d6"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in1",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍪 🍰",
+     "icon": "Pipe"
+    }
+   },
+   "b8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "exp1",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍪 🍰",
+     "icon": "Fluffy"
+    }
+   },
+   "e8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Text",
+    "peer": {
+     "testData": "🍪 🍰",
+     "icon": "Bluffy"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 7,
+   "optimalCellCount": 7,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": {
+     "branch/": {
+     },
+     "compare/": true,
+     "emoji/": true,
+     "if": true,
+     "log (1 : 1)": true,
+     "loop (1 : 1)": true,
+     "sync (2 : 2)": true
+    },
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

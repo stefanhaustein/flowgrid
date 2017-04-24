@@ -1,0 +1,36 @@
+
+ {
+  "name": "lander",
+  "artifacts": [
+   {
+    "name": "boom.png",
+    "kind": "resource"
+   },
+   {
+    "name": "lander0.png",
+    "kind": "resource"
+   },
+   {
+    "name": "lander100.png",
+    "kind": "resource"
+   },
+   {
+    "name": "lander33.png",
+    "kind": "resource"
+   },
+   {
+    "name": "lander66.png",
+    "kind": "resource"
+   },
+   {
+    "name": "main.png",
+    "kind": "resource"
+   },
+   {
+    "name": "surface.png",
+    "kind": "resource"
+   }
+
+  ],
+  "kind": "module"
+ }

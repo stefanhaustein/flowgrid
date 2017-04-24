@@ -1,0 +1,142 @@
+
+ {
+  "name": "hausDesNikolaus",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/graphics/Canvas"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "  ↓           ↱ → ↘",
+   "  b4          ↑   j4",
+   "  ↓           ↑   ↓",
+   "  b6          ↑   j6",
+   "  ↓           ↑   ↓",
+   "  b8          ↑   j8",
+   "  ↓           ↑   ↓",
+   "  b10         ↑   j10",
+   "  ↳ → → → → → ↗"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "peer": {
+     "portType": "Widget",
+     "widget": "canvas",
+     "width": 0.0,
+     "height": 0.0
+    }
+   },
+   "b3": {
+    "artifact": "/graphics/Canvas/createGraphics"
+   },
+   "c11": {
+    "buffered": 30,
+    "constants": [
+     null,
+     -200.0,
+     -200.0,
+     200.0,
+     200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "c5": {
+    "buffered": 30,
+    "constants": [
+     null,
+     -200.0,
+     -200.0,
+     200.0,
+     -200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "c7": {
+    "buffered": 30,
+    "constants": [
+     null,
+     200.0,
+     -200.0,
+     -200.0,
+     200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "c9": {
+    "buffered": 30,
+    "constants": [
+     null,
+     -200.0,
+     200.0,
+     -200.0,
+     -200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "k11": {
+    "buffered": 30,
+    "constants": [
+     null,
+     200.0,
+     200.0,
+     200.0,
+     -200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "k5": {
+    "buffered": 30,
+    "constants": [
+     null,
+     200.0,
+     200.0,
+     -200.0,
+     200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "k7": {
+    "buffered": 30,
+    "constants": [
+     null,
+     -200.0,
+     200.0,
+     0.0,
+     400.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   },
+   "k9": {
+    "buffered": 30,
+    "constants": [
+     null,
+     0.0,
+     400.0,
+     200.0,
+     200.0
+
+    ],
+    "artifact": "/graphics/Graphics/drawLine"
+   }
+  }
+ }

@@ -1,0 +1,39 @@
+
+ {
+  "name": "Brick",
+  "artifacts": [
+   {
+    "name": "height",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 40.0
+   },
+   {
+    "name": "width",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 80.0
+   },
+   {
+    "name": "x",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property"
+   },
+   {
+    "name": "y",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property"
+   },
+   {
+    "name": "color",
+    "type": "/graphics/color/Color",
+    "kind": "property"
+   }
+
+  ],
+  "kind": "class"
+ }

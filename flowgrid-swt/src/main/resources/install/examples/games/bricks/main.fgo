@@ -1,0 +1,42 @@
+
+ {
+  "name": "main",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/graphics/Canvas"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "c2",
+  "graph": [
+   "a0    d0",
+   "↓   ↙ ↵",
+   "↓ ↙ ↵",
+   "a3"
+
+  ],
+  "cells": {
+   "c2": {
+    "artifact": "Controller",
+    "action": "CREATE"
+   },
+   "c5": {
+    "artifact": "Controller/init"
+   },
+   "f2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "peer": {
+     "portType": "Widget",
+     "widget": "canvas",
+     "width": 0.0,
+     "height": 0.0
+    }
+   }
+  }
+ }

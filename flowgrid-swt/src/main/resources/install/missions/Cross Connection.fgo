@@ -1,0 +1,89 @@
+
+ {
+  "name": "Cross Connection",
+  "documentation": "Fluffy likes meat but Bluffy is vegetarian. Connect the pipes so that everyone gets their favourite food!\n\nConnections can only cross vertically and horizontally, not diagonally.",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 20.0,
+  "input": [
+   "/system/Text",
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text",
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0    d0",
+   "↓     ↓",
+   "",
+   "",
+   "",
+   "      ↓     ↓",
+   "      d6    g6"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "red",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍎 🍉 🍓",
+     "icon": "Pipe"
+    }
+   },
+   "e2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "blue",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍖 🍔 🍗",
+     "icon": "Pipe"
+    }
+   },
+   "e8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "blue",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍖 🍔 🍗",
+     "icon": "Fluffy"
+    }
+   },
+   "h8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "red",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍎 🍉 🍓",
+     "icon": "Bluffy"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 7,
+   "optimalCellCount": 11,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": true,
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

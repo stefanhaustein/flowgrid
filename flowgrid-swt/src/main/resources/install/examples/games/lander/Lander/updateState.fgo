@@ -1,0 +1,83 @@
+
+ {
+  "name": "updateState",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "c2",
+  "graph": [
+   "a0      e0    h0",
+   "↓       ↓     ↓",
+   "a2      ↓     h2",
+   "↳ → → ↘ ↓     ↓",
+   "      d4      ↓",
+   "  ↙ ← ← e5↘   ↓",
+   "  ↓     ↙ ↓←← ↵",
+   "  ↓     e7",
+   "  ↓     ↳ ↘",
+   "  b9      f9"
+
+  ],
+  "cells": {
+   "c2": {
+    "artifact": "Lander/height",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "c4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "COMPUTE"
+   },
+   "d11": {
+    "artifact": "Lander/landed",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "f6": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "g2": {
+    "artifact": "Lander/landed",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "g7": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "g9": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "h11": {
+    "artifact": "Lander/crashed",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "j2": {
+    "artifact": "Lander/velocity",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "j4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     3.0
+
+    ],
+    "artifact": "/control/compare/>",
+    "action": "COMPUTE"
+   }
+  }
+ }

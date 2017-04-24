@@ -1,0 +1,45 @@
+
+ {
+  "name": "Useless Machine",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/system/Boolean"
+
+  ],
+  "output": [
+   "/system/Boolean"
+
+  ],
+  "origin": "d2",
+  "graph": [
+   "↙ ← ← ↰",
+   "↓     ↑",
+   "a2    ↑",
+   "↓     ↑",
+   "a4    ↑",
+   "↓     ↑",
+   "↳ → → ↗"
+
+  ],
+  "cells": {
+   "d4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     false
+
+    ],
+    "artifact": "/logic/and"
+   },
+   "d6": {
+    "artifact": "/system/Port",
+    "input": true,
+    "output": true,
+    "name": "io",
+    "type": "/system/Boolean",
+    "peer": {
+    }
+   }
+  }
+ }

@@ -1,0 +1,61 @@
+
+ {
+  "name": "onDrag",
+  "kind": "operation",
+  "input": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "    c0    f0",
+   "    ↓     ↓",
+   "a2  ↓     ↓",
+   "↳ ↘ ↓     ↓",
+   "  ↓ ↓",
+   "  b5",
+   "  ↓",
+   "  ↓",
+   "  b8"
+
+  ],
+  "cells": {
+   "b3": {
+    "artifact": "Pad/x",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "c6": {
+    "artifact": "/math/+"
+   },
+   "c9": {
+    "artifact": "Pad/x",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "d1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "dx",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "g1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "dy",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   }
+  }
+ }

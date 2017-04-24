@@ -1,0 +1,63 @@
+
+ {
+  "name": "onClick",
+  "public": true,
+  "kind": "operation",
+  "public": true,
+  "input": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0",
+   "↳ ↘   ↓",
+   "  b2  ↳ ↘",
+   "  b3↘   e3",
+   "  b4",
+   "    ↓",
+   "    c6"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "x",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "c3": {
+    "artifact": "Controller/running",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "c4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c5": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "d7": {
+    "artifact": "Controller/startGame",
+    "implicitInstance": true
+   },
+   "e1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "y",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "f4": {
+    "artifact": "/control/log"
+   }
+  }
+ }

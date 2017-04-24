@@ -1,0 +1,45 @@
+
+ {
+  "name": "addRow",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0",
+   "↓ ↙ ← ↵",
+   "a2"
+
+  ],
+  "cells": {
+   "b1": {
+    "buffered": 1,
+    "constants": [
+     9.0
+
+    ],
+    "artifact": "/control/loop"
+   },
+   "b3": {
+    "buffered": 2,
+    "artifact": "Controller/addBrick",
+    "implicitInstance": true
+   },
+   "e1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "y",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   }
+  }
+ }

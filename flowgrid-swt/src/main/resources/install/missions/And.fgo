@@ -1,0 +1,85 @@
+
+ {
+  "name": "And",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 150.0,
+  "input": [
+   "/system/Boolean",
+   "/system/Boolean"
+
+  ],
+  "output": [
+   "/system/Boolean"
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0      e0",
+   "↓       ↓",
+   "",
+   "",
+   "",
+   "↓",
+   "a6"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Boolean",
+    "peer": {
+     "portType": "Test",
+     "testData": "false true false true",
+     "icon": "Pipe"
+    }
+   },
+   "b7": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Boolean",
+    "peer": {
+     "portType": "Test",
+     "testData": "false false false true",
+     "icon": "Robby"
+    }
+   },
+   "f1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Boolean",
+    "peer": {
+     "portType": "Test",
+     "testData": "false false true true",
+     "icon": "Pipe"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 3,
+   "editableEndRow": 6,
+   "optimalCellCount": 8,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": true,
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": {
+     "container/": true,
+     "examples/": true,
+     "graphics/": true,
+     "logic/": {
+     },
+     "math/": true,
+     "sound/": true,
+     "text/": true
+    },
+    "This module…": true
+   }
+  }
+ }

@@ -1,0 +1,72 @@
+
+ {
+  "name": "Not",
+  "documentation": "True becomes false and false true...",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 100.0,
+  "input": [
+   "/system/Boolean"
+
+  ],
+  "output": [
+   "/system/Boolean"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "↓",
+   "a6"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Boolean",
+    "peer": {
+     "testData": "true false",
+     "icon": "Pipe"
+    }
+   },
+   "b8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Boolean",
+    "peer": {
+     "testData": "false true",
+     "icon": "Robby"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 7,
+   "optimalCellCount": 4,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": true,
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": {
+     "container/": true,
+     "examples/": true,
+     "graphics/": true,
+     "logic/": {
+     },
+     "math/": true,
+     "sound/": true,
+     "text/": true
+    },
+    "This module…": true
+   }
+  }
+ }

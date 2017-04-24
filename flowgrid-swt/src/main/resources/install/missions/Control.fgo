@@ -1,0 +1,115 @@
+
+ {
+  "name": "Control",
+  "documentation": "Compute the right thrust to make the lander land safely, depending on the height and velocity",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 200.0,
+  "input": [
+   "/graphics/Canvas"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "-b1",
+  "graph": [
+   "      d0    g0",
+   "↙ ← ← d1→ → ↓→↘",
+   "↓   ↱ ↓↘    g2",
+   "↓   ↑ d3→ → ↘",
+   "↓   ↑ d4    g4",
+   "↓   ↖ ↵ ↓     ↓",
+   "↓",
+   "↓",
+   "↓",
+   "↓",
+   "↓",
+   "↳ → → ↘ ↓",
+   "      d12"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "/examples/games/lander/Lander",
+    "action": "CREATE"
+   },
+   "c13": {
+    "buffered": 1,
+    "artifact": "/examples/games/lander/Lander/thrust",
+    "action": "SET"
+   },
+   "c2": {
+    "artifact": "/control/branch/Branch 3-way"
+   },
+   "c4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c5": {
+    "artifact": "/examples/games/lander/Lander/height",
+    "action": "GET"
+   },
+   "f1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "peer": {
+     "portType": "Widget",
+     "widget": "canvas",
+     "width": 0.0,
+     "height": 0.0
+    }
+   },
+   "f3": {
+    "artifact": "/graphics/Canvas/add"
+   },
+   "f5": {
+    "artifact": "/examples/games/lander/Lander/velocity",
+    "action": "GET"
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 7,
+   "editableEndRow": 12,
+   "optimalCellCount": 5,
+   "speed": 100,
+   "disabledMenus": {
+    "Canvas…": {
+     "Call…": {
+     }
+    },
+    "Control…": {
+     "branch/": {
+     },
+     "compare/": {
+      ">": {
+      }
+     }
+    },
+    "Data / IO…": {
+     "Output…": {
+     }
+    },
+    "Edit…": {
+    },
+    "Lander…": {
+     "Get property…": {
+     },
+     "Set property…": {
+     }
+    },
+    "Operations / classes…": {
+     "examples/": {
+      "games/": {
+       "lander/": {
+        "Lander…": {
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }

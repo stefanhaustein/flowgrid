@@ -1,0 +1,8 @@
+
+ {
+  "name": "firmata",
+  "artifacts": [
+
+  ],
+  "kind": "module"
+ }

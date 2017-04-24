@@ -1,0 +1,69 @@
+
+ {
+  "name": "updateFuel",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "c2",
+  "graph": [
+   "a0    d0    g0",
+   "↓     ↓   ↙ ↵",
+   "↓     ↓ ↙ ↵",
+   "↳ ↘   d3",
+   "  ↳ ↘ ↓",
+   "    c5",
+   "    ↓",
+   "    c7",
+   "    ↓",
+   "    c9"
+
+  ],
+  "cells": {
+   "c2": {
+    "artifact": "Lander/fuel",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "e11": {
+    "artifact": "Lander/fuel",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "e7": {
+    "artifact": "/math/−"
+   },
+   "e9": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/math/max"
+   },
+   "f2": {
+    "artifact": "Lander/effectiveTrust",
+    "implicitInstance": true
+   },
+   "f5": {
+    "artifact": "/math/×"
+   },
+   "i2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "dt",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "fill": false,
+     "height": 1.0,
+     "width": 1.0
+    }
+   }
+  }
+ }

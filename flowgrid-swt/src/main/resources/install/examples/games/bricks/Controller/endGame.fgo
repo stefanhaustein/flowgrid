@@ -1,0 +1,64 @@
+
+ {
+  "name": "endGame",
+  "kind": "operation",
+  "input": [
+   "/examples/games/bricks/Ball"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0",
+   "↓ ↙ ← ↵",
+   "a2    d2",
+   "      ↓",
+   "      d4",
+   "      ↓",
+   "      ↓",
+   "      d7"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "Controller/canvas",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b3": {
+    "artifact": "/graphics/Canvas/remove"
+   },
+   "e1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "ball",
+    "type": "Ball",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "e3": {
+    "artifact": "Controller/graphics",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "e5": {
+    "artifact": "/graphics/Graphics/setAlignHCenter"
+   },
+   "e8": {
+    "buffered": 14,
+    "constants": [
+     null,
+     0.0,
+     0.0,
+     "Game Over"
+
+    ],
+    "artifact": "/graphics/Graphics/drawText"
+   }
+  }
+ }

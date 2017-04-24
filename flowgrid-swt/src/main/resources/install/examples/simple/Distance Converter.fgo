@@ -1,0 +1,75 @@
+
+ {
+  "name": "Distance Converter",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "origin": "d1",
+  "graph": [
+   "↱ ↘",
+   "↑ b1",
+   "↑ ↓",
+   "↑ b3",
+   "↑ ↓",
+   "↑ b5",
+   "↑ ↓",
+   "↑ b7",
+   "↖ ↵"
+
+  ],
+  "cells": {
+   "e2": {
+    "buffered": 2,
+    "constants": [
+     null,
+     2.54
+
+    ],
+    "artifact": "/math/×"
+   },
+   "e4": {
+    "artifact": "/system/Port",
+    "input": true,
+    "output": true,
+    "name": "cm",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "e6": {
+    "buffered": 2,
+    "constants": [
+     null,
+     2.54
+
+    ],
+    "artifact": "/math/÷"
+   },
+   "e8": {
+    "constants": [
+     null
+
+    ],
+    "artifact": "/system/Port",
+    "input": true,
+    "output": true,
+    "name": "inch",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   }
+  }
+ }

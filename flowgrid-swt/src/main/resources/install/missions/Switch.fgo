@@ -1,0 +1,95 @@
+
+ {
+  "name": "Switch",
+  "documentation": "A combination of branches and filters will work here, too.\n\nAlternatively, just use a swich.",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 45.0,
+  "input": [
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text",
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "↓     ↓",
+   "a8    d8"
+
+  ],
+  "cells": {
+   "b10": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Text",
+    "peer": {
+     "testData": "🍩 🍰 🍪",
+     "icon": "Fluffy"
+    }
+   },
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Text",
+    "peer": {
+     "testData": "🍩 🍰 🍐 🍎 🍪",
+     "icon": "Pipe"
+    }
+   },
+   "e10": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Text",
+    "peer": {
+     "testData": "🍐 🍎",
+     "icon": "Bluffy"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 9,
+   "optimalCellCount": 9,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": {
+     "branch/": true,
+     "compare/": true,
+     "emoji/": {
+      "animal/": true,
+      "color/": true,
+      "food/": {
+       "Sweets": {
+       }
+      },
+      "other/": true,
+      "plant/": true,
+      "shape/": true,
+      "vehicle/": true
+     },
+     "if": true,
+     "log (1 : 1)": true,
+     "loop (1 : 1)": true,
+     "sync (2 : 2)": true
+    },
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

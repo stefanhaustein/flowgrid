@@ -1,0 +1,46 @@
+
+ {
+  "name": "Ball",
+  "artifacts": [
+   {
+    "name": "radius",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 15.0
+   },
+   {
+    "name": "x",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 5.0
+   },
+   {
+    "name": "y",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": -100.0
+   },
+   {
+    "name": "controller",
+    "type": "Controller",
+    "kind": "property"
+   },
+   {
+    "name": "dx",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 0.0
+   },
+   {
+    "name": "dy",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": -400.0
+   }
+
+  ],
+  "kind": "class"
+ }

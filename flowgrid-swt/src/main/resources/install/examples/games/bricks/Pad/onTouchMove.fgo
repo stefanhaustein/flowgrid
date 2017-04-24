@@ -1,0 +1,17 @@
+
+ {
+  "name": "onTouchMove",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "a0",
+  "graph": [
+
+  ],
+  "cells": {
+  }
+ }

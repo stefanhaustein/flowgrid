@@ -1,0 +1,50 @@
+
+ {
+  "name": "fib2",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "c2",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "↓",
+   "a4"
+
+  ],
+  "cells": {
+   "c2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Number",
+    "peer": {
+    }
+   },
+   "c4": {
+    "buffered": 6,
+    "constants": [
+     null,
+     1.0,
+     0.0
+
+    ],
+    "artifact": "fib3"
+   },
+   "c6": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Number",
+    "peer": {
+    }
+   }
+  }
+ }

@@ -1,0 +1,210 @@
+
+ {
+  "name": "SensorTest",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/system/Number",
+   "/system/Number[]",
+   "/system/Number[]",
+   "/system/Number",
+   "/system/Number[]",
+   "/system/Number[]",
+   "/system/Number",
+   "/system/Number[]"
+
+  ],
+  "output": [
+   "/system/Number",
+   "/system/Number[]",
+   "/system/Number[]",
+   "/system/Number",
+   "/system/Number[]",
+   "/system/Number[]",
+   "/system/Number",
+   "/system/Number[]"
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "a0    d0    g0    j0",
+   "↓     ↓     ↓     ↓",
+   "a2    d2    g2    j2",
+   "",
+   "",
+   "a5    d5    g5    j5",
+   "↓     ↓     ↓     ↓",
+   "a7    d7    g7    j7"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Ambient temperature",
+    "type": "/system/Number",
+    "peer": {
+     "sensor": 13.0
+    }
+   },
+   "c3": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "temperature",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "c6": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Linear acceleration",
+    "type": "/system/Number[]",
+    "peer": {
+     "sensor": 10.0
+    }
+   },
+   "c8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "acceleration",
+    "type": "/system/Number[]",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "f1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Gravity",
+    "type": "/system/Number[]",
+    "peer": {
+     "sensor": 9.0
+    }
+   },
+   "f3": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "gravity",
+    "type": "/system/Number[]",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "f6": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Magnetic field",
+    "type": "/system/Number[]",
+    "peer": {
+     "sensor": 2.0
+    }
+   },
+   "f8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "compass",
+    "type": "/system/Number[]",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "i1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Gyroscope",
+    "type": "/system/Number[]",
+    "peer": {
+     "sensor": 4.0
+    }
+   },
+   "i3": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "gyroscope",
+    "type": "/system/Number[]",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "i6": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Pressure",
+    "type": "/system/Number",
+    "peer": {
+     "sensor": 6.0
+    }
+   },
+   "i8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "pressure",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "l1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Light",
+    "type": "/system/Number",
+    "peer": {
+     "sensor": 5.0
+    }
+   },
+   "l3": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "light",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "l6": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "Rotation vector",
+    "type": "/system/Number[]",
+    "peer": {
+     "sensor": 11.0
+    }
+   },
+   "l8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "rotation",
+    "type": "/system/Number[]",
+    "peer": {
+     "portType": "Widget",
+     "widget": "runchart",
+     "width": 1.0,
+     "height": 1.0
+    }
+   }
+  }
+ }

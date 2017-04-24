@@ -1,0 +1,99 @@
+
+ {
+  "name": "Double",
+  "documentation": "A branch may help here...",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 45.0,
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "↓",
+   "a8"
+
+  ],
+  "cells": {
+   "b10": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Number",
+    "peer": {
+     "testData": "4 10",
+     "icon": "Robby"
+    }
+   },
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Number",
+    "peer": {
+     "testData": "2 5",
+     "icon": "Pipe"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 9,
+   "optimalCellCount": 9,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": {
+     "branch/": {
+     },
+     "compare/": true,
+     "emoji/": true,
+     "if": true,
+     "log (1 : 1)": true,
+     "loop (1 : 1)": true,
+     "sync (2 : 2)": true
+    },
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": {
+     "container/": true,
+     "examples/": true,
+     "graphics/": true,
+     "logic/": true,
+     "math/": {
+      "abs (1 : 1)": true,
+      "ceil (1 : 1)": true,
+      "degree/": true,
+      "exp (1 : 1)": true,
+      "floor (1 : 1)": true,
+      "format (2 : 1)": true,
+      "hyperbolic/": true,
+      "log (1 : 1)": true,
+      "log10 (1 : 1)": true,
+      "max (2 : 1)": true,
+      "min (2 : 1)": true,
+      "pow (2 : 1)": true,
+      "radian/": true,
+      "root (2 : 1)": true,
+      "signum (1 : 1)": true,
+      "sqrt (1 : 1)": true,
+      "vector/": true
+     },
+     "sound/": true,
+     "text/": true
+    }
+   }
+  }
+ }

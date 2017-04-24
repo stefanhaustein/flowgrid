@@ -1,0 +1,35 @@
+
+ {
+  "name": "Pad",
+  "artifacts": [
+   {
+    "name": "height",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 30.0
+   },
+   {
+    "name": "width",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 100.0
+   },
+   {
+    "name": "x",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property"
+   },
+   {
+    "name": "y",
+    "public": true,
+    "type": "/system/Number",
+    "kind": "property",
+    "value": -400.0
+   }
+
+  ],
+  "kind": "class"
+ }

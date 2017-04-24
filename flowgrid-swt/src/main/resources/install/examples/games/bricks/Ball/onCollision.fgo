@@ -1,0 +1,83 @@
+
+ {
+  "name": "onCollision",
+  "kind": "operation",
+  "input": [
+   "/system/Any"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "  b0",
+   "  b1→ → → ↘",
+   "  b2      f2",
+   "↙ b3↘   ↙ f3→ ↘",
+   "a4  ↓   e4    h4",
+   "↳ ↘ ↓   ↳ ↘ ↙ ← ↵",
+   "  b6      f6",
+   "  ↓       ↓",
+   "  b8      f8"
+
+  ],
+  "cells": {
+   "b5": {
+    "artifact": "Ball/controller",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "c1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Any",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0,
+     "fill": false
+    }
+   },
+   "c2": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c3": {
+    "artifact": "/examples/games/bricks/Brick",
+    "action": "FILTER"
+   },
+   "c4": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "c7": {
+    "artifact": "Controller/removeBrick"
+   },
+   "c9": {
+    "artifact": "Ball/bounce",
+    "implicitInstance": true
+   },
+   "f5": {
+    "artifact": "Ball/x",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "g3": {
+    "artifact": "/examples/games/bricks/Pad",
+    "action": "FILTER"
+   },
+   "g4": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "g7": {
+    "artifact": "/math/−"
+   },
+   "g9": {
+    "artifact": "Ball/bounceUp",
+    "implicitInstance": true
+   },
+   "i5": {
+    "artifact": "Pad/x",
+    "action": "GET"
+   }
+  }
+ }

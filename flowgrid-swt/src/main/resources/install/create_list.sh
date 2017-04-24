@@ -1,0 +1,1 @@
+find . -type f -print | sed "s|^\./||" > allfiles.txt

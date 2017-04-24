@@ -1,0 +1,59 @@
+
+ {
+  "name": "acceleration",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "d1",
+  "graph": [
+   "  b0",
+   "  ↓",
+   "  b2",
+   "  ↓",
+   "a4",
+   "↓",
+   "a6"
+
+  ],
+  "cells": {
+   "d5": {
+    "buffered": 1,
+    "constants": [
+     1.62,
+     null
+
+    ],
+    "artifact": "/math/−"
+   },
+   "d7": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "accelleration",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "fill": false,
+     "height": 1.0,
+     "width": 1.0
+    }
+   },
+   "e1": {
+    "artifact": "Lander/effectiveTrust",
+    "implicitInstance": true
+   },
+   "e3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.05
+
+    ],
+    "artifact": "/math/×"
+   }
+  }
+ }

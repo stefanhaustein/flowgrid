@@ -1,0 +1,65 @@
+
+ {
+  "name": "Connection",
+  "documentation": "Drag a connection out of the bottom of the pipe and connect it to Fluffy.\n\nPress the \"Play\" icon to start.\n\n",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 0.0,
+  "input": [
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "↓",
+   "a6"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "input",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍉 🍇 🍰 🍔",
+     "icon": "Pipe"
+    }
+   },
+   "b8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "expectation",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍉 🍇 🍰 🍔",
+     "icon": "Fluffy"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 7,
+   "optimalCellCount": 3,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": true,
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

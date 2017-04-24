@@ -1,0 +1,80 @@
+
+ {
+  "name": "startGame",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0    g0    j0",
+   "↓     ↓     ↓ ↙ ← ↵",
+   "a2    ↓     g2",
+   "↓ ↙ ← ↵ ↙ ← ↵",
+   "a4    ↙ ↵",
+   "↓ ↙ ← ↵",
+   "a6          g6",
+   "↓",
+   "a8          g8"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "Controller/canvas",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b3": {
+    "artifact": "/graphics/Canvas/removeAll"
+   },
+   "b5": {
+    "artifact": "/graphics/Canvas/add"
+   },
+   "b7": {
+    "artifact": "/graphics/Canvas/add"
+   },
+   "b9": {
+    "artifact": "Controller/addBricks",
+    "implicitInstance": true
+   },
+   "e1": {
+    "artifact": "Pad",
+    "action": "CREATE"
+   },
+   "h1": {
+    "artifact": "Ball",
+    "action": "CREATE"
+   },
+   "h3": {
+    "artifact": "Ball/controller",
+    "action": "SET"
+   },
+   "h7": {
+    "buffered": 1,
+    "constants": [
+     0.0
+
+    ],
+    "artifact": "Controller/score",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "h9": {
+    "buffered": 1,
+    "constants": [
+     true
+
+    ],
+    "artifact": "Controller/running",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "k1": {
+    "artifact": "Controller",
+    "action": "THIS"
+   }
+  }
+ }

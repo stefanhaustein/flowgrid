@@ -1,0 +1,12 @@
+
+ {
+  "name": "sound",
+  "artifacts": [
+   {
+    "name": "rooster.wav",
+    "kind": "resource"
+   }
+
+  ],
+  "kind": "module"
+ }

@@ -1,5 +1,8 @@
 package org.flowgrid.swt;
 
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import org.flowgrid.model.io.Files;
 import org.flowgrid.model.io.StatusListener;
 import org.flowgrid.swt.dialog.ProgressDialog;
@@ -8,16 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class Installer {
-    private static final String[] MASTER_FILE_NAMES = {
-            "flowgrid-examples-master.zip",
-            "flowgrid-missions-master.zip",
-            "flowgrid-myname-master.zip"
-    };
-
     SwtFlowgrid flowgrid;
     Settings settings;
     ProgressDialog progressDialog;
@@ -54,43 +49,33 @@ public class Installer {
             Files.deleteAll(storageRootDir, path, statusListener);
         }
 
-        for (String master : MASTER_FILE_NAMES) {
-            String resourceName = "/install/" + master;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(
+                "/install/allfiles.txt"), "UTF-8"));
+
+        while (true) {
+            String localName = reader.readLine();
+            if (localName == null) {
+                break;
+            }
+            if (localName.equals("allfiles.txt") || localName.startsWith(".") || localName.equals("create_list.sh")) {
+                continue;
+            }
+            String resourceName = "/install/" + localName;
             InputStream resourceInputStream = getClass().getResourceAsStream(resourceName);
             if (resourceInputStream == null) {
-                throw new RuntimeException("Resource not found: '" + resourceName + "'");
+                System.err.println("Resource not found: '" +resourceName + "'. Update allfiles.txt?");
             }
-            ZipInputStream zis = new ZipInputStream(resourceInputStream);
-
-            String prefix = path.startsWith("/") ? path.substring(1) : path;
-            while(true) {
-                ZipEntry entry = zis.getNextEntry();
-                if (entry == null) {
-                    break;
-                }
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                String localName = entry.getName();
-                int cut = localName.indexOf('/');
-                if (localName.startsWith("flowgrid-") && localName.substring(0, cut).endsWith("-master")) {
-                    localName = localName.substring(9, cut - 7) + localName.substring(cut);
-                }
-                if (!localName.startsWith(prefix)) {
-                    continue;
-                }
-                if (command == Settings.BootCommand.RESTORE_MISSING_FILES) {
-                    if (Files.exists(storageRootDir, localName)) {
-                        continue;
-                    }
-                }
-                message(localName);
-                OutputStream os = Files.save(storageRootDir, localName, entry.getTime());
-                Files.copyStream(zis, os);
-                os.close();
+            if (command == Settings.BootCommand.RESTORE_MISSING_FILES && Files.exists(storageRootDir, localName)) {
+                continue;
             }
+            message(localName);
+            File target = new File(storageRootDir, localName);
+            target.getParentFile().mkdirs();
+            OutputStream os = new FileOutputStream(new File(storageRootDir, localName));
+            Files.copyStream(resourceInputStream, os);
+            resourceInputStream.close();
+            os.close();
         }
-
     }
 
     private void message(final String message) {

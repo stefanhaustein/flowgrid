@@ -1,0 +1,80 @@
+
+ {
+  "name": "Spaghetti",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 15.0,
+  "input": [
+   "/system/Text",
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text"
+
+  ],
+  "origin": "a1",
+  "graph": [
+   "  b0    e0",
+   "↙ ↓←← ← ↓←↰",
+   "↓ ↳ → ↘ ↳ ↘↖↰",
+   "↓   ↙ ↓←← ↵ ↑",
+   "↳ ↘ ↳ ↓→→ ↘ ↑",
+   "  ↳ → ↳↘→ ↓→↗",
+   "  ↙ ← ↓←← ↵",
+   "",
+   "",
+   "    ↓",
+   "    c10"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Text",
+    "peer": {
+     "portType": "Test",
+     "testData": "🍝",
+     "icon": "Pipe"
+    }
+   },
+   "c11": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Expectation",
+    "type": "/system/Text",
+    "peer": {
+     "portType": "Test",
+     "testData": "🍝",
+     "icon": "Fluffy"
+    }
+   },
+   "e1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "TestInput",
+    "type": "/system/Text",
+    "peer": {
+     "portType": "Test",
+     "testData": "👟",
+     "icon": "Pipe"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 8,
+   "editableEndRow": 10,
+   "optimalCellCount": 3,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": true,
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

@@ -1,0 +1,89 @@
+
+ {
+  "name": "effectiveTrust",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "a0    d0    g0    j0",
+   "↓     ↓     ↓ ↙ ← ↵",
+   "↓     d2    g2",
+   "↓     ↓     g3",
+   "↓     ↓ ↙ ← ↵",
+   "↓     d5",
+   "↓ ↙ ← ↵",
+   "a7",
+   "↓ b8",
+   "↓↙↵",
+   "a10"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "Lander/thrust",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "c11": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "effectiveThrust",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "fill": false,
+     "height": 1.0,
+     "width": 1.0
+    }
+   },
+   "c8": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "d9": {
+    "artifact": "/system/Literal",
+    "value": 0.0,
+    "type": "/system/Number"
+   },
+   "f1": {
+    "artifact": "Lander/fuel",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "f3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/control/compare/>",
+    "action": "COMPUTE"
+   },
+   "f6": {
+    "artifact": "/logic/and"
+   },
+   "i1": {
+    "artifact": "Lander/landed",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "i3": {
+    "artifact": "/logic/or"
+   },
+   "i4": {
+    "artifact": "/logic/not"
+   },
+   "l1": {
+    "artifact": "Lander/crashed",
+    "action": "GET",
+    "implicitInstance": true
+   }
+  }
+ }

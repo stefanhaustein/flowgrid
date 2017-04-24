@@ -1,0 +1,119 @@
+
+ {
+  "name": "updateDisplay",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0    g0    j0",
+   "↓     ↓     ↓     ↓",
+   "a2    d2    g2    j2",
+   "↙ ↵   ↓     ↓     ↓",
+   "a4    ↓     ↓     ↓",
+   "↓     ↓     ↓     ↓",
+   "a6    ↓     ↓     ↓",
+   "↓     ↓     ↓     ↓",
+   "a8          ↓     ↓",
+   "↓     ↙ ← ← ↵     ↓",
+   "a10               ↓",
+   "↓     ↙ ← ← ← ← ← ↵",
+   "a12"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "Lander/canvas",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b11": {
+    "buffered": 6,
+    "constants": [
+     null,
+     -500.0,
+     400.0,
+     null
+
+    ],
+    "artifact": "/graphics/Graphics/drawText"
+   },
+   "b13": {
+    "buffered": 6,
+    "constants": [
+     null,
+     -500.0,
+     300.0,
+     null
+
+    ],
+    "artifact": "/graphics/Graphics/drawText"
+   },
+   "b3": {
+    "artifact": "/graphics/Canvas/createGraphics"
+   },
+   "b5": {
+    "artifact": "/graphics/Graphics/setAlignLeft"
+   },
+   "b7": {
+    "artifact": "/graphics/Graphics/setAlignTop"
+   },
+   "b9": {
+    "buffered": 6,
+    "constants": [
+     null,
+     -500.0,
+     500.0,
+     null
+
+    ],
+    "artifact": "/graphics/Graphics/drawText"
+   },
+   "e1": {
+    "artifact": "Lander/fuel",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "e3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     "Fuel: 0.00   "
+
+    ],
+    "artifact": "/math/format"
+   },
+   "h1": {
+    "artifact": "Lander/velocity",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "h3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     "Speed: 0.00   "
+
+    ],
+    "artifact": "/math/format"
+   },
+   "k1": {
+    "artifact": "Lander/height",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "k3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     "Height: 0.00   "
+
+    ],
+    "artifact": "/math/format"
+   }
+  }
+ }

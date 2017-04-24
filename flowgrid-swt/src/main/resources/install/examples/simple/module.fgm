@@ -1,0 +1,9 @@
+
+ {
+  "name": "simple",
+  "documentation": "A set of simple example operations.",
+  "artifacts": [
+
+  ],
+  "kind": "module"
+ }

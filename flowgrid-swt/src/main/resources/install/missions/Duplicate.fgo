@@ -1,0 +1,76 @@
+
+ {
+  "name": "Duplicate",
+  "documentation": "Remember that the \"replicator\" is called \"branch\" here.",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 50.0,
+  "input": [
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "↓",
+   "a8"
+
+  ],
+  "cells": {
+   "b10": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "duplicated",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍪 🍪 🍰 🍰",
+     "icon": "Fluffy"
+    }
+   },
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "input",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍪 🍰",
+     "icon": "Pipe"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 9,
+   "optimalCellCount": 8,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": {
+     "branch/": {
+     },
+     "compare/": true,
+     "emoji/": true,
+     "if": true,
+     "log (1 : 1)": true,
+     "loop (1 : 1)": true,
+     "sync (2 : 2)": true
+    },
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

@@ -1,0 +1,39 @@
+
+ {
+  "name": "Hello World",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+   "/system/Text"
+
+  ],
+  "origin": "c2",
+  "graph": [
+   "a0",
+   "↓",
+   "↓",
+   "↓",
+   "a4"
+
+  ],
+  "cells": {
+   "c2": {
+    "artifact": "/system/Literal",
+    "value": "Hello World",
+    "type": "/system/Text"
+   },
+   "c6": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Text",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0,
+     "fill": false
+    }
+   }
+  }
+ }

@@ -1,0 +1,41 @@
+
+ {
+  "name": "bounce",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "↓",
+   "a4"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "Ball/dy",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "c3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     -1.0
+
+    ],
+    "artifact": "/math/×"
+   },
+   "c5": {
+    "artifact": "Ball/dy",
+    "action": "SET",
+    "implicitInstance": true
+   }
+  }
+ }

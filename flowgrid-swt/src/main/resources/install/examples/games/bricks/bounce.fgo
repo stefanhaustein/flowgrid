@@ -1,0 +1,171 @@
+
+ {
+  "name": "bounce",
+  "kind": "operation",
+  "input": [
+   "/system/Number",
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "  b0    e0",
+   "  ↓   ↙ e1→ → → → → ↘",
+   "↙ b2→ ↓→↓→→ → ↘     ↓",
+   "↓ b3  ↓ e3    h3    k3",
+   "↓ ↓ ↙ ↓←↵     ↓ ↙ ← ↵",
+   "↓ b5  ↓       h5",
+   "↓ ↳ → ↓→→ → → ↳↘↘",
+   "↓     ↓       h7",
+   "↓     ↳ → → ↘ ↓",
+   "↓           g9",
+   "↓     ↙ ← ← ↵ ↓",
+   "↓   c11       ↓     k11",
+   "↓   * → → → ↘ ↓     ↓",
+   "↓ ↙ ↵←← ← ← ↓←↵     ↓",
+   "↓ ↓ ↙ ← ← ← ↓←← ← ← ↵",
+   "↓ b15       ↓",
+   "↓ ↓         ↓",
+   "a17         ↓",
+   "↓           ↳ ↘",
+   "a19           h19"
+
+  ],
+  "cells": {
+   "b18": {
+    "artifact": "/math/+"
+   },
+   "b20": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "pos'",
+    "type": "/system/Number",
+    "peer": {
+     "height": 1.0,
+     "width": 1.0
+    }
+   },
+   "c1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "pos",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "c16": {
+    "artifact": "/math/×"
+   },
+   "c3": {
+    "artifact": "/control/branch/Branch 3-way"
+   },
+   "c4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     -500.0
+
+    ],
+    "artifact": "/control/compare/≤",
+    "action": "COMPUTE"
+   },
+   "c6": {
+    "artifact": "/logic/and"
+   },
+   "d12": {
+    "buffered": 1,
+    "constants": [
+     -1.0,
+     null
+
+    ],
+    "artifact": "/math/×"
+   },
+   "d13": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "f1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "delta",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "f2": {
+    "artifact": "/control/branch/Branch 3-way"
+   },
+   "f4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "COMPUTE"
+   },
+   "h10": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "i20": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "delta'",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "i4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     500.0
+
+    ],
+    "artifact": "/control/compare/≥",
+    "action": "COMPUTE"
+   },
+   "i6": {
+    "artifact": "/logic/and"
+   },
+   "i8": {
+    "artifact": "/logic/or"
+   },
+   "l12": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "s",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "l4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/control/compare/>",
+    "action": "COMPUTE"
+   }
+  }
+ }

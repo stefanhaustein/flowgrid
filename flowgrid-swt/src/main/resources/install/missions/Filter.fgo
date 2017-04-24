@@ -1,0 +1,88 @@
+
+ {
+  "name": "Filter",
+  "documentation": "Oh no, the food supply line got mixed up! Tap on a free cell to install a food filter.\n\nThe food filter can be found under \"Control\" > \"Emoji\" > \"Food\".",
+  "kind": "operation",
+  "asyncInput": true,
+  "passedWithStars": 0,
+  "order": 30.0,
+  "input": [
+   "/system/Text"
+
+  ],
+  "output": [
+   "/system/Text"
+
+  ],
+  "origin": "b2",
+  "graph": [
+   "a0",
+   "↓",
+   "",
+   "",
+   "",
+   "↓",
+   "a6"
+
+  ],
+  "cells": {
+   "b2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "input",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍰 🔧 🍔 🍪 🎾",
+     "icon": "Pipe"
+    }
+   },
+   "b8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "triangles",
+    "type": "/system/Text",
+    "peer": {
+     "widget": "test",
+     "testData": "🍰 🍔 🍪",
+     "icon": "Fluffy"
+    }
+   }
+  },
+  "tutorialData": {
+   "editableStartRow": 4,
+   "editableEndRow": 7,
+   "optimalCellCount": 4,
+   "speed": 50,
+   "disabledMenus": {
+    "Control…": {
+     "branch/": true,
+     "compare/": true,
+     "emoji/": {
+      "animal/": true,
+      "color/": true,
+      "food/": {
+       "Food": {
+       },
+       "Fruit": {
+       },
+       "Sweets": {
+       }
+      },
+      "other/": true,
+      "plant/": true,
+      "shape/": true,
+      "vehicle/": true
+     },
+     "if": true,
+     "log (1 : 1)": true,
+     "loop (1 : 1)": true,
+     "sync (2 : 2)": true
+    },
+    "Data / IO…": true,
+    "Edit…": true,
+    "Operations / classes…": true,
+    "This module…": true
+   }
+  }
+ }

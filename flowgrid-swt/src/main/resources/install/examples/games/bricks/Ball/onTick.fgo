@@ -1,0 +1,115 @@
+
+ {
+  "name": "onTick",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "        e0    h0    k0",
+   "↙ ← ← ← e1↘ ↙ ↵↙← ← k1",
+   "a2        f2        ↓",
+   "↓       ↙ ↵ ↳ ↘     ↓",
+   "a4      e4    h4    ↓",
+   "↓                   ↓",
+   "↓ b6    e6    h6    ↓",
+   "↓ ↓     ↳ ↘ ↙ ↵↙← ← ↵",
+   "a8        f8",
+   "        ↙ ↵ ↳ ↘",
+   "        e10   h10"
+
+  ],
+  "cells": {
+   "b3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     -490.0
+
+    ],
+    "artifact": "/control/compare/<",
+    "action": "FILTER"
+   },
+   "b5": {
+    "artifact": "Ball/controller",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b9": {
+    "artifact": "Controller/endGame"
+   },
+   "c7": {
+    "artifact": "Ball",
+    "action": "THIS"
+   },
+   "f1": {
+    "artifact": "Ball/y",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "f11": {
+    "artifact": "Ball/x",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "f2": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "f5": {
+    "artifact": "Ball/y",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "f7": {
+    "artifact": "Ball/x",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "g3": {
+    "artifact": "bounce"
+   },
+   "g9": {
+    "artifact": "bounce"
+   },
+   "i1": {
+    "artifact": "Ball/dy",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "i11": {
+    "artifact": "Ball/dx",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "i5": {
+    "artifact": "Ball/dy",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "i7": {
+    "artifact": "Ball/dx",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "l1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "s",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0,
+     "fill": false
+    }
+   },
+   "l2": {
+    "artifact": "/control/branch/Branch left"
+   }
+  }
+ }

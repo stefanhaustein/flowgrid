@@ -1,0 +1,62 @@
+
+ {
+  "name": "onAttach",
+  "public": true,
+  "kind": "operation",
+  "public": true,
+  "input": [
+   "/graphics/Canvas"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "↓",
+   "a4      e4",
+   "  ↓     ↓",
+   "  b6    ↓",
+   "  ↓     ↓",
+   "  b8"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "peer": {
+    }
+   },
+   "b3": {
+    "artifact": "Lander/canvas",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "b5": {
+    "artifact": "/graphics/Canvas/createGraphics"
+   },
+   "c7": {
+    "artifact": "/graphics/Graphics/setAlignBottom"
+   },
+   "c9": {
+    "buffered": 6,
+    "constants": [
+     null,
+     0.0,
+     -500.0,
+     null
+
+    ],
+    "artifact": "/graphics/Graphics/drawImage"
+   },
+   "f5": {
+    "artifact": "surface.png"
+   }
+  }
+ }

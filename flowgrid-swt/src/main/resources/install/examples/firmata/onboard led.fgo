@@ -1,0 +1,46 @@
+
+ {
+  "name": "onboard led",
+  "kind": "operation",
+  "input": [
+   "/system/Boolean"
+
+  ],
+  "output": [
+   "/system/Boolean"
+
+  ],
+  "origin": "d2",
+  "graph": [
+   "a0",
+   "↓",
+   "↓",
+   "a3"
+
+  ],
+  "cells": {
+   "d2": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Boolean",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0,
+     "fill": false
+    }
+   },
+   "d5": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "Firmata D0",
+    "type": "/system/Boolean",
+    "peer": {
+     "portType": "Firmata",
+     "pin": 13.0,
+     "mode": "DIGITAL"
+    }
+   }
+  }
+ }

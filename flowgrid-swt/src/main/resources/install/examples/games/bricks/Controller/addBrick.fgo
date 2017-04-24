@@ -1,0 +1,146 @@
+
+ {
+  "name": "addBrick",
+  "kind": "operation",
+  "input": [
+   "/system/Number",
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "      d0    g0",
+   "      ↓     g1→ ↘",
+   "      d2    g2  i2",
+   "      ↓     ↓   ↓",
+   "a4    d4    g4  i4",
+   "↳ → ↘ ↓     ↓   ↓",
+   "    c6      ↓   i6",
+   "    ↳ ↘ ↙ ← ↵   ↓",
+   "      d8        ↓",
+   "      ↓ ↙ ← ← ← ↵",
+   "a10   d10",
+   "↳ → ↘ ↓",
+   "    c12"
+
+  ],
+  "cells": {
+   "b11": {
+    "artifact": "Controller/canvas",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b5": {
+    "artifact": "Brick",
+    "action": "CREATE"
+   },
+   "d13": {
+    "buffered": 1,
+    "artifact": "/graphics/Canvas/add"
+   },
+   "d7": {
+    "artifact": "Brick/x",
+    "action": "SET"
+   },
+   "e1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "x",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "e11": {
+    "artifact": "Brick/color",
+    "action": "SET"
+   },
+   "e3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     5.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "e5": {
+    "buffered": 2,
+    "constants": [
+     null,
+     100.0
+
+    ],
+    "artifact": "/math/×"
+   },
+   "e9": {
+    "artifact": "Brick/y",
+    "action": "SET"
+   },
+   "h1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "y",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "h2": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "h3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     50.0
+
+    ],
+    "artifact": "/math/×"
+   },
+   "h5": {
+    "buffered": 2,
+    "constants": [
+     null,
+     100.0
+
+    ],
+    "artifact": "/math/+"
+   },
+   "j3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "j5": {
+    "buffered": 2,
+    "constants": [
+     null,
+     72.0
+
+    ],
+    "artifact": "/math/×"
+   },
+   "j7": {
+    "buffered": 6,
+    "constants": [
+     null,
+     100.0,
+     100.0
+
+    ],
+    "artifact": "/graphics/color/fromHsv"
+   }
+  }
+ }

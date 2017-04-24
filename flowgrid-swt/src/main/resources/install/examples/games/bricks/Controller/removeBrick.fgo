@@ -1,0 +1,102 @@
+
+ {
+  "name": "removeBrick",
+  "kind": "operation",
+  "input": [
+   "/examples/games/bricks/Brick"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0    d0    g0",
+   "↓     ↓     ↓",
+   "a2    d2    ↓ h2",
+   "↓     ↓     ↓ ↓",
+   "a4    d4    g4",
+   "↓     ↓",
+   "a6    d6",
+   "↓",
+   "a8"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "Controller/bricks",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "b3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "b5": {
+    "artifact": "Controller/bricks",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "b7": {
+    "buffered": 2,
+    "constants": [
+     null,
+     0.0
+
+    ],
+    "artifact": "/control/compare/=",
+    "action": "FILTER"
+   },
+   "b9": {
+    "artifact": "Controller/addBricks",
+    "implicitInstance": true
+   },
+   "e1": {
+    "artifact": "Controller/score",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "e3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     20.0
+
+    ],
+    "artifact": "/math/+"
+   },
+   "e5": {
+    "artifact": "Controller/score",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "e7": {
+    "artifact": "Controller/drawScore",
+    "implicitInstance": true
+   },
+   "h1": {
+    "artifact": "Controller/canvas",
+    "action": "GET",
+    "implicitInstance": true
+   },
+   "h5": {
+    "artifact": "/graphics/Canvas/remove"
+   },
+   "i3": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "brick",
+    "type": "Brick",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   }
+  }
+ }

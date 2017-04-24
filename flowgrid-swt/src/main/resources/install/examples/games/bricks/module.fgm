@@ -1,0 +1,12 @@
+
+ {
+  "name": "bricks",
+  "artifacts": [
+   {
+    "name": "main.png",
+    "kind": "resource"
+   }
+
+  ],
+  "kind": "module"
+ }

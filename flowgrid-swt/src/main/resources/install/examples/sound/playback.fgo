@@ -1,0 +1,54 @@
+
+ {
+  "name": "playback",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/system/Boolean"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "↓",
+   "a4",
+   "↓",
+   "a6"
+
+  ],
+  "cells": {
+   "b1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "click me!",
+    "type": "/system/Boolean",
+    "peer": {
+     "portType": "Widget",
+     "widget": "button",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "b3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     true
+
+    ],
+    "artifact": "/control/compare/=",
+    "action": "FILTER"
+   },
+   "b5": {
+    "artifact": "rooster.wav"
+   },
+   "b7": {
+    "artifact": "/sound/Sound/play"
+   }
+  }
+ }

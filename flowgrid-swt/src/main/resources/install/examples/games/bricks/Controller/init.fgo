@@ -1,0 +1,72 @@
+
+ {
+  "name": "init",
+  "kind": "operation",
+  "input": [
+   "/graphics/Canvas"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "a3→ → → ↘",
+   "↓ b4    ↓",
+   "↓ ↓     ↓",
+   "a6      e6",
+   "↓         ↓",
+   "a8        f8",
+   "          ↓",
+   "          f10"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "peer": {
+     "portType": "Widget",
+     "widget": "canvas",
+     "width": 0.0,
+     "height": 0.0
+    }
+   },
+   "c3": {
+    "artifact": "Controller/canvas",
+    "action": "SET",
+    "implicitInstance": true
+   },
+   "c4": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c7": {
+    "artifact": "/graphics/Canvas/setOnClickListener"
+   },
+   "c9": {
+    "artifact": "Controller/startGame",
+    "implicitInstance": true
+   },
+   "d5": {
+    "artifact": "Controller",
+    "action": "THIS"
+   },
+   "g7": {
+    "artifact": "/graphics/Canvas/createGraphics"
+   },
+   "h11": {
+    "artifact": "Controller/drawScore",
+    "implicitInstance": true
+   },
+   "h9": {
+    "artifact": "Controller/graphics",
+    "action": "SET",
+    "implicitInstance": true
+   }
+  }
+ }

@@ -1,0 +1,47 @@
+
+ {
+  "name": "tone",
+  "kind": "operation",
+  "asyncInput": true,
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+
+  ],
+  "origin": "d1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2",
+   "↓",
+   "a4"
+
+  ],
+  "cells": {
+   "d1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "hz",
+    "type": "/system/Number",
+    "peer": {
+     "portType": "Widget",
+     "width": 1.0,
+     "height": 1.0
+    }
+   },
+   "d3": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/sound/newTone"
+   },
+   "d5": {
+    "artifact": "/sound/Sound/play"
+   }
+  }
+ }

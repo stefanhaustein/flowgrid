@@ -1,0 +1,43 @@
+
+ {
+  "name": "addBricks",
+  "kind": "operation",
+  "input": [
+
+  ],
+  "output": [
+
+  ],
+  "origin": "d2",
+  "graph": [
+   "a0",
+   "↓",
+   "↓",
+   "a3    d3"
+
+  ],
+  "cells": {
+   "d2": {
+    "buffered": 1,
+    "constants": [
+     5.0
+
+    ],
+    "artifact": "/control/loop"
+   },
+   "d5": {
+    "artifact": "Controller/addRow",
+    "implicitInstance": true
+   },
+   "g5": {
+    "buffered": 1,
+    "constants": [
+     45.0
+
+    ],
+    "artifact": "Controller/bricks",
+    "action": "SET",
+    "implicitInstance": true
+   }
+  }
+ }

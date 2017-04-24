@@ -1,0 +1,50 @@
+
+ {
+  "name": "sqr",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "c1",
+  "graph": [
+   "a0",
+   "↓",
+   "a2↘",
+   "a3",
+   "↓",
+   "a5"
+
+  ],
+  "cells": {
+   "c1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Number",
+    "peer": {
+     "width": 1.0,
+     "height": 1.0,
+     "fill": false
+    }
+   },
+   "c3": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "c4": {
+    "artifact": "/math/×"
+   },
+   "c6": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Number",
+    "peer": {
+    }
+   }
+  }
+ }

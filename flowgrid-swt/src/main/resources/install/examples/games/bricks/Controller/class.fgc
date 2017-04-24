@@ -1,0 +1,35 @@
+
+ {
+  "name": "Controller",
+  "artifacts": [
+   {
+    "name": "bricks",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 0.0
+   },
+   {
+    "name": "canvas",
+    "type": "/graphics/Canvas",
+    "kind": "property"
+   },
+   {
+    "name": "graphics",
+    "type": "/graphics/Graphics",
+    "kind": "property"
+   },
+   {
+    "name": "running",
+    "type": "/system/Boolean",
+    "kind": "property"
+   },
+   {
+    "name": "score",
+    "type": "/system/Number",
+    "kind": "property",
+    "value": 0.0
+   }
+
+  ],
+  "kind": "class"
+ }

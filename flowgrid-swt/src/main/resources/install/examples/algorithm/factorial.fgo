@@ -1,0 +1,93 @@
+
+ {
+  "name": "factorial",
+  "documentation": "Computes the factorial of the input.",
+  "kind": "operation",
+  "input": [
+   "/system/Number"
+
+  ],
+  "output": [
+   "/system/Number"
+
+  ],
+  "origin": "b1",
+  "graph": [
+   "      d0",
+   "↱ → ↘↙d1↘",
+   "↑ ↙ c2  ↳ ↘",
+   "↑ ↓ c3    ↓↙← ← ↰",
+   "↑ ↓ c4→ → ↓→↘   ↑",
+   "↑ b5      f5    ↑",
+   "↑ ↓   ↱ ↘ ↓ ↓   ↑",
+   "↑ b7  ↑ e7  g7  ↑",
+   "↖ b8→ ↗ ↳ → → → ↗"
+
+  ],
+  "cells": {
+   "c6": {
+    "artifact": "/control/if",
+    "action": "FILTER"
+   },
+   "c8": {
+    "buffered": 2,
+    "constants": [
+     null,
+     1.0
+
+    ],
+    "artifact": "/math/−"
+   },
+   "c9": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "d3": {
+    "artifact": "/control/branch/Branch left"
+   },
+   "d4": {
+    "buffered": 2,
+    "constants": [
+     null,
+     2.0
+
+    ],
+    "artifact": "/control/compare/>",
+    "action": "COMPUTE"
+   },
+   "d5": {
+    "artifact": "/control/branch/Branch right"
+   },
+   "e1": {
+    "artifact": "/system/Port",
+    "input": true,
+    "name": "in",
+    "type": "/system/Number",
+    "peer": {
+     "height": 1.0,
+     "width": 1.0,
+     "fill": false
+    }
+   },
+   "e2": {
+    "artifact": "/control/branch/Branch left and right only"
+   },
+   "f8": {
+    "artifact": "/math/×"
+   },
+   "g6": {
+    "artifact": "/control/if",
+    "action": "SWITCH"
+   },
+   "h8": {
+    "artifact": "/system/Port",
+    "output": true,
+    "name": "out",
+    "type": "/system/Number",
+    "peer": {
+     "height": 1.0,
+     "width": 1.0,
+     "fill": false
+    }
+   }
+  }
+ }
