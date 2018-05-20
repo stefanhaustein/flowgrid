@@ -77,7 +77,7 @@ FlowGrid Android depends on:
 
 Links:
 
-- [Languagce concepts](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/documentation.md)
+- [Language concepts](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/documentation.md)
 - [User interface](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/ui.md)
 - [System library](https://github.com/FlowGrid/flowgrid/blob/master/flowgrid-android/src/main/assets/api.md)
 
